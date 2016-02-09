@@ -1,6 +1,6 @@
-# Clanton, Carson
-# 1000-301-592
-# 2015-01-28
+# Wood, Jeff
+# 100-103-5461
+# 2016-01-27
 # Assignment_00
 
 from tkinter import *

@@ -1,7 +1,7 @@
-# Clanton, Carson
-# 1000-301-592
-# 2015-01-28
-# Assignment_00
+# Wood, Jeff
+# 100-103-5461
+# 2016-02-17
+# Assignment_01
 
 from tkinter import *
 from math import *
