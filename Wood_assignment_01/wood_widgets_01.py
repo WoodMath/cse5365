@@ -8,18 +8,22 @@ from math import *
 from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import filedialog
+from wood_fileread_01 import *
 
 class cl_widgets:
-    def __init__(self,ob_root_window,ob_world=[]):
+    def __init__(self,ob_root_window,ob_world=[],ob_mesh=mesh()):
         self.ob_root_window=ob_root_window
         self.ob_world=ob_world
+        self.mesh=ob_mesh
         self.menu=cl_menu(self)
-        self.toolbar=cl_toolbar(self)
-        self.pannel_01 = cl_pannel_01(self)
-        self.pannel_02 = cl_pannel_02(self)
+#        self.toolbar=cl_toolbar(self)
+#        self.pannel_01 = cl_pannel_01(self)
+#        self.pannel_02 = cl_pannel_02(self)
+        self.pannel_03 = cl_pannel_03(self,ob_mesh)
         self.ob_canvas_frame=cl_canvas_frame(self)
         #self.status = cl_statusBar_frame(self)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
+
 
 class cl_canvas_frame:
     def __init__(self, master):
@@ -165,6 +169,52 @@ class cl_pannel_02:
 
     def button2_callback(self):
         print ( "button2 pressed!")
+class cl_pannel_03:
+
+    def __init__(self, master,ob_mesh):
+
+        self.master=master
+        frame = Frame(master.ob_root_window)
+        frame.pack()
+        
+#        self.var_filename = StringVar()
+#        self.var_filename.set('')
+#        self.button = Button(frame, text="Hello", fg="red", command=self.say_hi)
+#        self.button.pack(side=LEFT)
+
+#        self.hi_there = Button(frame, text="Ask for a string", command=self.ask_for_string)
+#        self.hi_there.pack(side=LEFT)
+
+        
+#        self.hi_there = Button(frame, text="Ask for a float", command=self.ask_for_string)
+#        self.hi_there.pack(side=LEFT)
+        self.file_dialog_button = Button(frame, text="Open File Dialog", fg="blue", command=self.browse_file)
+        self.file_dialog_button.pack(side=LEFT)        
+
+        self.var_filename = StringVar()
+        self.var_filename.set('')
+        self.button = Button(frame, text="Load File (Draw)", fg="red", command=self.load_file)
+        self.button.pack(side=LEFT)
+
+
+#    def say_hi(self):
+#        print ( "hi there, everyone!")
+#    def ask_for_string(self):
+#        s=simpledialog.askstring('My Dialog', 'Please enter a string')
+#        print ( s)
+#    def ask_for_float(self):
+#        f=simpledialog.askfloat('My Dialog', 'Please enter a string')
+#        print ( f)
+#    def browse_file(self):
+#        self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
+#        filename = self.var_filename.get()
+    def browse_file(self):
+        self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
+        filename = self.var_filename.get()
+    def load_file(self):
+        self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
+        filename = self.var_filename.get()
+
 class MyDialog(simpledialog.Dialog):
     def body(self, master):
 
