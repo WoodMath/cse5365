@@ -14,7 +14,10 @@
 #       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.vectorize.html
 #       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.matrix.transpose.html
 #       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.array.html
-
+#
+#       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_polygon.html
+#       http://zetcode.com/gui/tkinter/drawing/
+#       http://effbot.org/tkinterbook/canvas.htm
 
 #import pip
 #installed_packages = pip.get_installed_distributions()
@@ -76,22 +79,23 @@ class mesh:
     def load(self):
         with open(self.filename) as openfileobject:
             for line in openfileobject:
+                print(line,end='')
                 line_parsed=line.split()
                 if(len(line_parsed)>0):
                     line_type=line_parsed[0]
                     line_parsed.pop(0)
                     if(line_type=='v'):
                         line_parsed=vect_float(line_parsed)
-                        m.add_vertex(line_parsed)
+                        self.add_vertex(line_parsed)
                     if(line_type=='f'):
                         line_parsed=vect_int_less_one(line_parsed[:])
-                        m.add_face(line_parsed)
+                        self.add_face(line_parsed)
                     if(line_type=='w'):
                         line_parsed=vect_float(line_parsed[:])
-                        m.add_window(line_parsed)
+                        self.add_window(line_parsed)
                     if(line_type=='s'):
                         line_parsed=vect_float(line_parsed[:])
-                        m.add_viewport(line_parsed)
+                        self.add_viewport(line_parsed)
 
     
 

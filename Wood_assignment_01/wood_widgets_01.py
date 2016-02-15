@@ -176,7 +176,7 @@ class cl_pannel_03:
         self.master=master
         frame = Frame(master.ob_root_window)
         frame.pack()
-        
+        self.mesh = ob_mesh
 #        self.var_filename = StringVar()
 #        self.var_filename.set('')
 #        self.button = Button(frame, text="Hello", fg="red", command=self.say_hi)
@@ -211,9 +211,28 @@ class cl_pannel_03:
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()
+        self.mesh.filename=filename
+        print(' self.mesh.filename = ' + self.mesh.filename)
+        self.mesh.load()
+
     def load_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()
+#    def toolbar_draw_callback(self):
+        self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas)
+        temp_canvas=self.master.ob_canvas_frame.canvas
+        poly_id = temp_canvas.create_polygon(x0, y0, x1, y1, ..., option, ...)
+        #line1=temp_canvas.create_line(0,0,temp_canvas.cget("width"),temp_canvas.cget("height"))
+        #line2=temp_canvas.create_line(temp_canvas.cget("width"),0,0,temp_canvas.cget("height"))
+        #oval=temp_canvas.create_oval(int(0.25*int(temp_canvas.cget("width"))),
+            #int(0.25*int(temp_canvas.cget("height"))),
+            #int(0.75*int(temp_canvas.cget("width"))),
+            #int(0.75*int(temp_canvas.cget("height"))))
+#       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_polygon.html
+#       http://zetcode.com/gui/tkinter/drawing/
+#       http://effbot.org/tkinterbook/canvas.htm
+
+        print ( "called the draw callback!")
 
 class MyDialog(simpledialog.Dialog):
     def body(self, master):
