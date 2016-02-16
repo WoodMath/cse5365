@@ -23,6 +23,7 @@ class cl_widgets:
         self.ob_canvas_frame=cl_canvas_frame(self)
         #self.status = cl_statusBar_frame(self)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
+        self.ob_canvas_frame.canvas.delete("all")
 
 
 class cl_canvas_frame:
@@ -176,6 +177,7 @@ class cl_pannel_03:
         self.master=master
         frame = Frame(master.ob_root_window)
         frame.pack()
+        self.canvas = master.ob_root_window
         self.mesh = ob_mesh
 #        self.var_filename = StringVar()
 #        self.var_filename.set('')
@@ -203,15 +205,30 @@ class cl_pannel_03:
         filename = self.var_filename.get()
         self.mesh.filename=filename
         print(filename)
-        self.mesh.load()
-        self.mesh.establish_matrices()
+#        if(len(filename)):
+
 
     def load_file(self):
-        self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas,self.mesh)
+        if(len(self.mesh.filename)):
+            self.mesh.set_file(self.mesh.filename)
+            self.mesh.load()
+            self.mesh.establish_matrices()
+            print('window:')
+            print(' wxmin = ' + str(self.mesh.wx[0]))
+            print(' wxmax = ' + str(self.mesh.wx[1]))        
+            print(' wymin = ' + str(self.mesh.wy[0]))
+            print(' wymax = ' + str(self.mesh.wy[1]))        
+            print(' ')
+            print('viewport:')
+            print(' vxmin = ' + str(self.mesh.vx[0]))
+            print(' vxmax = ' + str(self.mesh.vx[1]))        
+            print(' vymin = ' + str(self.mesh.vy[0]))
+            print(' vymax = ' + str(self.mesh.vy[1])) 
+            print(' ')
 
+            self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas,self.mesh)
 
-
-        print ( "called the draw callback!")
+            print ( "called the draw callback!")
 
 class MyDialog(simpledialog.Dialog):
     def body(self, master):

@@ -9,14 +9,13 @@ from tkinter import *
 
 
 class cl_world:
-    def __init__(self, mesh, objects=[],canvases=[],triangles=[],borders=[],edges=[]):
+    def __init__(self, mesh, objects=[],canvases=[],polygons=[],borders=[],edges=[]):
         self.objects=objects
         self.canvases=canvases
-        self.triangles=triangles
+        self.polygons=polygons
         self.borders=borders
         self.edges=edges
         self.mesh=mesh
-        #self.display
         
  
     def add_canvas(self,canvas):
@@ -24,7 +23,10 @@ class cl_world:
         canvas.world=self
     
     def create_graphic_objects(self,canvas,mesh):
-
+        self.polygons=[]
+        self.borders=[]
+        self.edges=[]
+        canvas.delete('all')
         mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
         for i in range(0,len(mesh.box)-1):
             self.borders.append(canvas.create_line(int(mesh.box[i,0]), int(mesh.box[i,1]), \
@@ -44,7 +46,7 @@ class cl_world:
                 v0=mesh.coordinates[i0,:]
                 v1=mesh.coordinates[i1,:]
                 v2=mesh.coordinates[i2,:]
-                self.triangles.append(canvas.create_polygon(int(v0[0,0]), int(v0[0,1]), \
+                self.polygons.append(canvas.create_polygon(int(v0[0,0]), int(v0[0,1]), \
                                                             int(v1[0,0]), int(v1[0,1]), \
                                                             int(v2[0,0]), int(v2[0,1]), \
                                                             fill='blue', width=1.0, outline='black'))
@@ -62,7 +64,7 @@ class cl_world:
                 v1=mesh.coordinates[i1,:]
                 v2=mesh.coordinates[i2,:]
                 v3=mesh.coordinates[i3,:]                
-                self.triangles.append(canvas.create_polygon(int(v0[0,0]), int(v0[0,1]), \
+                self.polygons.append(canvas.create_polygon(int(v0[0,0]), int(v0[0,1]), \
                                                             int(v1[0,0]), int(v1[0,1]), \
                                                             int(v2[0,0]), int(v2[0,1]), \
                                                             int(v3[0,0]), int(v3[0,1]), \
@@ -86,7 +88,7 @@ class cl_world:
                     int(mesh.box[i+1,0]), int(mesh.box[i+1,1])\
                 )
 
-        if self.triangles:
+        if self.polygons:
             for i in range(0,len(mesh.faces)):
                 ##################################
                 ## if Face containse 3 vertices ##
@@ -101,7 +103,7 @@ class cl_world:
                     v1=mesh.coordinates[i1,:]
                     v2=mesh.coordinates[i2,:]
                     canvas.coords(\
-                        self.triangles[i],\
+                        self.polygons[i],\
                         int(v0[0,0]), int(v0[0,1]), \
                         int(v1[0,0]), int(v1[0,1]), \
                         int(v2[0,0]), int(v2[0,1]))
@@ -120,7 +122,7 @@ class cl_world:
                     v2=mesh.coordinates[i2,:]
                     v3=mesh.coordinates[i3,:]                    
                     canvas.coords(\
-                        self.triangles[i],\
+                        self.polygons[i],\
                         int(v0[0,0]), int(v0[0,1]), \
                         int(v1[0,0]), int(v1[0,1]), \
                         int(v2[0,0]), int(v2[0,1]), \

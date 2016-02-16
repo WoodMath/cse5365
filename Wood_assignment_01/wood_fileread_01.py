@@ -87,11 +87,21 @@ class mesh:
     def add_face(self,face):
         self.faces.append(face)
     def add_window(self,window):
+#        print('window:')
         self.wx=[window[0],window[2]]
+#        print(' wxmin = ' + str(window[0]))
+#        print(' wxmax = ' + str(window[2]))        
         self.wy=[window[1],window[3]]
+#        print(' wymin = ' + str(window[1]))
+#        print(' wymax = ' + str(window[3]))                
     def add_viewport(self,viewport):
+#        print('viewport:')
         self.vx=[viewport[0],viewport[2]]
+#        print(' vxmin = ' + str(viewport[0]))
+#        print(' vxmax = ' + str(viewport[2]))       
         self.vy=[viewport[1],viewport[3]]
+#        print(' vymin = ' + str(viewport[1]))
+#        print(' vymax = ' + str(viewport[3]))
         self.bounding.append([viewport[0],viewport[1],1.0])
         self.bounding.append([viewport[2],viewport[1],1.0])
         self.bounding.append([viewport[2],viewport[3],1.0])
@@ -155,18 +165,18 @@ class mesh:
 
     
 
-m=mesh()
-m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/teapot_01.txt')
+#m=mesh()
+#m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/teapot_01.txt')
 #m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/pyramid_01.txt')
-m.load()
-m.establish_matrices()
-m.establish_coordinates(400,400)
-m.coordinates
+#m.load()
+#m.establish_matrices()
+#m.establish_coordinates(400,400)
+#m.coordinates
 
-face=m.faces[0]
-v0=m.coordinates[face[0],:]
-v1=m.coordinates[face[1],:]
-v2=m.coordinates[face[2],:]
+#face=m.faces[0]
+#v0=m.coordinates[face[0],:]
+#v1=m.coordinates[face[1],:]
+#v2=m.coordinates[face[2],:]
 #for j in m.coordinates:
 #    l=j
 #    print(l)
