@@ -205,7 +205,6 @@ class cl_pannel_03:
         filename = self.var_filename.get()
         self.mesh.filename=filename
         print(filename)
-#        if(len(filename)):
 
 
     def load_file(self):
