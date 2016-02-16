@@ -18,12 +18,14 @@
 #       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_polygon.html
 #       http://zetcode.com/gui/tkinter/drawing/
 #       http://effbot.org/tkinterbook/canvas.htm
-#
-#       https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
-#       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.array.html
-#       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.matrix.html
-#       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.multiply.html
-#       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.matrix.transpose.html
+
+#import pip
+#installed_packages = pip.get_installed_distributions()
+#installed_packages_list = sorted(["%s==%s" % (i.key, i.version)
+#    for i in installed_packages])
+#print(installed_packages_list)
+
+#print(dot([1, 2, 3],[4,5,6]))
 
 
 import numpy as np
@@ -85,11 +87,21 @@ class mesh:
     def add_face(self,face):
         self.faces.append(face)
     def add_window(self,window):
+#        print('window:')
         self.wx=[window[0],window[2]]
+#        print(' wxmin = ' + str(window[0]))
+#        print(' wxmax = ' + str(window[2]))        
         self.wy=[window[1],window[3]]
+#        print(' wymin = ' + str(window[1]))
+#        print(' wymax = ' + str(window[3]))                
     def add_viewport(self,viewport):
+#        print('viewport:')
         self.vx=[viewport[0],viewport[2]]
+#        print(' vxmin = ' + str(viewport[0]))
+#        print(' vxmax = ' + str(viewport[2]))       
         self.vy=[viewport[1],viewport[3]]
+#        print(' vymin = ' + str(viewport[1]))
+#        print(' vymax = ' + str(viewport[3]))
         self.bounding.append([viewport[0],viewport[1],1.0])
         self.bounding.append([viewport[2],viewport[1],1.0])
         self.bounding.append([viewport[2],viewport[3],1.0])
@@ -99,6 +111,7 @@ class mesh:
     def load(self):
         with open(self.filename) as openfileobject:
             for line in openfileobject:
+#                print(line,end='')
                 line_parsed=line.split()
                 if(len(line_parsed)>0):
                     line_type=line_parsed[0]
@@ -130,8 +143,16 @@ class mesh:
                             [0,1,-self.wy[0]],\
                             [0,0,1]])
         self.tMat=np.matrix([[1,0,0,0],[0,1,0,0],[0,0,0,1]])
+#        self.mMat=self.cMat*self.vMat*self.sMat*self.wMat*self.tMat;
         self.mMat=self.vMat*self.sMat*self.wMat*self.tMat;
+#        self.mMat=self.sMat*self.wMat*self.tMat;
+#        self.mMat=self.wMat*self.tMat;
         self.vertices=np.matrix(self.vertices)
+#       https://docs.scipy.org/doc/numpy-dev/user/quickstart.html
+#       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.array.html
+#       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.matrix.html
+#       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.multiply.html
+#       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.matrix.transpose.html
     def establish_coordinates(self,iWidth,iHeight):
         self.tMat = np.matrix([[float(iWidth),0,0],[0,float(iHeight),0],[0,0,1]])
         self.tMat = self.tMat * np.matrix([[1,0,0],[0,-1,1],[0,0,1]])
@@ -139,6 +160,24 @@ class mesh:
         self.coordinates = np.transpose(self.coordinates)
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
+#    def draw(self):
+#        for ind in range(0,len(self.vertices)):
 
     
 
+#m=mesh()
+#m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/teapot_01.txt')
+#m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/pyramid_01.txt')
+#m.load()
+#m.establish_matrices()
+#m.establish_coordinates(400,400)
+#m.coordinates
+
+#face=m.faces[0]
+#v0=m.coordinates[face[0],:]
+#v1=m.coordinates[face[1],:]
+#v2=m.coordinates[face[2],:]
+#for j in m.coordinates:
+#    l=j
+#    print(l)
+#print(m.box)

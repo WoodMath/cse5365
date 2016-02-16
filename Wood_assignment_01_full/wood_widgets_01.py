@@ -15,8 +15,13 @@ class cl_widgets:
         self.ob_root_window=ob_root_window
         self.ob_world=ob_world
         self.mesh=ob_mesh
+        self.menu=cl_menu(self)
+#        self.toolbar=cl_toolbar(self)
+#        self.pannel_01 = cl_pannel_01(self)
+#        self.pannel_02 = cl_pannel_02(self)
         self.pannel_03 = cl_pannel_03(self,ob_mesh)
         self.ob_canvas_frame=cl_canvas_frame(self)
+        #self.status = cl_statusBar_frame(self)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
         self.ob_canvas_frame.canvas.delete("all")
 
@@ -111,7 +116,60 @@ class cl_canvas_frame:
         print ('canvas width', self.canvas.cget("width"))
         print ('canvas height', self.canvas.cget("height"))
         self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
+class cl_pannel_01:
 
+    def __init__(self, master):
+
+        self.master=master
+        frame = Frame(master.ob_root_window)
+        frame.pack()
+        
+        self.var_filename = StringVar()
+        self.var_filename.set('')
+        self.button = Button(frame, text="Hello", fg="red", command=self.say_hi)
+        self.button.pack(side=LEFT)
+
+        self.hi_there = Button(frame, text="Ask for a string", command=self.ask_for_string)
+        self.hi_there.pack(side=LEFT)
+        
+        self.hi_there = Button(frame, text="Ask for a float", command=self.ask_for_string)
+        self.hi_there.pack(side=LEFT)
+        self.file_dialog_button = Button(frame, text="Open File Dialog", fg="blue", command=self.browse_file)
+        self.file_dialog_button.pack(side=LEFT)        
+
+    def say_hi(self):
+        print ( "hi there, evefaceryone!")
+    def ask_for_string(self):
+        s=simpledialog.askstring('My Dialog', 'Please enter a string')
+        print ( s)
+    def ask_for_float(self):
+        f=simpledialog.askfloat('My Dialog', 'Please enter a string')
+        print ( f)
+    def browse_file(self):
+        self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
+        filename = self.var_filename.get()
+        print(filename)
+class cl_pannel_02:
+
+    def __init__(self, master):
+
+        self.master=master
+        frame = Frame(master.ob_root_window)
+        frame.pack()
+        self.button = Button(frame, text="Open Dialog", fg="blue", command=self.open_dialog_callback)
+        self.button.pack(side=LEFT)
+
+        self.hi_there = Button(frame, text="button 2", command=self.button2_callback)
+        self.hi_there.pack(side=LEFT)
+        
+
+    def open_dialog_callback(self):
+        d = MyDialog(self.master.ob_root_window)
+        print ( d.result)
+        print ( "mydialog_callback pressed!"   )     
+
+    def button2_callback(self):
+        print ( "button2 pressed!")
 class cl_pannel_03:
 
     def __init__(self, master,ob_mesh):
@@ -121,7 +179,17 @@ class cl_pannel_03:
         frame.pack()
         self.canvas = master.ob_root_window
         self.mesh = ob_mesh
+#        self.var_filename = StringVar()
+#        self.var_filename.set('')
+#        self.button = Button(frame, text="Hello", fg="red", command=self.say_hi)
+#        self.button.pack(side=LEFT)
 
+#        self.hi_there = Button(frame, text="Ask for a string", command=self.ask_for_string)
+#        self.hi_there.pack(side=LEFT)
+
+        
+#        self.hi_there = Button(frame, text="Ask for a float", command=self.ask_for_string)
+#        self.hi_there.pack(side=LEFT)
         self.file_dialog_button = Button(frame, text="Open File Dialog", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
 
@@ -195,7 +263,21 @@ class MyDialog(simpledialog.Dialog):
                 "Illegal values, please try again"
             )
 
-     
+
+#class StatusBar:
+
+    #def __init__(self, master):
+        #self.master=master
+        #self.label = Label(self, bd=1, relief=SUNKEN, anchor=W)
+        #self.label.pack(fill=X)
+
+    #def set(self, format, *args):
+        #self.label.config(text=format % args)
+        #self.label.update_idletasks()
+
+    #def clear(self):
+        #self.label.config(text="")
+        #self.label.update_idletasks()       
 
 class cl_statusBar_frame:
 
@@ -213,7 +295,37 @@ class cl_statusBar_frame:
     def clear(self):
         self.label.config(text="")
         self.label.update_idletasks()
+class cl_menu:
+    def __init__(self, master):
         
+        self.master=master
+        self.menu = Menu(master.ob_root_window)
+        master.ob_root_window.config(menu=self.menu)
+        self.filemenu = Menu(self.menu)
+        self.menu.add_cascade(label="File", menu=self.filemenu)
+        self.filemenu.add_command(label="New", command=self.menu_callback)
+        self.filemenu.add_command(label="Open...", command=self.menu_callback)
+        self.filemenu.add_separator()
+        self.filemenu.add_command(label="Exit", command=self.menu_callback)
+        self.dummymenu = Menu(self.menu)
+        self.menu.add_cascade(label="Dummy", menu=self.dummymenu)
+        self.dummymenu.add_command(label="Item1", command=self.menu_item1_callback)
+        self.dummymenu.add_command(label="Item2", command=self.menu_item2_callback)
+        
+        self.helpmenu = Menu(self.menu)
+        self.menu.add_cascade(label="Help", menu=self.helpmenu)
+        self.helpmenu.add_command(label="About...", command=self.menu_help_callback)        
+
+    def menu_callback(self):
+        print ("called the menu callback!")
+                        
+    def menu_help_callback(self):
+        print ("called the help menu callback!") 
+    def menu_item1_callback(self):
+        print ("called item1 callback!")    
+
+    def menu_item2_callback(self):
+        print ("called item2 callback!")    
 class cl_toolbar:
     def __init__(self, master):
         
@@ -228,6 +340,14 @@ class cl_toolbar:
         self.toolbar.pack(side=TOP, fill=X)
     def toolbar_draw_callback(self):
         self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas)
+        #temp_canvas=self.master.ob_canvas_frame.canvas
+        #line1=temp_canvas.create_line(0,0,temp_canvas.cget("width"),temp_canvas.cget("height"))
+        #line2=temp_canvas.create_line(temp_canvas.cget("width"),0,0,temp_canvas.cget("height"))
+        #oval=temp_canvas.create_oval(int(0.25*int(temp_canvas.cget("width"))),
+            #int(0.25*int(temp_canvas.cget("height"))),
+            #int(0.75*int(temp_canvas.cget("width"))),
+            #int(0.75*int(temp_canvas.cget("height"))))
+
         print ( "called the draw callback!")
     
     def toolbar_callback(self):

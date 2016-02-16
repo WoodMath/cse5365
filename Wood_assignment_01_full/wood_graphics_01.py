@@ -3,15 +3,10 @@
 # 2016-02-17
 # Assignment_01
 
-#   From:
-#       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_polygon.html
-#       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_line.html
-#       http://zetcode.com/gui/tkinter/drawing/
-#       http://effbot.org/tkinterbook/canvas.htm
-
 from numpy import *
 from math import *
 from tkinter import *
+
 
 class cl_world:
     def __init__(self, mesh, objects=[],canvases=[],polygons=[],borders=[],edges=[]):
@@ -54,7 +49,7 @@ class cl_world:
                 self.polygons.append(canvas.create_polygon(int(v0[0,0]), int(v0[0,1]), \
                                                             int(v1[0,0]), int(v1[0,1]), \
                                                             int(v2[0,0]), int(v2[0,1]), \
-                                                            fill='red', width=1.0, outline='black'))
+                                                            fill='blue', width=1.0, outline='black'))
             ##################################
             ## if Face containse 4 vertices ##
             ##################################
@@ -73,9 +68,12 @@ class cl_world:
                                                             int(v1[0,0]), int(v1[0,1]), \
                                                             int(v2[0,0]), int(v2[0,1]), \
                                                             int(v3[0,0]), int(v3[0,1]), \
-                                                            fill='red', width=1.0, outline='black'))
+                                                            fill='blue', width=1.0, outline='black'))
 
-
+#       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_polygon.html
+#       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_line.html
+#       http://zetcode.com/gui/tkinter/drawing/
+#       http://effbot.org/tkinterbook/canvas.htm
 
 
     def redisplay(self,canvas,event):
@@ -131,3 +129,11 @@ class cl_world:
                         int(v3[0,0]), int(v3[0,1])) 
 
 
+
+
+#           canvas.coords(self.objects[0],0,0,event.width,event.height)
+#           canvas.coords(self.objects[1],event.width,0,0,event.height)
+#           canvas.coords(self.objects[2],int(0.25*int(event.width)),
+#               int(0.25*int(event.height)),
+#               int(0.75*int(event.width)),
+#               int(0.75*int(event.height)))        
