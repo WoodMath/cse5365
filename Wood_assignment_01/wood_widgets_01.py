@@ -137,7 +137,7 @@ class cl_pannel_01:
         self.file_dialog_button.pack(side=LEFT)        
 
     def say_hi(self):
-        print ( "hi there, everyone!")
+        print ( "hi there, evefaceryone!")
     def ask_for_string(self):
         s=simpledialog.askstring('My Dialog', 'Please enter a string')
         print ( s)
@@ -197,40 +197,19 @@ class cl_pannel_03:
         self.button.pack(side=LEFT)
 
 
-#    def say_hi(self):
-#        print ( "hi there, everyone!")
-#    def ask_for_string(self):
-#        s=simpledialog.askstring('My Dialog', 'Please enter a string')
-#        print ( s)
-#    def ask_for_float(self):
-#        f=simpledialog.askfloat('My Dialog', 'Please enter a string')
-#        print ( f)
-#    def browse_file(self):
-#        self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
-#        filename = self.var_filename.get()
+
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()
         self.mesh.filename=filename
-        print(' self.mesh.filename = ' + self.mesh.filename)
+        print(filename)
         self.mesh.load()
+        self.mesh.establish_matrices()
 
     def load_file(self):
-        self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
-        filename = self.var_filename.get()
-#    def toolbar_draw_callback(self):
-        self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas)
-        temp_canvas=self.master.ob_canvas_frame.canvas
-        poly_id = temp_canvas.create_polygon(x0, y0, x1, y1, ..., option, ...)
-        #line1=temp_canvas.create_line(0,0,temp_canvas.cget("width"),temp_canvas.cget("height"))
-        #line2=temp_canvas.create_line(temp_canvas.cget("width"),0,0,temp_canvas.cget("height"))
-        #oval=temp_canvas.create_oval(int(0.25*int(temp_canvas.cget("width"))),
-            #int(0.25*int(temp_canvas.cget("height"))),
-            #int(0.75*int(temp_canvas.cget("width"))),
-            #int(0.75*int(temp_canvas.cget("height"))))
-#       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_polygon.html
-#       http://zetcode.com/gui/tkinter/drawing/
-#       http://effbot.org/tkinterbook/canvas.htm
+        self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas,self.mesh)
+
+
 
         print ( "called the draw callback!")
 
