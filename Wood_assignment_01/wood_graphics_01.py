@@ -34,16 +34,17 @@ class cl_world:
         
         canvas.delete('all')        # Clear screen of all objects
 
-        # Establish matrix for window size
+        # Establish proper coordinates based on window size
         mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
 
 
-        # Draw viewport box
+        # DRAW viewport box
         for i in range(0,len(mesh.box)-1):
             self.borders.append(canvas.create_line(int(mesh.box[i,0]), int(mesh.box[i,1]), \
                                                    int(mesh.box[i+1,0]), int(mesh.box[i+1,1]), \
                                                    fill="black", width=1.0))
-        
+
+        # DRAW Triangles and Quads
         for i in range(0,len(mesh.faces)):
             ##################################
             ## if Face containse 3 vertices ##
@@ -81,14 +82,17 @@ class cl_world:
                                                             int(v3[0,0]), int(v3[0,1]), \
                                                             fill='red', width=1.0, outline='black'))
 
-
-
-
     def redisplay(self,canvas,event):
 
         mesh=self.mesh
-        if self.borders:
+
+        # If there are drawn objects
+        if(self.borders or self.polygons):
+            # RE-Establish proper coordinates based on window size
             mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
+            
+        # REPOSITION viewport box object
+        if self.borders:
             for i in range(0,len(mesh.box)-1):
                 canvas.coords(\
                     self.borders[i],\
@@ -96,6 +100,7 @@ class cl_world:
                     int(mesh.box[i+1,0]), int(mesh.box[i+1,1])\
                 )
 
+        # REPOSITION Triangles and Quads objects
         if self.polygons:
             for i in range(0,len(mesh.faces)):
                 ##################################
