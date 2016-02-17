@@ -28,10 +28,11 @@ class cl_world:
         canvas.world=self
     
     def create_graphic_objects(self,canvas,mesh):
-        self.polygons=[]
-        self.borders=[]
+        self.polygons=[]            # Array storing Triangles and Quads
+        self.borders=[]             # Array storing Viewport Box
         self.edges=[]
-        canvas.delete('all')
+        
+        canvas.delete('all')        # Clear screen of all objects
         mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
         for i in range(0,len(mesh.box)-1):
             self.borders.append(canvas.create_line(int(mesh.box[i,0]), int(mesh.box[i,1]), \
