@@ -107,12 +107,12 @@ class cl_canvas_frame:
         self.canvas.pack()
         print ('canvas width', self.canvas.cget("width"))
         print ('canvas height', self.canvas.cget("height"))
+
+        # Call redisplay() method in 'wood_graphics_01.py'
         self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
 
 class cl_pannel_03:
-
     def __init__(self, master,ob_mesh):
-
         self.master=master
         frame = Frame(master.ob_root_window)
         frame.pack()
@@ -126,8 +126,6 @@ class cl_pannel_03:
         self.var_filename.set('')
         self.button = Button(frame, text="Load File (Draw)", fg="red", command=self.load_file)
         self.button.pack(side=LEFT)
-
-
     
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
@@ -137,11 +135,13 @@ class cl_pannel_03:
         self.mesh.filename=filename
         print(filename)
 
-
     def load_file(self):
+        # If there is a file to load (closing file dialog will return '')
         if(len(self.mesh.filename)):
             self.mesh.set_file(self.mesh.filename)
             self.mesh.load()
+            
+            # Calculate non-canvas size matrix transformations
             self.mesh.establish_matrices()
             print('window:')
             print(' wxmin = ' + str(self.mesh.wx[0]))
@@ -156,6 +156,7 @@ class cl_pannel_03:
             print(' vymax = ' + str(self.mesh.vy[1])) 
             print(' ')
 
+            # Call create_graphic_objects() method in 'wood_graphics_01.py'
             self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas,self.mesh)
 
             print ( "called the draw callback!")
@@ -194,16 +195,12 @@ class MyDialog(simpledialog.Dialog):
                 "Illegal values, please try again"
             )
 
-     
-
 class cl_statusBar_frame:
-
     def __init__(self, master):
         self.master=master
         status = StatusBar(master.ob_root_window)
         status.pack(side=BOTTOM, fill=X)
         status.set('%s','This is the status bar')
-
 
     def set(self, format, *args):
         self.label.config(text=format % args)
@@ -215,7 +212,6 @@ class cl_statusBar_frame:
         
 class cl_toolbar:
     def __init__(self, master):
-        
         self.master=master
         self.toolbar = Frame(master.ob_root_window)
         self.button = Button(self.toolbar, text="Draw", width=16, command=self.toolbar_draw_callback)

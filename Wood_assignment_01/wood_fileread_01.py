@@ -143,8 +143,10 @@ class mesh:
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
 
-    
-m=mesh()
-m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/pyramid_01.txt')
-m.load()
-m.establish_matrices()
+## Code used to test functionality
+#m=mesh()
+#m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/pyramid_01.txt')
+#m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/teapot_01.txt')
+#m.load()
+#m.establish_matrices()
+#m.establish_coordinates(500,500)

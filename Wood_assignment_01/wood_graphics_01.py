@@ -83,7 +83,6 @@ class cl_world:
                                                             fill='red', width=1.0, outline='black'))
 
     def redisplay(self,canvas,event):
-
         mesh=self.mesh
 
         # If there are drawn objects
