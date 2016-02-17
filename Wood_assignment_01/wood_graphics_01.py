@@ -34,7 +34,7 @@ class cl_world:
         
         canvas.delete('all')        # Clear screen of all objects
 
-        #
+        # Establish matrix for window size
         mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
 
 
