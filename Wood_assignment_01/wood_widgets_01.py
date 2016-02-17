@@ -128,10 +128,12 @@ class cl_pannel_03:
         self.button.pack(side=LEFT)
 
 
-
+    
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()
+
+        # Save filename to 'mesh' object
         self.mesh.filename=filename
         print(filename)
 
