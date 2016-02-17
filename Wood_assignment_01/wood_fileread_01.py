@@ -135,8 +135,11 @@ class mesh:
     def establish_coordinates(self,iWidth,iHeight):
         self.tMat = np.matrix([[float(iWidth),0,0],[0,float(iHeight),0],[0,0,1]])
         self.tMat = self.tMat * np.matrix([[1,0,0],[0,-1,1],[0,0,1]])
+
+        # Transform vertices
         self.coordinates = self.tMat * self.mMat * np.transpose(np.matrix(self.vertices))
         self.coordinates = np.transpose(self.coordinates)
+        # Transform viewport box
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
 

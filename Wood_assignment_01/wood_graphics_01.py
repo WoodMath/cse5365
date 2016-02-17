@@ -33,7 +33,12 @@ class cl_world:
         self.edges=[]
         
         canvas.delete('all')        # Clear screen of all objects
+
+        #
         mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
+
+
+        # Draw viewport box
         for i in range(0,len(mesh.box)-1):
             self.borders.append(canvas.create_line(int(mesh.box[i,0]), int(mesh.box[i,1]), \
                                                    int(mesh.box[i+1,0]), int(mesh.box[i+1,1]), \

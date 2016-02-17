@@ -103,9 +103,6 @@ class cl_canvas_frame:
         pass
     def canvas_resized_callback(self,event):
         self.canvas.config(width=event.width,height=event.height)
-        #self.canvas.config(width=event.width-4,height=event.height-4)
-        #print 'canvas width height', self.canvas.cget("width"), self.canvas.cget("height")
-        #print 'event width height',event.width, event.height
         
         self.canvas.pack()
         print ('canvas width', self.canvas.cget("width"))
