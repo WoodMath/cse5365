@@ -60,7 +60,6 @@ class mesh:
         self.vMat=[]
         self.sMat=[]
         self.wMat=[]
-        self.cMat=[]
         self.mMat=[]
         self.bounding=[]
         self.box=[]
@@ -76,7 +75,6 @@ class mesh:
         self.vMat=[]
         self.sMat=[]
         self.wMat=[]
-        self.cMat=[]
         self.mMat=[]
         self.bounding=[]
         self.box=[]
@@ -90,11 +88,11 @@ class mesh:
     def add_viewport(self,viewport):
         self.vx=[viewport[0],viewport[2]]
         self.vy=[viewport[1],viewport[3]]
-        self.bounding.append([viewport[0],viewport[1],1.0])
-        self.bounding.append([viewport[2],viewport[1],1.0])
-        self.bounding.append([viewport[2],viewport[3],1.0])
-        self.bounding.append([viewport[0],viewport[3],1.0])
-        self.bounding.append([viewport[0],viewport[1],1.0])
+        self.bounding.append([viewport[0],viewport[1],0.0,1.0])
+        self.bounding.append([viewport[2],viewport[1],0.0,1.0])
+        self.bounding.append([viewport[2],viewport[3],0.0,1.0])
+        self.bounding.append([viewport[0],viewport[3],0.0,1.0])
+        self.bounding.append([viewport[0],viewport[1],0.0,1.0])
 
     def load(self):
         with open(self.filename) as openfileobject:
@@ -104,7 +102,7 @@ class mesh:
                     line_type=line_parsed[0]
                     line_parsed.pop(0)
                     if(line_type=='v'):
-                        line_parsed.append(1)
+                        line_parsed.append('1.0')
                         line_parsed=vect_float(line_parsed)
                         self.add_vertex(line_parsed)
                     if(line_type=='f'):
@@ -117,24 +115,25 @@ class mesh:
                         line_parsed=vect_float(line_parsed[:])
                         self.add_viewport(line_parsed)
     def establish_matrices(self):
-        self.cMat=np.matrix([[1,0,0],\
-                            [0,-1,1],\
-                            [0,0,1]])
-        self.vMat=np.matrix([[1,0,self.vx[0]],\
-                            [0,1,self.vy[0]],\
-                            [0,0,1]])
-        self.sMat=np.matrix([[(self.vx[1]-self.vx[0])/(self.wx[1]-self.wx[0]),0,0],\
-                            [0,(self.vy[1]-self.vy[0])/(self.wy[1]-self.wy[0]),0],\
-                            [0,0,1]])
-        self.wMat=np.matrix([[1,0,-self.wx[0]],\
-                            [0,1,-self.wy[0]],\
-                            [0,0,1]])
+        self.vMat=np.matrix([[1,0,0,self.vx[0]],\
+                            [0,1,0,self.vy[0]],\
+                            [0,0,1,0],\
+                            [0,0,0,1]])
+        self.sMat=np.matrix([[(self.vx[1]-self.vx[0])/(self.wx[1]-self.wx[0]),0,0,0],\
+                            [0,(self.vy[1]-self.vy[0])/(self.wy[1]-self.wy[0]),0,0],\
+                            [0,0,1,0],\
+                            [0,0,0,1]])
+        self.wMat=np.matrix([[1,0,0,-self.wx[0]],\
+                            [0,1,0,-self.wy[0]],\
+                            [0,0,1,0],\
+                            [0,0,0,1]])
         self.tMat=np.matrix([[1,0,0,0],[0,1,0,0],[0,0,0,1]])
-        self.mMat=self.vMat*self.sMat*self.wMat*self.tMat;
+ #       self.mMat=self.vMat*self.sMat*self.wMat*self.tMat;
+        self.mMat=self.vMat*self.sMat*self.wMat;
         self.vertices=np.matrix(self.vertices)
     def establish_coordinates(self,iWidth,iHeight):
-        self.tMat = np.matrix([[float(iWidth),0,0],[0,float(iHeight),0],[0,0,1]])
-        self.tMat = self.tMat * np.matrix([[1,0,0],[0,-1,1],[0,0,1]])
+        self.tMat = np.matrix([[float(iWidth),0,0,0],[0,float(iHeight),0,0],[0,0,1,0],[0,0,0,1]])
+        self.tMat = self.tMat * np.matrix([[1,0,0,0],[0,-1,0,1],[0,0,1,0],[0,0,0,1]])
 
         # Transform vertices
         self.coordinates = self.tMat * self.mMat * np.transpose(np.matrix(self.vertices))

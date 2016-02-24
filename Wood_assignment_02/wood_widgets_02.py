@@ -259,10 +259,12 @@ class cl_pannel_03:
 
             print ( "called the draw callback!")
 
-        def rotate(self):
+    def rotate(self):
+        print('rotate called')
 
 
-        def scale(self):
+    def scale(self):
+        print('scale called')
             
 
 class MyDialog(simpledialog.Dialog):
