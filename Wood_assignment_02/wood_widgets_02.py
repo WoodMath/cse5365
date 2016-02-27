@@ -221,7 +221,15 @@ class cl_pannel_03:
         self.steps_rotation_spinbox = Spinbox(scale_frame, from_=0, to=10, width=3).pack(side=LEFT, padx=0, pady=0)
 
         self.scale_button = Button(scale_frame, text="Scale", fg="blue", command=self.scale)
-        self.scale_button.pack(side=LEFT)                         
+        self.scale_button.pack(side=LEFT)
+
+        disc_frame_one = Frame(master.ob_root_window)
+        disc_frame_one.pack()
+        self.disc_label_one = Label(disc_frame_one, text="NOTE: Transformations are cumulative").pack(side=LEFT,padx=0,pady=0)
+
+        disc_frame_two = Frame(master.ob_root_window)
+        disc_frame_two.pack()
+        self.disc_label_two = Label(disc_frame_two, text="Click 'Draw' to reset transformation stack.").pack(side=LEFT,padx=0,pady=0)
 
 
         

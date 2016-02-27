@@ -24,9 +24,15 @@
 #       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.matrix.html
 #       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.multiply.html
 #       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.matrix.transpose.html
-
-
+#
+#       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.power.html
+#       http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.sqrt.html
+#       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.linalg.inv.html
+#
+#       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.sin.html
+#       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.cos.html
 import numpy as np
+from numpy.linalg import inv
 
 class number_range:
     def __init__(self,vMin,vMax):
@@ -61,6 +67,10 @@ class mesh:
         self.sMat=[]
         self.wMat=[]
         self.mMat=[]
+        self.StackMatrix=np.matrix([[1,0,0,0],\
+                                    [0,1,0,0],\
+                                    [0,0,1,0],\
+                                    [0,0,0,1]])
         self.bounding=[]
         self.box=[]
     def set_file(self,filename):
@@ -76,6 +86,10 @@ class mesh:
         self.sMat=[]
         self.wMat=[]
         self.mMat=[]
+        self.StackMatrix=np.matrix([[1,0,0,0],\
+                                    [0,1,0,0],\
+                                    [0,0,1,0],\
+                                    [0,0,0,1]])
         self.bounding=[]
         self.box=[]
     def add_vertex(self,vertex):
@@ -141,6 +155,85 @@ class mesh:
         # Transform viewport box
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
+        
+    def establish_rotation_matrices(self, i_divs, v_a, v_b, i_degree):
+        print(' establishing rotation matrices ')
+        v_a = np.array(v_a)
+        v_b = np.array(v_b)
+        v_ab = v_b-v_a
+        f_x = v_ab[0]
+        f_y = v_ab[1]
+        f_z = v_ab[2]
+
+        m_Rotate_Trans = np.matrix(\
+            [[1,0,0,-v_a[0]],\
+             [0,1,0,-v_a[1]],\
+             [0,0,1,-v_a[2]],\
+             [0,0,0,1]]
+        m_Rotate_Trans_Inv = np.matrix(\
+            [[1,0,0,v_a[0]],\
+             [0,1,0,v_a[1]],\
+             [0,0,1,v_a[2]],\
+             [0,0,0,1]]
+            
+        sin_X_axis = f_y / np.sqrt(f_y**2+f_z**2)
+        cos_X_axis = f_z / np.sqrt(f_y**2+f_z**2)
+        sin_Y_axis = f_x / np.sqrt(f_x**2+f_z**2)
+        cos_Y_axis = f_z / np.sqrt(f_x**2+f_z**2)
+        sin_Z_axis = np.sin(float(i_degree)*np.pi/180.0)
+        cos_Z_axis = np.cos(float(i_degree)*np.pi/180.0)
+
+        m_Rotate_X = np.matrix(\
+            [[1,0,0,0],\
+             [0,cos_X_axis,-sin_X_axis,0],\
+             [0,sin_X_axis,cos_X_axis,0],\
+             [0,0,0,1]]
+        m_Rotate_X_Inv = np.matrix(\
+            [[1,0,0,0],\
+             [0,cos_X_axis,sin_X_axis,0],\
+             [0,-sin_X_axis,cos_X_axis,0],\
+             [0,0,0,1]]
+
+        m_Rotate_Y = np.matrix(\
+            [[cos_Y_axis,0,-sin_Y_axis,0],\
+             [0,1,0,0],\
+             [sin_Y_axis,0,cos_Y_axis,0],\
+             [0,0,0,1]]
+        m_Rotate_Y_Inv = np.matrix(\
+            [[cos_Y_axis,0,sin_Y_axis,0],\
+             [0,1,0,0],\
+             [-sin_Y_axis,0,cos_Y_axis,0],\
+             [0,0,0,1]]
+
+        m_Rotate_Z = np.matrix(\
+            [[cos_Z_axis,-sin_Z_axis,0,0],\
+             [sin_Z_axis,cos_Z_axis,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]]
+        m_Rotate_Z_Inv = np.matrix(\
+            [[cos_Z_axis,sin_Z_axis,0,0],\
+             [-sin_Z_axis,cos_Z_axis,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]]
+
+    def establish_scale_matrices(self, i_divs, v_scale, v_center):
+        print(' establishing scale matrices ')
+
+        m_Scale_Trans = np.matrix(\
+            [[1,0,0,-v_center[0]],\
+             [0,1,0,-v_center[1]],\
+             [0,0,1,-v_center[2]],\
+             [0,0,0,1]]
+        m_Scale_Trans_Inv = np.matrix(\
+            [[1,0,0,v_center[0]],\
+             [0,1,0,v_center[1]],\
+             [0,0,1,v_center[2]],\
+             [0,0,0,1]]
+        m_Scale_Size = np.matrix(\
+            [[v_scale[0],0,0,0],\
+             [0,v_scale[1],0,0],\
+             [0,0,v_scale[2],0],\
+             [0,0,0,1]]
 
 ## Code used to test functionality
 #m=mesh()
