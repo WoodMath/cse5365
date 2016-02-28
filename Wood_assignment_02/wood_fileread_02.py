@@ -31,7 +31,10 @@
 #
 #       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.sin.html
 #       http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.cos.html
+#
+#       http://effbot.org/pyfaq/how-do-i-copy-an-object-in-python.htm
 import numpy as np
+import copy
 from numpy.linalg import inv
 
 class number_range:
@@ -56,6 +59,8 @@ vect_float=np.vectorize(float)
 class mesh:
     def __init__(self):
         self.vertices=[]
+        self.transformed_vertices=[]
+        self.stack=np.matrix([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,0.0],[0.0,0.0,0.0,1.0]])
         self.faces=[]
         self.wx=[]
         self.wy=[]
@@ -77,6 +82,8 @@ class mesh:
         self.steps=0
     def set_file(self,filename):
         self.vertices=[]
+        self.transformed_vertices=[]
+        self.stack=np.matrix([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,0.0],[0.0,0.0,0.0,1.0]])
         self.faces=[]
         self.wx=[]
         self.wy=[]
@@ -133,6 +140,7 @@ class mesh:
                         line_parsed=vect_float(line_parsed[:])
                         self.add_viewport(line_parsed)
     def establish_matrices(self):
+        print(' Establishing matrices ')
         self.vMat=np.matrix([[1,0,0,self.vx[0]],\
                             [0,1,0,self.vy[0]],\
                             [0,0,1,0],\
@@ -146,22 +154,29 @@ class mesh:
                             [0,0,1,0],\
                             [0,0,0,1]])
         self.tMat=np.matrix([[1,0,0,0],[0,1,0,0],[0,0,0,1]])
- #       self.mMat=self.vMat*self.sMat*self.wMat*self.tMat;
+#        self.mMat=self.vMat*self.sMat*self.wMat*self.tMat;
         self.mMat=self.vMat*self.sMat*self.wMat;
         self.vertices=np.matrix(self.vertices)
+        self.transformed_vertices=copy.copy(self.vertices)
+#        print(self.transformed_vertices)
     def establish_coordinates(self,iWidth,iHeight):
         self.tMat = np.matrix([[float(iWidth),0,0,0],[0,float(iHeight),0,0],[0,0,1,0],[0,0,0,1]])
         self.tMat = self.tMat * np.matrix([[1,0,0,0],[0,-1,0,1],[0,0,1,0],[0,0,0,1]])
 
-        # Transform vertices
-        self.coordinates = self.tMat * self.mMat * np.transpose(np.matrix(self.vertices))
+        print(' Establishing coordinates ')
+
+        # Transform vertices into coordinates
+        self.coordinates = self.tMat * self.mMat * np.transpose(np.matrix(self.transformed_vertices))
         self.coordinates = np.transpose(self.coordinates)
+
         # Transform viewport box
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
+
+        print(' self.coordinates = ' + str(self.coordinates))
         
-    def establish_rotation_matrices(self, i_step, i_steps, v_a, v_b, i_degree):
-        print(' establishing rotation matrices ')
+    def establish_rotation_matrices(self, i_steps, v_a, v_b, i_degree):
+        print(' Establishing rotation matrices ')
         v_a = np.array(v_a)
         v_b = np.array(v_b)
         v_ab = v_b-v_a
@@ -169,6 +184,9 @@ class mesh:
         f_y = v_ab[1]
         f_z = v_ab[2]
 
+        f_degree = float(i_degree)
+        f_steps = float(i_steps)
+        f_degree = f_degree / f_steps
 
         m_Rotate_Trans = np.matrix(\
             [[1,0,0,-v_a[0]],\
@@ -180,13 +198,32 @@ class mesh:
              [0,1,0,v_a[1]],\
              [0,0,1,v_a[2]],\
              [0,0,0,1]])
+
+        ## If not the X-axis as indicated by 0 length along Y-axis and Z-axis
+        if(f_y**2 + f_z**2):
+            sin_X_axis = f_y / np.sqrt(f_y**2+f_z**2)
+            cos_X_axis = f_z / np.sqrt(f_y**2+f_z**2)
+        else:
+            sin_X_axis = float(0.0)
+            cos_X_axis = float(1.0)
+
+        ## If not the Y-axis as indicated by 0 length along X-axis and Z-axis
+        if(f_x**2 + f_z**2):
+            sin_Y_axis = f_x / np.sqrt(f_x**2+f_z**2)
+            cos_Y_axis = f_z / np.sqrt(f_x**2+f_z**2)
+        else:
+            sin_Y_axis = float(0.0)
+            cos_Y_axis = float(1.0)
             
-        sin_X_axis = f_y / np.sqrt(f_y**2+f_z**2)
-        cos_X_axis = f_z / np.sqrt(f_y**2+f_z**2)
-        sin_Y_axis = f_x / np.sqrt(f_x**2+f_z**2)
-        cos_Y_axis = f_z / np.sqrt(f_x**2+f_z**2)
-        sin_Z_axis = np.sin(float(i_degree)*np.pi/180.0)
-        cos_Z_axis = np.cos(float(i_degree)*np.pi/180.0)
+        sin_Z_axis = np.sin(float(f_degree)*np.pi/180.0)
+        cos_Z_axis = np.cos(float(f_degree)*np.pi/180.0)
+
+        print(' sin_X_axis = ' + str(sin_X_axis))
+        print(' cos_X_axis = ' + str(cos_X_axis))
+        print(' sin_Y_axis = ' + str(sin_Y_axis))
+        print(' cos_Y_axis = ' + str(cos_Y_axis))
+        print(' sin_Z_axis = ' + str(sin_Z_axis))
+        print(' cos_Z_axis = ' + str(cos_Z_axis))
 
         m_Rotate_X = np.matrix(\
             [[1,0,0,0],\
@@ -215,14 +252,27 @@ class mesh:
              [sin_Z_axis,cos_Z_axis,0,0],\
              [0,0,1,0],\
              [0,0,0,1]])
-        m_Rotate_Z_Inv = np.matrix(\
-            [[cos_Z_axis,sin_Z_axis,0,0],\
-             [-sin_Z_axis,cos_Z_axis,0,0],\
-             [0,0,1,0],\
-             [0,0,0,1]])
+#        m_Rotate_Z_Inv = np.matrix(\
+#            [[cos_Z_axis,sin_Z_axis,0,0],\
+#             [-sin_Z_axis,cos_Z_axis,0,0],\
+#             [0,0,1,0],\
+#             [0,0,0,1]])
 
-    def establish_scale_matrices(self, i_step, i_steps, v_scale, v_center):
-        print(' establishing scale matrices ')
+        rotationMatrix = m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X
+
+        # Transform vertices into coordinates
+        self.transformed_vertices = rotationMatrix * np.transpose(np.matrix(self.transformed_vertices))
+        self.transformed_vertices = np.transpose(self.transformed_vertices)
+
+    def establish_scale_matrices(self, i_steps, v_scale, v_center):
+        print(' Establishing scale matrices ')
+
+        f_steps = float(i_steps)
+
+        v_scale[0] = np.power(v_scale[0], 1.0/f_steps)
+        v_scale[1] = np.power(v_scale[1], 1.0/f_steps)
+        v_scale[2] = np.power(v_scale[2], 1.0/f_steps)
+        print(' v_scale = ' + str(v_scale))
 
         m_Scale_Trans = np.matrix(\
             [[1,0,0,-v_center[0]],\
@@ -239,6 +289,13 @@ class mesh:
              [0,v_scale[1],0,0],\
              [0,0,v_scale[2],0],\
              [0,0,0,1]])
+
+        scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans
+
+        # Transform vertices into coordinates
+        self.transformed_vertices = scaleMatrix * np.transpose(np.matrix(self.transformed_vertices))
+        self.transformed_vertices = np.transpose(self.transformed_vertices)
+
 
 ## Code used to test functionality
 #m=mesh()

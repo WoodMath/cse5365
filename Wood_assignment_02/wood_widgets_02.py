@@ -10,6 +10,7 @@ from tkinter import simpledialog
 from tkinter import filedialog
 from wood_fileread_02 import *
 from tkValidatingEntry import *
+import time
 
 class cl_widgets:
     def __init__(self,ob_root_window,ob_world=[],ob_mesh=mesh()):
@@ -22,13 +23,17 @@ class cl_widgets:
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
         self.ob_canvas_frame.canvas.delete("all")
 
+        callback = self.ob_canvas_frame.canvas.after(4, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
+
 
 class cl_canvas_frame:
     def __init__(self, master):
         self.master=master
         self.canvas = Canvas(master.ob_root_window,width=640, height=640, bg="yellow", highlightthickness=0)
         self.canvas.pack(expand=YES, fill=BOTH)
-        
+
+
+                                            
         self.canvas.bind('<Configure>', self.canvas_resized_callback) 
         self.canvas.bind("<ButtonPress-1>", self.left_mouse_click_callback)
         #self.canvas.bind("<ButtonRelease-1>", self.left_mouse_release_callback)
@@ -110,14 +115,17 @@ class cl_canvas_frame:
         print ('canvas width', self.canvas.cget("width"))
         print ('canvas height', self.canvas.cget("height"))
 
-        # Call redisplay() method in 'wood_graphics_01.py'
+        # Call redisplay() method in 'wood_graphics_02.py'
         self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
 
 class cl_pannel_03:
-    def __init__(self, master,ob_mesh):
+    def __init__(self, master, ob_mesh):
         self.master=master
         self.canvas = master.ob_root_window
         self.mesh = ob_mesh
+
+
+
 
         frame = Frame(master.ob_root_window)
         frame.pack()
@@ -140,11 +148,11 @@ class cl_pannel_03:
 
         self.i_rotate_option = IntVar(value=1)
 
-        self.rotate_axis_label = Label(axis_frame, text="Rotation").pack(side=LEFT,padx=10,pady=0)
-        self.rotate_axis_x = Radiobutton(axis_frame, text="X", variable=self.i_rotate_option, value=1).pack(side=LEFT,anchor=W)
-        self.rotate_axis_y = Radiobutton(axis_frame, text="Y", variable=self.i_rotate_option, value=2).pack(side=LEFT,anchor=W)
-        self.rotate_axis_z = Radiobutton(axis_frame, text="Z", variable=self.i_rotate_option, value=3).pack(side=LEFT,anchor=W)
-        self.rotate_ab = Radiobutton(axis_frame, text="Line AB", variable=self.i_rotate_option, value=4).pack(side=LEFT,anchor=W, padx=10)
+        self.rotate_axis_label = Label(axis_frame, text="Rotation").pack(side=LEFT,padx=0,pady=0)
+        self.rotate_axis_x = Radiobutton(axis_frame, text="X", variable=self.i_rotate_option, value=1).pack(side=LEFT,anchor=W,padx=0,pady=0)
+        self.rotate_axis_y = Radiobutton(axis_frame, text="Y", variable=self.i_rotate_option, value=2).pack(side=LEFT,anchor=W,padx=0,pady=0)
+        self.rotate_axis_z = Radiobutton(axis_frame, text="Z", variable=self.i_rotate_option, value=3).pack(side=LEFT,anchor=W,padx=0,pady=0)
+        self.rotate_ab = Radiobutton(axis_frame, text="Line AB", variable=self.i_rotate_option, value=4).pack(side=LEFT,anchor=W,padx=0,pady=0)
 
         self.fDefaultZero = 0.0
         self.fDefaultOne = 1.0
@@ -178,11 +186,13 @@ class cl_pannel_03:
 
         self.sRotateDegrees=StringVar(value='0')
         self.rotate_degrees_label = Label(axis_frame, text="Degree:").pack(side=LEFT,padx=0,pady=0)
-        self.rotate_degrees_spinbox = Spinbox(axis_frame, from_=0, to=360, width=3, textvariable=self.sRotateDegrees).pack(side=LEFT, padx=0, pady=0)
+        self.rotate_degrees_spinbox = Spinbox(axis_frame, from_=0, to=360, width=3, textvariable=self.sRotateDegrees)
+        self.rotate_degrees_spinbox.pack(side=LEFT, padx=0, pady=0)
 
         self.sRotateSteps=StringVar(value='0')
-        self.rotate_steps_label = Label(axis_frame, text="Steps:", textvariable=self.sRotateSteps).pack(side=LEFT,padx=0,pady=0)
-        self.rotate_steps_spinbox = Spinbox(axis_frame, from_=0, to=10, width=3).pack(side=LEFT, padx=0, pady=0)
+        self.rotate_steps_label = Label(axis_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
+        self.rotate_steps_spinbox = Spinbox(axis_frame, from_=0, to=10, width=3, textvariable=self.sRotateSteps)
+        self.rotate_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
 
         self.rotate_button = Button(axis_frame, text="Rotate", fg="blue", command=self.rotate)
         self.rotate_button.pack(side=LEFT)                         
@@ -275,7 +285,7 @@ class cl_pannel_03:
             print(' vymax = ' + str(self.mesh.vy[1])) 
             print(' ')
 
-            # Call create_graphic_objects() method in 'wood_graphics_01.py'
+            # Call create_graphic_objects() method in 'wood_graphics_02.py'
             self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas,self.mesh)
 
             print ( "called the draw callback!")
@@ -301,8 +311,8 @@ class cl_pannel_03:
             self.fRotateBy = float(self.sRotateBy.get())
             self.fRotateBz = float(self.sRotateBz.get())
 
-            self.v_a = [fRotateAx, fRotateAy, fRotateAz]
-            self.v_b = [fRotateBx, fRotateBy, fRotateBz]
+            self.v_a = [self.fRotateAx, self.fRotateAy, self.fRotateAz]
+            self.v_b = [self.fRotateBx, self.fRotateBy, self.fRotateBz]
             
 
         self.rotate_degrees = int(self.sRotateDegrees.get())
@@ -313,6 +323,20 @@ class cl_pannel_03:
         print(' self.v_b = ' + str(self.v_b))
         print(' self.rotate_degrees = ' + str(self.rotate_degrees))
         print(' self.rotate_steps = ' + str(self.rotate_steps))
+
+        if(self.rotate_steps):
+            for k in range(0, self.rotate_steps):
+                print(' k = ' + str(k))
+                self.mesh.establish_rotation_matrices(self.rotate_steps, self.v_a, self.v_b, self.rotate_degrees)
+                time.sleep(1)
+                # Call redisplay() method in 'wood_graphics_02.py'
+                self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+
+        else:
+            self.mesh.establish_rotation_matrices(1, self.v_a, self.v_b, self.rotate_degrees)
+
+            # Call redisplay() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
 
 
     def scale(self):
@@ -346,6 +370,20 @@ class cl_pannel_03:
         print(' self.scale_center = ' + str(self.scale_center))
         print(' self.scale_steps = ' + str(self.scale_steps))
 
+
+        if(self.scale_steps):
+            for k in range(0, self.scale_steps):
+                print(' k = ' + str(k))
+                self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
+                time.sleep(1)
+                # Call redisplay() method in 'wood_graphics_02.py'
+                self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+
+        else:
+            self.mesh.establish_scale_matrices(1, self.scale_size, self.scale_center)
+
+            # Call redisplay() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
 
 
 class MyDialog(simpledialog.Dialog):

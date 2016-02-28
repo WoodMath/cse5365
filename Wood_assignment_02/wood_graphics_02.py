@@ -84,7 +84,7 @@ class cl_world:
 
     def redisplay(self,canvas,event):
         mesh=self.mesh
-
+        print(' Redisplay called ')
         # If there are drawn objects
         if(self.borders or self.polygons):
             # RE-Establish proper coordinates based on window size
@@ -138,6 +138,7 @@ class cl_world:
                         int(v0[0,0]), int(v0[0,1]), \
                         int(v1[0,0]), int(v1[0,1]), \
                         int(v2[0,0]), int(v2[0,1]), \
-                        int(v3[0,0]), int(v3[0,1])) 
+                        int(v3[0,0]), int(v3[0,1]))
+        canvas.pack()
 
 
