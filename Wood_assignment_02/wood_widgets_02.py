@@ -23,8 +23,6 @@ class cl_widgets:
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
         self.ob_canvas_frame.canvas.delete("all")
 
-        callback = self.ob_canvas_frame.canvas.after(4, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
-
 
 class cl_canvas_frame:
     def __init__(self, master):

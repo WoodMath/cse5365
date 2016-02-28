@@ -139,6 +139,6 @@ class cl_world:
                         int(v1[0,0]), int(v1[0,1]), \
                         int(v2[0,0]), int(v2[0,1]), \
                         int(v3[0,0]), int(v3[0,1]))
-        canvas.pack()
+#        canvas.pack()
 
 

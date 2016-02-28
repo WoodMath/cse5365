@@ -173,7 +173,7 @@ class mesh:
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
 
-        print(' self.coordinates = ' + str(self.coordinates))
+#        print(' self.coordinates = ' + str(self.coordinates))
         
     def establish_rotation_matrices(self, i_steps, v_a, v_b, i_degree):
         print(' Establishing rotation matrices ')
