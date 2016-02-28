@@ -122,8 +122,10 @@ class cl_pannel_03:
         frame = Frame(master.ob_root_window)
         frame.pack()
 
+        self.filename = StringVar()
+
         self.file_location_label = Label(frame, text="File Name").pack(side=LEFT,padx=10,pady=10)
-        self.file_location_entry = Entry(frame, width=50).pack(side=LEFT,padx=10, pady=10)
+        self.file_location_entry = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=10, pady=10)
 
         self.file_dialog_button = Button(frame, text="Open File Dialog", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
@@ -136,49 +138,51 @@ class cl_pannel_03:
         axis_frame = Frame(master.ob_root_window)
         axis_frame.pack()
 
-        i_axis = IntVar(value=1)
+        self.i_rotate_option = IntVar(value=1)
 
-        self.axis_label = Label(axis_frame, text="Rotation").pack(side=LEFT,padx=10,pady=0)
-        self.axis_x = Radiobutton(axis_frame, text="X", variable=i_axis, value=1).pack(side=LEFT,anchor=W)
-        self.axis_y = Radiobutton(axis_frame, text="Y", variable=i_axis, value=2).pack(side=LEFT,anchor=W)
-        self.axis_z = Radiobutton(axis_frame, text="Z", variable=i_axis, value=3).pack(side=LEFT,anchor=W)
-        self.rotate_ab = Radiobutton(axis_frame, text="Line AB", variable=i_axis, value=4).pack(side=LEFT,anchor=W, padx=10)
+        self.rotate_axis_label = Label(axis_frame, text="Rotation").pack(side=LEFT,padx=10,pady=0)
+        self.rotate_axis_x = Radiobutton(axis_frame, text="X", variable=self.i_rotate_option, value=1).pack(side=LEFT,anchor=W)
+        self.rotate_axis_y = Radiobutton(axis_frame, text="Y", variable=self.i_rotate_option, value=2).pack(side=LEFT,anchor=W)
+        self.rotate_axis_z = Radiobutton(axis_frame, text="Z", variable=self.i_rotate_option, value=3).pack(side=LEFT,anchor=W)
+        self.rotate_ab = Radiobutton(axis_frame, text="Line AB", variable=self.i_rotate_option, value=4).pack(side=LEFT,anchor=W, padx=10)
 
-        fDefaultZero = 0.0
-        fDefaultOne = 1.0
+        self.fDefaultZero = 0.0
+        self.fDefaultOne = 1.0
         
-        fRotateAx = fDefaultZero
-        sRotateAx = StringVar(value=str(round(fRotateAx,2)))
-        fRotateAy = fDefaultZero
-        sRotateAy = StringVar(value=str(round(fRotateAy,2)))
-        fRotateAz = fDefaultZero
-        sRotateAz = StringVar(value=str(round(fRotateAz,2)))
+        self.fRotateAx = self.fDefaultZero
+        self.sRotateAx = StringVar(value=str(round(self.fRotateAx,2)))
+        self.fRotateAy = self.fDefaultZero
+        self.sRotateAy = StringVar(value=str(round(self.fRotateAy,2)))
+        self.fRotateAz = self.fDefaultZero
+        self.sRotateAz = StringVar(value=str(round(self.fRotateAz,2)))
 
-        fRotateBx = fDefaultOne
-        sRotateBx = StringVar(value=str(round(fRotateBx,2)))
-        fRotateBy = fDefaultOne
-        sRotateBy = StringVar(value=str(round(fRotateBy,2)))
-        fRotateBz = fDefaultOne
-        sRotateBz = StringVar(value=str(round(fRotateBz,2)))
+        self.fRotateBx = self.fDefaultOne
+        self.sRotateBx = StringVar(value=str(round(self.fRotateBx,2)))
+        self.fRotateBy = self.fDefaultOne
+        self.sRotateBy = StringVar(value=str(round(self.fRotateBy,2)))
+        self.fRotateBz = self.fDefaultOne
+        self.sRotateBz = StringVar(value=str(round(self.fRotateBz,2)))
 
 #        self.rotate_ax.delete(0, END)
 #        self.rotate_ax.insert(0, "1.0")
         
         self.rotate_a_label = Label(axis_frame, text="A:").pack(side=LEFT,padx=0,pady=0)
-        self.rotate_ax = Entry(axis_frame, textvariable=sRotateAx, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.rotate_ay = Entry(axis_frame, textvariable=sRotateAy, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.rotate_az = Entry(axis_frame, textvariable=sRotateAz, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.rotate_ax = Entry(axis_frame, textvariable=self.sRotateAx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.rotate_ay = Entry(axis_frame, textvariable=self.sRotateAy, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.rotate_az = Entry(axis_frame, textvariable=self.sRotateAz, width=3).pack(side=LEFT,padx=0, pady=0)
         
         self.rotate_b_label = Label(axis_frame, text="B:").pack(side=LEFT,padx=0,pady=0)
-        self.rotate_bx = Entry(axis_frame, textvariable=sRotateBx, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.rotate_by = Entry(axis_frame, textvariable=sRotateBy, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.rotate_bz = Entry(axis_frame, textvariable=sRotateBz, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.rotate_bx = Entry(axis_frame, textvariable=self.sRotateBx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.rotate_by = Entry(axis_frame, textvariable=self.sRotateBy, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.rotate_bz = Entry(axis_frame, textvariable=self.sRotateBz, width=3).pack(side=LEFT,padx=0, pady=0)
 
-        self.degree_label = Label(axis_frame, text="Degree:").pack(side=LEFT,padx=0,pady=0)
-        self.degree_spinbox = Spinbox(axis_frame, from_=0, to=360, width=3).pack(side=LEFT, padx=0, pady=0)
+        self.sRotateDegrees=StringVar(value='0')
+        self.rotate_degrees_label = Label(axis_frame, text="Degree:").pack(side=LEFT,padx=0,pady=0)
+        self.rotate_degrees_spinbox = Spinbox(axis_frame, from_=0, to=360, width=3, textvariable=self.sRotateDegrees).pack(side=LEFT, padx=0, pady=0)
 
-        self.steps_rotation_label = Label(axis_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
-        self.steps_rotation_spinbox = Spinbox(axis_frame, from_=0, to=10, width=3).pack(side=LEFT, padx=0, pady=0)
+        self.sRotateSteps=StringVar(value='0')
+        self.rotate_steps_label = Label(axis_frame, text="Steps:", textvariable=self.sRotateSteps).pack(side=LEFT,padx=0,pady=0)
+        self.rotate_steps_spinbox = Spinbox(axis_frame, from_=0, to=10, width=3).pack(side=LEFT, padx=0, pady=0)
 
         self.rotate_button = Button(axis_frame, text="Rotate", fg="blue", command=self.rotate)
         self.rotate_button.pack(side=LEFT)                         
@@ -186,39 +190,45 @@ class cl_pannel_03:
         scale_frame = Frame(master.ob_root_window)
         scale_frame.pack()
 
-        i_scale = IntVar(value=1)
+        self.i_scale_option = IntVar(value=1)
         self.scale_label = Label(scale_frame, text="Scale Ratio:").pack(side=LEFT,padx=0,pady=0)
-        self.scale_all = Radiobutton(scale_frame, text="All", variable=i_scale, value=1).pack(side=LEFT,anchor=W)
+        self.scale_all = Radiobutton(scale_frame, text="All", variable=self.i_scale_option, value=1).pack(side=LEFT,anchor=W)
 
-        self.degree_spinbox = Spinbox(scale_frame, values=(0.25,0.50,0.75,1.00,1.25,1.50,1.75,2.00,2.25,2.50,2.75,3.00,3.25,3.50,3.75,4.00), width=3).pack(side=LEFT, padx=0, pady=0)
-        self.scale_sxsysz = Radiobutton(scale_frame, text="[Sx,Sy,Sz]", variable=i_scale, value=2).pack(side=LEFT,anchor=W)
+        self.sScaleSize=StringVar(value="1.00")
+        self.scale_size_spinbox = Spinbox(scale_frame, textvariable=self.sScaleSize, values=("0.25","0.50","0.75","1.00","1.25","1.50","1.75","2.00","2.25","2.50","2.75","3.00","3.25","3.50","3.75","4.00"), width=4)
+        self.scale_size_spinbox.delete(0,"end")
+        self.scale_size_spinbox.insert(0,"1.00")
+        self.scale_size_spinbox.pack(side=LEFT, padx=0, pady=0)
 
-        fScaleSx = fDefaultOne
-        sScaleSx = StringVar(value=str(round(fScaleSx,2)))
-        fScaleSy = fDefaultOne
-        sScaleSy = StringVar(value=str(round(fScaleSy,2)))
-        fScaleSz = fDefaultOne
-        sScaleSz = StringVar(value=str(round(fScaleSz,2)))
+        self.scale_size_sxsysz = Radiobutton(scale_frame, text="[Sx,Sy,Sz]", variable=self.i_scale_option, value=2).pack(side=LEFT,anchor=W)
 
-        fScaleAx = fDefaultZero
-        sScaleAx = StringVar(value=str(round(fScaleAx,2)))
-        fScaleAy = fDefaultZero
-        sScaleAy = StringVar(value=str(round(fScaleAy,2)))
-        fScaleAz = fDefaultZero
-        sScaleAz = StringVar(value=str(round(fScaleAz,2)))
+        self.fScaleSx = self.fDefaultOne
+        self.sScaleSx = StringVar(value=str(round(self.fScaleSx,2)))
+        self.fScaleSy = self.fDefaultOne
+        self.sScaleSy = StringVar(value=str(round(self.fScaleSy,2)))
+        self.fScaleSz = self.fDefaultOne
+        self.sScaleSz = StringVar(value=str(round(self.fScaleSz,2)))
+
+        self.fScaleAx = self.fDefaultZero
+        self.sScaleAx = StringVar(value=str(round(self.fScaleAx,2)))
+        self.fScaleAy = self.fDefaultZero
+        self.sScaleAy = StringVar(value=str(round(self.fScaleAy,2)))
+        self.fScaleAz = self.fDefaultZero
+        self.sScaleAz = StringVar(value=str(round(self.fScaleAz,2)))
         
-        self.scale_sx = Entry(scale_frame, textvariable=sScaleSx, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.scale_sy = Entry(scale_frame, textvariable=sScaleSy, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.scale_sz = Entry(scale_frame, textvariable=sScaleSz, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.scale_sx = Entry(scale_frame, textvariable=self.sScaleSx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.scale_sy = Entry(scale_frame, textvariable=self.sScaleSy, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.scale_sz = Entry(scale_frame, textvariable=self.sScaleSz, width=3).pack(side=LEFT,padx=0, pady=0)
 
         self.scale_a_label = Label(scale_frame, text="Center of Scale:").pack(side=LEFT,padx=0,pady=0)
 
-        self.scale_ax = Entry(scale_frame, textvariable=sScaleAx, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.scale_ay = Entry(scale_frame, textvariable=sScaleAy, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.scale_az = Entry(scale_frame, textvariable=sScaleAz, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.scale_ax = Entry(scale_frame, textvariable=self.sScaleAx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.scale_ay = Entry(scale_frame, textvariable=self.sScaleAy, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.scale_az = Entry(scale_frame, textvariable=self.sScaleAz, width=3).pack(side=LEFT,padx=0, pady=0)
 
-        self.steps_rotation_label = Label(scale_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
-        self.steps_rotation_spinbox = Spinbox(scale_frame, from_=0, to=10, width=3).pack(side=LEFT, padx=0, pady=0)
+        self.sScaleSteps=StringVar(value='0')
+        self.scale_steps_label = Label(scale_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
+        self.scale_steps_spinbox = Spinbox(scale_frame, from_=0, to=10, width=3, textvariable=self.sScaleSteps).pack(side=LEFT, padx=0, pady=0)
 
         self.scale_button = Button(scale_frame, text="Scale", fg="blue", command=self.scale)
         self.scale_button.pack(side=LEFT)
@@ -239,6 +249,9 @@ class cl_pannel_03:
 
         # Save filename to 'mesh' object
         self.mesh.filename=filename
+        
+        self.filename.set(filename)        
+        
         print(filename)
 
     def load_file(self):
@@ -268,12 +281,72 @@ class cl_pannel_03:
             print ( "called the draw callback!")
 
     def rotate(self):
-        print('rotate called')
+        print(' rotate button pushed ')
+
+        self.v_a = [0.0,0.0,0.0]
+
+        self.rotate_option = self.i_rotate_option.get()
+        if(self.rotate_option==1):
+            self.v_b = [1.0,0.0,0.0]
+        elif(self.rotate_option==2):
+            self.v_b = [0.0,1.0,0.0]
+        elif(self.rotate_option==3):
+            self.v_b = [0.0,0.0,1.0]
+        else:
+            self.fRotateAx = float(self.sRotateAx.get())
+            self.fRotateAy = float(self.sRotateAy.get())
+            self.fRotateAz = float(self.sRotateAz.get())
+
+            self.fRotateBx = float(self.sRotateBx.get())
+            self.fRotateBy = float(self.sRotateBy.get())
+            self.fRotateBz = float(self.sRotateBz.get())
+
+            self.v_a = [fRotateAx, fRotateAy, fRotateAz]
+            self.v_b = [fRotateBx, fRotateBy, fRotateBz]
+            
+
+        self.rotate_degrees = int(self.sRotateDegrees.get())
+        self.rotate_steps = int(self.sRotateSteps.get())
+
+        print(' self.rotate_option = ' + str(self.rotate_option))
+        print(' self.v_a = ' + str(self.v_a))
+        print(' self.v_b = ' + str(self.v_b))
+        print(' self.rotate_degrees = ' + str(self.rotate_degrees))
+        print(' self.rotate_steps = ' + str(self.rotate_steps))
 
 
     def scale(self):
-        print('scale called')
+        print(' scale button clicked ')
             
+        self.scale_option = self.i_scale_option.get()
+
+        self.scale_uniform_size = float(self.sScaleSize.get())
+
+        self.fScaleSx = float(self.sScaleSx.get())
+        self.fScaleSy = float(self.sScaleSy.get())
+        self.fScaleSz = float(self.sScaleSz.get())
+
+        self.fScaleAx = float(self.sScaleAx.get())
+        self.fScaleAy = float(self.sScaleAy.get())
+        self.fScaleAz = float(self.sScaleAz.get())
+
+        self.scale_center = [0.0,0.0,0.0]
+        self.scale_size = [1.0,1.0,1.0]
+        if(self.scale_option==1):
+            self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
+        else:
+            self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
+            self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
+
+        self.scale_steps = int(self.sScaleSteps.get())
+
+        print(' self.scale_option = ' + str(self.scale_option))
+        print(' self.scale_uniform_size = ' + str(self.scale_uniform_size))
+        print(' self.scale_size = ' + str(self.scale_size))
+        print(' self.scale_center = ' + str(self.scale_center))
+        print(' self.scale_steps = ' + str(self.scale_steps))
+
+
 
 class MyDialog(simpledialog.Dialog):
     def body(self, master):

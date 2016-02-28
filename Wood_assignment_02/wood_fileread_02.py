@@ -73,6 +73,8 @@ class mesh:
                                     [0,0,0,1]])
         self.bounding=[]
         self.box=[]
+        self.step=0
+        self.steps=0
     def set_file(self,filename):
         self.vertices=[]
         self.faces=[]
@@ -92,6 +94,8 @@ class mesh:
                                     [0,0,0,1]])
         self.bounding=[]
         self.box=[]
+        self.step=0
+        self.steps=0
     def add_vertex(self,vertex):
         self.vertices.append(vertex)
     def add_face(self,face):
@@ -156,7 +160,7 @@ class mesh:
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
         
-    def establish_rotation_matrices(self, i_divs, v_a, v_b, i_degree):
+    def establish_rotation_matrices(self, i_step, i_steps, v_a, v_b, i_degree):
         print(' establishing rotation matrices ')
         v_a = np.array(v_a)
         v_b = np.array(v_b)
@@ -217,7 +221,7 @@ class mesh:
              [0,0,1,0],\
              [0,0,0,1]])
 
-    def establish_scale_matrices(self, i_divs, v_scale, v_center):
+    def establish_scale_matrices(self, i_step, i_steps, v_scale, v_center):
         print(' establishing scale matrices ')
 
         m_Scale_Trans = np.matrix(\
