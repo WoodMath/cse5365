@@ -66,7 +66,7 @@ class mesh:
         self.wy=[]
         self.vx=[]
         self.vy=[]
-        self.filename=None
+        self.filename=[]
         self.coordinates=[]
         self.vMat=[]
         self.sMat=[]
@@ -173,7 +173,6 @@ class mesh:
         self.box = self.tMat * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
 
-        print(' self.coordinates = ' + str(self.coordinates))
         
     def establish_rotation_matrices(self, i_steps, v_a, v_b, i_degree):
         print(' Establishing rotation matrices ')
@@ -269,10 +268,13 @@ class mesh:
 
         f_steps = float(i_steps)
 
-        v_scale[0] = np.power(v_scale[0], 1.0/f_steps)
-        v_scale[1] = np.power(v_scale[1], 1.0/f_steps)
-        v_scale[2] = np.power(v_scale[2], 1.0/f_steps)
+        v_inc_scale = [1.0,1.0,1.0]
+        v_inc_scale[0] = np.power(v_scale[0], 1.0/f_steps)
+        v_inc_scale[1] = np.power(v_scale[1], 1.0/f_steps)
+        v_inc_scale[2] = np.power(v_scale[2], 1.0/f_steps)
+        print(' f_steps = ' + str(f_steps))
         print(' v_scale = ' + str(v_scale))
+        print(' v_inc_scale = ' + str(v_inc_scale))
 
         m_Scale_Trans = np.matrix(\
             [[1,0,0,-v_center[0]],\
@@ -285,9 +287,9 @@ class mesh:
              [0,0,1,v_center[2]],\
              [0,0,0,1]])
         m_Scale_Size = np.matrix(\
-            [[v_scale[0],0,0,0],\
-             [0,v_scale[1],0,0],\
-             [0,0,v_scale[2],0],\
+            [[v_inc_scale[0],0,0,0],\
+             [0,v_inc_scale[1],0,0],\
+             [0,0,v_inc_scale[2],0],\
              [0,0,0,1]])
 
         scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans

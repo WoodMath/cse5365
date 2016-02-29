@@ -18,12 +18,16 @@ class cl_widgets:
         ob_root_window.title("Wood_Assignment_02")
         self.ob_world=ob_world
         self.mesh=ob_mesh
-        self.pannel_03 = cl_pannel_03(self,ob_mesh)
+        self.pannel_03 = cl_pannel_03(self,ob_root_window,ob_mesh)
         self.ob_canvas_frame=cl_canvas_frame(self)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
         self.ob_canvas_frame.canvas.delete("all")
 
-        callback = self.ob_canvas_frame.canvas.after(4, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
+
+#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
+#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
+        
+#        callback = self.ob_canvas_frame.canvas.after(4, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
 
 
 class cl_canvas_frame:
@@ -119,7 +123,7 @@ class cl_canvas_frame:
         self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
 
 class cl_pannel_03:
-    def __init__(self, master, ob_mesh):
+    def __init__(self, master, ob_root_window, ob_mesh):
         self.master=master
         self.canvas = master.ob_root_window
         self.mesh = ob_mesh
@@ -262,10 +266,10 @@ class cl_pannel_03:
         
         self.filename.set(filename)        
         
-        print(filename)
+        print(" Loading file '" + str(filename) + "'")
 
     def load_file(self):
-        # If there is a file to load (closing file dialog will return '')
+
         if(len(self.mesh.filename)):
             self.mesh.set_file(self.mesh.filename)
             self.mesh.load()
@@ -290,8 +294,21 @@ class cl_pannel_03:
 
             print ( "called the draw callback!")
 
+    def rotate_callback(self,i_iteration):
+        if(i_iteration):
+            self.mesh.establish_rotation_matrices(self.rotate_steps, self.v_a, self.v_b, self.rotate_degrees)
+            # Call redisplay() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            self.master.ob_canvas_frame.canvas.update()
+            self.master.ob_root_window.after(50, self.rotate_callback(i_iteration-1))
+        else:
+            return
+            
     def rotate(self):
         print(' rotate button pushed ')
+
+        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
+            return
 
         self.v_a = [0.0,0.0,0.0]
 
@@ -318,30 +335,34 @@ class cl_pannel_03:
         self.rotate_degrees = int(self.sRotateDegrees.get())
         self.rotate_steps = int(self.sRotateSteps.get())
 
+        if(self.rotate_steps<1):
+            self.rotate_steps=1
+
         print(' self.rotate_option = ' + str(self.rotate_option))
         print(' self.v_a = ' + str(self.v_a))
         print(' self.v_b = ' + str(self.v_b))
         print(' self.rotate_degrees = ' + str(self.rotate_degrees))
         print(' self.rotate_steps = ' + str(self.rotate_steps))
 
-        if(self.rotate_steps):
-            for k in range(0, self.rotate_steps):
-                print(' k = ' + str(k))
-                self.mesh.establish_rotation_matrices(self.rotate_steps, self.v_a, self.v_b, self.rotate_degrees)
-                time.sleep(1)
-                # Call redisplay() method in 'wood_graphics_02.py'
-                self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+        self.master.ob_root_window.after(0, self.rotate_callback(self.rotate_steps))
 
-        else:
-            self.mesh.establish_rotation_matrices(1, self.v_a, self.v_b, self.rotate_degrees)
-
+    def scale_callback(self,i_iteration):
+        if(i_iteration):
+            print(' self.scale_steps = ' + str(self.scale_steps))
+            self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-
+            self.master.ob_canvas_frame.canvas.update()
+            self.master.ob_root_window.after(50, self.scale_callback(i_iteration-1))
+        else:
+            return
 
     def scale(self):
         print(' scale button clicked ')
-            
+
+        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
+            return
+        
         self.scale_option = self.i_scale_option.get()
 
         self.scale_uniform_size = float(self.sScaleSize.get())
@@ -363,27 +384,17 @@ class cl_pannel_03:
             self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
 
         self.scale_steps = int(self.sScaleSteps.get())
-
+        if(self.scale_steps<1):
+            self.scale_steps=1
+            
         print(' self.scale_option = ' + str(self.scale_option))
         print(' self.scale_uniform_size = ' + str(self.scale_uniform_size))
         print(' self.scale_size = ' + str(self.scale_size))
         print(' self.scale_center = ' + str(self.scale_center))
         print(' self.scale_steps = ' + str(self.scale_steps))
 
-
-        if(self.scale_steps):
-            for k in range(0, self.scale_steps):
-                print(' k = ' + str(k))
-                self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
-                time.sleep(1)
-                # Call redisplay() method in 'wood_graphics_02.py'
-                self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-
-        else:
-            self.mesh.establish_scale_matrices(1, self.scale_size, self.scale_center)
-
-            # Call redisplay() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+        self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
+            
 
 
 class MyDialog(simpledialog.Dialog):

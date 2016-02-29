@@ -31,8 +31,10 @@ class cl_world:
         self.polygons=[]            # Array storing Triangles and Quads
         self.borders=[]             # Array storing Viewport Box
         self.edges=[]
-        
+
         canvas.delete('all')        # Clear screen of all objects
+        if(not len(mesh.vertices)):  # If no objects do not attempt to draw.
+            return
 
         # Establish proper coordinates based on window size
         mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
@@ -82,9 +84,14 @@ class cl_world:
                                                             int(v3[0,0]), int(v3[0,1]), \
                                                             fill='red', width=1.0, outline='black'))
 
+
     def redisplay(self,canvas,event):
         mesh=self.mesh
         print(' Redisplay called ')
+
+        if(not len(mesh.vertices)):  # If no objects do not attempt to draw.
+            return
+        
         # If there are drawn objects
         if(self.borders or self.polygons):
             # RE-Establish proper coordinates based on window size
