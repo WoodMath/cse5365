@@ -9,7 +9,7 @@ from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import filedialog
 from wood_fileread_02 import *
-from tkValidatingEntry import *
+
 import time
 
 class cl_widgets:
@@ -136,9 +136,9 @@ class cl_pannel_03:
 
         self.filename = StringVar()
 
-        self.file_location_label = Label(frame, text="File Name").pack(side=LEFT,padx=10,pady=10)
+        self.file_location_label = Label(frame, text="File Name:").pack(side=LEFT,padx=10,pady=10)
 #        self.file_location_entry = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
-        self.file_location_labe = Label(frame, textvariable=self.filename, width=75).pack(side=LEFT,padx=0,pady=0)
+        self.file_location_labe = Label(frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
 
         self.file_dialog_button = Button(frame, text="Open File Dialog", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
@@ -203,7 +203,7 @@ class cl_pannel_03:
         self.rotate_steps_spinbox.insert(0,"1")
         self.rotate_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
 
-        self.rotate_button = Button(axis_frame, text="Rotate", fg="blue", command=self.rotate)
+        self.rotate_button = Button(axis_frame, text="Rotate", fg="green", command=self.rotate)
         self.rotate_button.pack(side=LEFT)                         
 
         scale_frame = Frame(master.ob_root_window)
@@ -252,17 +252,21 @@ class cl_pannel_03:
         self.scale_steps_spinbox.insert(0,"1")
         self.scale_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
 
-        self.scale_button = Button(scale_frame, text="Scale", fg="blue", command=self.scale)
+        self.scale_button = Button(scale_frame, text="Scale", fg="green", command=self.scale)
         self.scale_button.pack(side=LEFT)
 
-        disc_frame_one = Frame(master.ob_root_window)
-        disc_frame_one.pack()
-        self.disc_label_one = Label(disc_frame_one, text="NOTE: Transformations are cumulative").pack(side=LEFT,padx=0,pady=0)
+#        disc_frame_one = Frame(master.ob_root_window)
+#        disc_frame_one.pack()
+#        self.disc_label_one = Label(disc_frame_one, text="NOTE: Transformations are cumulative").pack(side=LEFT,padx=0,pady=0)
 
-        disc_frame_two = Frame(master.ob_root_window)
-        disc_frame_two.pack()
-        self.disc_label_two = Label(disc_frame_two, text="Click 'Draw' to reset transformation stack.").pack(side=LEFT,padx=0,pady=0)
+#        disc_frame_two = Frame(master.ob_root_window)
+#        disc_frame_two.pack()
+#        self.disc_label_two = Label(disc_frame_two, text="Click 'Draw' to reset transformation stack.").pack(side=LEFT,padx=0,pady=0)
 
+        disc_frame_thr = Frame(master.ob_root_window)
+        disc_frame_thr.pack()
+        self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load File (Draw)' to reset transformation stack.")
+        self.disc_label_thr.pack(side=LEFT,padx=0,pady=0)
 
         
     def browse_file(self):
