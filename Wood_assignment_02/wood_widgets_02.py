@@ -137,7 +137,8 @@ class cl_pannel_03:
         self.filename = StringVar()
 
         self.file_location_label = Label(frame, text="File Name").pack(side=LEFT,padx=10,pady=10)
-        self.file_location_entry = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=10, pady=10)
+#        self.file_location_entry = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
+        self.file_location_labe = Label(frame, textvariable=self.filename, width=75).pack(side=LEFT,padx=0,pady=0)
 
         self.file_dialog_button = Button(frame, text="Open File Dialog", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
@@ -190,12 +191,16 @@ class cl_pannel_03:
 
         self.sRotateDegrees=StringVar(value='0')
         self.rotate_degrees_label = Label(axis_frame, text="Degree:").pack(side=LEFT,padx=0,pady=0)
-        self.rotate_degrees_spinbox = Spinbox(axis_frame, from_=0, to=360, width=3, textvariable=self.sRotateDegrees)
+        self.rotate_degrees_spinbox = Spinbox(axis_frame, from_=-360, to=360, width=3, textvariable=self.sRotateDegrees)
+        self.rotate_degrees_spinbox.delete(0,"end")
+        self.rotate_degrees_spinbox.insert(0,"0")
         self.rotate_degrees_spinbox.pack(side=LEFT, padx=0, pady=0)
 
-        self.sRotateSteps=StringVar(value='0')
+        self.sRotateSteps=StringVar(value='1')
         self.rotate_steps_label = Label(axis_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
         self.rotate_steps_spinbox = Spinbox(axis_frame, from_=0, to=10, width=3, textvariable=self.sRotateSteps)
+        self.rotate_steps_spinbox.delete(0,"end")
+        self.rotate_steps_spinbox.insert(0,"1")
         self.rotate_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
 
         self.rotate_button = Button(axis_frame, text="Rotate", fg="blue", command=self.rotate)
@@ -240,9 +245,12 @@ class cl_pannel_03:
         self.scale_ay = Entry(scale_frame, textvariable=self.sScaleAy, width=3).pack(side=LEFT,padx=0, pady=0)
         self.scale_az = Entry(scale_frame, textvariable=self.sScaleAz, width=3).pack(side=LEFT,padx=0, pady=0)
 
-        self.sScaleSteps=StringVar(value='0')
+        self.sScaleSteps=StringVar(value='1')
         self.scale_steps_label = Label(scale_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
-        self.scale_steps_spinbox = Spinbox(scale_frame, from_=0, to=10, width=3, textvariable=self.sScaleSteps).pack(side=LEFT, padx=0, pady=0)
+        self.scale_steps_spinbox = Spinbox(scale_frame, from_=0, to=10, width=3, textvariable=self.sScaleSteps)
+        self.scale_steps_spinbox.delete(0,"end")
+        self.scale_steps_spinbox.insert(0,"1")
+        self.scale_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
 
         self.scale_button = Button(scale_frame, text="Scale", fg="blue", command=self.scale)
         self.scale_button.pack(side=LEFT)
