@@ -387,13 +387,13 @@ class cl_pannel_03:
         self.fScaleAy = float(self.sScaleAy.get())
         self.fScaleAz = float(self.sScaleAz.get())
 
-        self.scale_center = [0.0,0.0,0.0]
+        self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
         self.scale_size = [1.0,1.0,1.0]
+        
         if(self.scale_option==1):
             self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
         else:
             self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
-            self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
 
         self.scale_steps = int(self.sScaleSteps.get())
         if(self.scale_steps<1):
