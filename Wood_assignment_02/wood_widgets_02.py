@@ -326,12 +326,17 @@ class cl_pannel_03:
         self.v_a = [0.0,0.0,0.0]
 
         self.rotate_option = self.i_rotate_option.get()
+
+        # If X-axis selected
         if(self.rotate_option==1):
             self.v_b = [1.0,0.0,0.0]
+        # If Y-axis selected
         elif(self.rotate_option==2):
             self.v_b = [0.0,1.0,0.0]
+        # If Z-axis selected
         elif(self.rotate_option==3):
             self.v_b = [0.0,0.0,1.0]
+        # Else assign axis based on vector 'ab'
         else:
             self.fRotateAx = float(self.sRotateAx.get())
             self.fRotateAy = float(self.sRotateAy.get())
@@ -357,6 +362,7 @@ class cl_pannel_03:
         print(' self.rotate_degrees = ' + str(self.rotate_degrees))
         print(' self.rotate_steps = ' + str(self.rotate_steps))
 
+        # Iterative callback used for animation and redisplay
         self.master.ob_root_window.after(0, self.rotate_callback(self.rotate_steps))
 
     def scale_callback(self,i_iteration):
@@ -390,9 +396,11 @@ class cl_pannel_03:
 
         self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
         self.scale_size = [1.0,1.0,1.0]
-        
+
+        # If uniform scale selected assign same scale to all array elements
         if(self.scale_option==1):
             self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
+        # Else assign differing scale to array based on dimension
         else:
             self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
 
@@ -406,6 +414,7 @@ class cl_pannel_03:
         print(' self.scale_center = ' + str(self.scale_center))
         print(' self.scale_steps = ' + str(self.scale_steps))
 
+        # Iterative callback used for animation and redisplay
         self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
             
 
