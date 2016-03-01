@@ -28,12 +28,12 @@ class cl_world:
         canvas.world=self
     
     def create_graphic_objects(self,canvas,mesh):
-        self.polygons=[]            # Array storing Triangles and Quads
-        self.borders=[]             # Array storing Viewport Box
+        self.polygons=[]                                # Array storing Triangles and Quads
+        self.borders=[]                                 # Array storing Viewport Box
         self.edges=[]
 
-        canvas.delete('all')        # Clear screen of all objects
-        if(not len(mesh.vertices)):  # If no objects do not attempt to draw.
+        canvas.delete('all')                            # Clear screen of all objects
+        if(not len(mesh.transformed_vertices)):         # If no objects do not attempt to draw.
             return
 
         # Establish proper coordinates based on window size
@@ -89,7 +89,7 @@ class cl_world:
         mesh=self.mesh
         print(' Redisplay called ')
 
-        if(not len(mesh.vertices)):  # If no objects do not attempt to draw.
+        if(not len(mesh.transformed_vertices)):         # If no objects do not attempt to draw.
             return
         
         # If there are drawn objects

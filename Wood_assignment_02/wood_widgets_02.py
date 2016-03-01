@@ -140,12 +140,12 @@ class cl_pannel_03:
 #        self.file_location_entry = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
         self.file_location_labe = Label(frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
 
-        self.file_dialog_button = Button(frame, text="Open File Dialog", fg="blue", command=self.browse_file)
+        self.file_dialog_button = Button(frame, text="Browse", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
 
         self.var_filename = StringVar()
         self.var_filename.set('')
-        self.button = Button(frame, text="Load File (Draw)", fg="red", command=self.load_file)
+        self.button = Button(frame, text="Load", fg="red", command=self.load_file)
         self.button.pack(side=LEFT)
 
         axis_frame = Frame(master.ob_root_window)
@@ -265,7 +265,7 @@ class cl_pannel_03:
 
         disc_frame_thr = Frame(master.ob_root_window)
         disc_frame_thr.pack()
-        self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load File (Draw)' to reset transformation stack.")
+        self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load' to reset transformation stack.")
         self.disc_label_thr.pack(side=LEFT,padx=0,pady=0)
 
         
@@ -279,12 +279,15 @@ class cl_pannel_03:
         self.filename.set(filename)        
         
         print(" Loading file '" + str(filename) + "'")
-
-    def load_file(self):
-
         if(len(self.mesh.filename)):
             self.mesh.set_file(self.mesh.filename)
             self.mesh.load()
+            
+
+    def load_file(self):
+        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
+            return
+        else:
             
             # Calculate non-canvas size matrix transformations
             self.mesh.establish_matrices()
@@ -320,7 +323,7 @@ class cl_pannel_03:
     def rotate(self):
         print(' rotate button pushed ')
 
-        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
+        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
             return
 
         self.v_a = [0.0,0.0,0.0]
@@ -379,7 +382,7 @@ class cl_pannel_03:
     def scale(self):
         print(' scale button clicked ')
 
-        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
+        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
             return
         
         self.scale_option = self.i_scale_option.get()
