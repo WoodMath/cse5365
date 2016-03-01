@@ -175,6 +175,8 @@ class mesh:
 
         
     def establish_rotation_matrices(self, i_steps, v_a, v_b, i_degree):
+        # Establish the rotation matrices
+        
         print(' Establishing rotation matrices ')
         v_a = np.array(v_a)
         v_b = np.array(v_b)
@@ -187,11 +189,15 @@ class mesh:
         f_steps = float(i_steps)
         f_degree = f_degree / f_steps
 
+        ## Establish matrix for translating all points
+        ## such that vector 'a' lies at origin
         m_Rotate_Trans = np.matrix(\
             [[1,0,0,-v_a[0]],\
              [0,1,0,-v_a[1]],\
              [0,0,1,-v_a[2]],\
              [0,0,0,1]])
+        ## establish inverse matrix (to save time vs. 'np.inverse(m_Rotate_Trans)')
+        ## to translate points back again at end of process
         m_Rotate_Trans_Inv = np.matrix(\
             [[1,0,0,v_a[0]],\
              [0,1,0,v_a[1]],\
@@ -199,6 +205,7 @@ class mesh:
              [0,0,0,1]])
 
         ## If not the X-axis as indicated by 0 length along Y-axis and Z-axis
+        ## Needed or results in divide by 0 error
         if(f_y**2 + f_z**2):
             sin_X_axis = f_y / np.sqrt(f_y**2+f_z**2)
             cos_X_axis = f_z / np.sqrt(f_y**2+f_z**2)
@@ -207,6 +214,7 @@ class mesh:
             cos_X_axis = float(1.0)
 
         ## If not the Y-axis as indicated by 0 length along X-axis and Z-axis
+        ## Needed or results in divide by 0 error
         if(f_x**2 + f_z**2):
             sin_Y_axis = f_x / np.sqrt(f_x**2+f_z**2)
             cos_Y_axis = f_z / np.sqrt(f_x**2+f_z**2)
@@ -224,28 +232,38 @@ class mesh:
         print(' sin_Z_axis = ' + str(sin_Z_axis))
         print(' cos_Z_axis = ' + str(cos_Z_axis))
 
+        ## Establish matrix for rotating all points about X-axis
+        ## such that vector 'ab' lies in XZ-plane
         m_Rotate_X = np.matrix(\
             [[1,0,0,0],\
              [0,cos_X_axis,-sin_X_axis,0],\
              [0,sin_X_axis,cos_X_axis,0],\
              [0,0,0,1]])
+        ## establish inverse matrix (to save time vs. 'np.inverse(m_Rotate_X_Inv)')
+        ## to rotate points back again at end of process
         m_Rotate_X_Inv = np.matrix(\
             [[1,0,0,0],\
              [0,cos_X_axis,sin_X_axis,0],\
              [0,-sin_X_axis,cos_X_axis,0],\
              [0,0,0,1]])
 
+        ## Establish matrix for rotating all points about Y-axis
+        ## such that vector 'ab' lies along Z-axis
         m_Rotate_Y = np.matrix(\
             [[cos_Y_axis,0,-sin_Y_axis,0],\
              [0,1,0,0],\
              [sin_Y_axis,0,cos_Y_axis,0],\
              [0,0,0,1]])
+        ## establish inverse matrix (to save time vs. 'np.inverse(m_Rotate_Y_Inv)')
+        ## to rotate points back again at end of process
         m_Rotate_Y_Inv = np.matrix(\
             [[cos_Y_axis,0,sin_Y_axis,0],\
              [0,1,0,0],\
              [-sin_Y_axis,0,cos_Y_axis,0],\
              [0,0,0,1]])
 
+        ## Establish matrix for rotating all points about Z-axis
+        ## such that the actual rotation by 'i_degrees' takes place
         m_Rotate_Z = np.matrix(\
             [[cos_Z_axis,-sin_Z_axis,0,0],\
              [sin_Z_axis,cos_Z_axis,0,0],\
@@ -257,9 +275,10 @@ class mesh:
 #             [0,0,1,0],\
 #             [0,0,0,1]])
 
+        ## Combine rotation transformation to be applied to points
         rotationMatrix = m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X
 
-        # Transform vertices into coordinates
+        ## Transform vertices into coordinates
         self.transformed_vertices = rotationMatrix * np.transpose(np.matrix(self.transformed_vertices))
         self.transformed_vertices = np.transpose(self.transformed_vertices)
 
@@ -276,25 +295,32 @@ class mesh:
         print(' v_scale = ' + str(v_scale))
         print(' v_inc_scale = ' + str(v_inc_scale))
 
+        ## Establish matrix for translating all points
+        ## such that point 'a' lies at origin
         m_Scale_Trans = np.matrix(\
             [[1,0,0,-v_center[0]],\
              [0,1,0,-v_center[1]],\
              [0,0,1,-v_center[2]],\
              [0,0,0,1]])
+        ## establish inverse matrix (to save time vs. 'np.inverse(m_Scale_Trans)')
+        ## to translate points back again at end of process
         m_Scale_Trans_Inv = np.matrix(\
             [[1,0,0,v_center[0]],\
              [0,1,0,v_center[1]],\
              [0,0,1,v_center[2]],\
              [0,0,0,1]])
+        ## establish matrix to perform actual scaling
+        ## about origin
         m_Scale_Size = np.matrix(\
             [[v_inc_scale[0],0,0,0],\
              [0,v_inc_scale[1],0,0],\
              [0,0,v_inc_scale[2],0],\
              [0,0,0,1]])
 
+        ## Combine translation transformation to be applied to points
         scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans
 
-        # Transform vertices into coordinates
+        ## Transform vertices into coordinates
         self.transformed_vertices = scaleMatrix * np.transpose(np.matrix(self.transformed_vertices))
         self.transformed_vertices = np.transpose(self.transformed_vertices)
 

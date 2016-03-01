@@ -307,11 +307,12 @@ class cl_pannel_03:
             print ( "called the draw callback!")
 
     def rotate_callback(self,i_iteration):
+        
         if(i_iteration):
             self.mesh.establish_rotation_matrices(self.rotate_steps, self.v_a, self.v_b, self.rotate_degrees)
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-            self.master.ob_canvas_frame.canvas.update()
+            # self.master.ob_canvas_frame.canvas.update()
             self.master.ob_root_window.after(50, self.rotate_callback(i_iteration-1))
         else:
             return
@@ -364,7 +365,7 @@ class cl_pannel_03:
             self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-            self.master.ob_canvas_frame.canvas.update()
+            # self.master.ob_canvas_frame.canvas.update()
             self.master.ob_root_window.after(50, self.scale_callback(i_iteration-1))
         else:
             return
