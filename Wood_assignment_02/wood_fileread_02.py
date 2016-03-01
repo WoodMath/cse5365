@@ -154,11 +154,13 @@ class mesh:
                             [0,0,1,0],\
                             [0,0,0,1]])
         self.tMat=np.matrix([[1,0,0,0],[0,1,0,0],[0,0,0,1]])
-#        self.mMat=self.vMat*self.sMat*self.wMat*self.tMat;
         self.mMat=self.vMat*self.sMat*self.wMat;
         self.vertices=np.matrix(self.vertices)
+
+        ## Do not transfer from 'object space' into 'world space' until
+        ## 'establish_matrices' called from 'load_file' in 'wood_widgets_02.py'
         self.transformed_vertices=copy.copy(self.vertices)
-#        print(self.transformed_vertices)
+
     def establish_coordinates(self,iWidth,iHeight):
         self.tMat = np.matrix([[float(iWidth),0,0,0],[0,float(iHeight),0,0],[0,0,1,0],[0,0,0,1]])
         self.tMat = self.tMat * np.matrix([[1,0,0,0],[0,-1,0,1],[0,0,1,0],[0,0,0,1]])
