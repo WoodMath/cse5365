@@ -9,9 +9,10 @@
 #       http://zetcode.com/gui/tkinter/drawing/
 #       http://effbot.org/tkinterbook/canvas.htm
 
-from numpy import *
+import numpy as np
 from math import *
 from tkinter import *
+from copy import *
 
 class cl_world:
     def __init__(self, mesh, objects=[],canvases=[],polygons=[],borders=[],edges=[]):
@@ -46,43 +47,24 @@ class cl_world:
                                                    int(mesh.box[i+1,0]), int(mesh.box[i+1,1]), \
                                                    fill="black", width=1.0))
 
-        # DRAW Triangles and Quads
+        ## DRAW all faces
         for f in range(0,len(mesh.faces)):
-            ##################################
-            ## if Face containse 3 vertices ##
-            ##################################
-            if(len(mesh.faces[f])==3):
-                ## Index of 3-corners of face
-                i0=mesh.faces[f][0]
-                i1=mesh.faces[f][1]
-                i2=mesh.faces[f][2]
-                ## Get vertex for each index
-                v0=mesh.coordinates[i0,:]
-                v1=mesh.coordinates[i1,:]
-                v2=mesh.coordinates[i2,:]
-                self.polygons.append(canvas.create_polygon(int(v0[0,0]), int(v0[0,1]), \
-                                                            int(v1[0,0]), int(v1[0,1]), \
-                                                            int(v2[0,0]), int(v2[0,1]), \
-                                                            fill='red', width=1.0, outline='black'))
-            ##################################
-            ## if Face containse 4 vertices ##
-            ##################################
-            if(len(mesh.faces[f])==4):
-                ## Index of 3-corners of face
-                i0=mesh.faces[f][0]
-                i1=mesh.faces[f][1]
-                i2=mesh.faces[f][2]
-                i3=mesh.faces[f][3]
-                ## Get vertex for each index
-                v0=mesh.coordinates[i0,:]
-                v1=mesh.coordinates[i1,:]
-                v2=mesh.coordinates[i2,:]
-                v3=mesh.coordinates[i3,:]                
-                self.polygons.append(canvas.create_polygon(int(v0[0,0]), int(v0[0,1]), \
-                                                            int(v1[0,0]), int(v1[0,1]), \
-                                                            int(v2[0,0]), int(v2[0,1]), \
-                                                            int(v3[0,0]), int(v3[0,1]), \
-                                                            fill='red', width=1.0, outline='black'))
+
+            v_polygon=[]
+            i_indices=[]
+
+            ## For each face loop over all indices to build
+            ## [[x0,y0],[x1,y1],[x2,y2],..[xn,yn]] array
+            for i in range(0,len(mesh.faces[f])):
+                i_index= mesh.faces[f][i]
+                i_indices.append(i_index)
+                v_to_add = mesh.coordinates[i_index,:]
+                
+                v_polygon.append(int(v_to_add[0,0]))
+                v_polygon.append(int(v_to_add[0,1]))
+
+            ## DRAW actual faces
+            self.polygons.append(canvas.create_polygon(list(v_polygon), fill='red', width=1.0, outline='black'))
 
 
     def redisplay(self,canvas,event):
@@ -106,47 +88,26 @@ class cl_world:
                     int(mesh.box[i+1,0]), int(mesh.box[i+1,1])\
                 )
 
-        # REPOSITION Triangles and Quads objects
         if self.polygons:
+
+            ## REPOSITION all faces
             for f in range(0,len(mesh.faces)):
-                ##################################
-                ## if Face containse 3 vertices ##
-                ##################################    
-                if(len(mesh.faces[f])==3):
-                    ## Index of 3-corners of face
-                    i0=mesh.faces[f][0]
-                    i1=mesh.faces[f][1]
-                    i2=mesh.faces[f][2]
-                    ## Get vertex for each index
-                    v0=mesh.coordinates[i0,:]
-                    v1=mesh.coordinates[i1,:]
-                    v2=mesh.coordinates[i2,:]
-                    canvas.coords(\
-                        self.polygons[i],\
-                        int(v0[0,0]), int(v0[0,1]), \
-                        int(v1[0,0]), int(v1[0,1]), \
-                        int(v2[0,0]), int(v2[0,1]))
-                ##################################    
-                ## if Face containse 4 vertices ##
-                ##################################                    
-                if(len(mesh.faces[i])==4):
-                    ## Index of 4-corners of face
-                    i0=mesh.faces[f][0]
-                    i1=mesh.faces[f][1]
-                    i2=mesh.faces[f][2]
-                    i3=mesh.faces[f][3]                    
-                    ## Get vertex for each index
-                    v0=mesh.coordinates[i0,:]
-                    v1=mesh.coordinates[i1,:]
-                    v2=mesh.coordinates[i2,:]
-                    v3=mesh.coordinates[i3,:]                    
-                    canvas.coords(\
-                        self.polygons[f],\
-                        int(v0[0,0]), int(v0[0,1]), \
-                        int(v1[0,0]), int(v1[0,1]), \
-                        int(v2[0,0]), int(v2[0,1]), \
-                        int(v3[0,0]), int(v3[0,1]))
-        canvas.update()
-#        canvas.pack()
+
+                v_polygon=[]
+                i_indices=[]
+
+                ## For each face loop over all indices to build
+                ## [[x0,y0],[x1,y1],[x2,y2],..[xn,yn]] array
+                for i in range(0,len(mesh.faces[f])):
+                    i_index= mesh.faces[f][i]
+                    i_indices.append(i_index)
+                    v_to_add = mesh.coordinates[i_index,:]
+
+                    v_polygon.append(v_to_add[0,0])
+                    v_polygon.append(v_to_add[0,1])
+
+                ## REPOSITION actual faces
+                canvas.coords(self.polygons[f], v_polygon)
+            canvas.update()
 
 
