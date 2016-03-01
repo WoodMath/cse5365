@@ -189,11 +189,11 @@ class cl_pannel_03:
         self.rotate_by = Entry(axis_frame, textvariable=self.sRotateBy, width=3).pack(side=LEFT,padx=0, pady=0)
         self.rotate_bz = Entry(axis_frame, textvariable=self.sRotateBz, width=3).pack(side=LEFT,padx=0, pady=0)
 
-        self.sRotateDegrees=StringVar(value='0')
+        self.sRotateDegrees=StringVar(value='90')
         self.rotate_degrees_label = Label(axis_frame, text="Degree:").pack(side=LEFT,padx=0,pady=0)
         self.rotate_degrees_spinbox = Spinbox(axis_frame, from_=-360, to=360, width=3, textvariable=self.sRotateDegrees)
         self.rotate_degrees_spinbox.delete(0,"end")
-        self.rotate_degrees_spinbox.insert(0,"0")
+        self.rotate_degrees_spinbox.insert(0,"90")
         self.rotate_degrees_spinbox.pack(side=LEFT, padx=0, pady=0)
 
         self.sRotateSteps=StringVar(value='1')
