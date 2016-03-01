@@ -47,15 +47,15 @@ class cl_world:
                                                    fill="black", width=1.0))
 
         # DRAW Triangles and Quads
-        for i in range(0,len(mesh.faces)):
+        for f in range(0,len(mesh.faces)):
             ##################################
             ## if Face containse 3 vertices ##
             ##################################
-            if(len(mesh.faces[i])==3):
+            if(len(mesh.faces[f])==3):
                 ## Index of 3-corners of face
-                i0=mesh.faces[i][0]
-                i1=mesh.faces[i][1]
-                i2=mesh.faces[i][2]
+                i0=mesh.faces[f][0]
+                i1=mesh.faces[f][1]
+                i2=mesh.faces[f][2]
                 ## Get vertex for each index
                 v0=mesh.coordinates[i0,:]
                 v1=mesh.coordinates[i1,:]
@@ -67,12 +67,12 @@ class cl_world:
             ##################################
             ## if Face containse 4 vertices ##
             ##################################
-            if(len(mesh.faces[i])==4):
+            if(len(mesh.faces[f])==4):
                 ## Index of 3-corners of face
-                i0=mesh.faces[i][0]
-                i1=mesh.faces[i][1]
-                i2=mesh.faces[i][2]
-                i3=mesh.faces[i][3]
+                i0=mesh.faces[f][0]
+                i1=mesh.faces[f][1]
+                i2=mesh.faces[f][2]
+                i3=mesh.faces[f][3]
                 ## Get vertex for each index
                 v0=mesh.coordinates[i0,:]
                 v1=mesh.coordinates[i1,:]
@@ -108,15 +108,15 @@ class cl_world:
 
         # REPOSITION Triangles and Quads objects
         if self.polygons:
-            for i in range(0,len(mesh.faces)):
+            for f in range(0,len(mesh.faces)):
                 ##################################
                 ## if Face containse 3 vertices ##
                 ##################################    
-                if(len(mesh.faces[i])==3):
+                if(len(mesh.faces[f])==3):
                     ## Index of 3-corners of face
-                    i0=mesh.faces[i][0]
-                    i1=mesh.faces[i][1]
-                    i2=mesh.faces[i][2]
+                    i0=mesh.faces[f][0]
+                    i1=mesh.faces[f][1]
+                    i2=mesh.faces[f][2]
                     ## Get vertex for each index
                     v0=mesh.coordinates[i0,:]
                     v1=mesh.coordinates[i1,:]
@@ -131,17 +131,17 @@ class cl_world:
                 ##################################                    
                 if(len(mesh.faces[i])==4):
                     ## Index of 4-corners of face
-                    i0=mesh.faces[i][0]
-                    i1=mesh.faces[i][1]
-                    i2=mesh.faces[i][2]
-                    i3=mesh.faces[i][3]                    
+                    i0=mesh.faces[f][0]
+                    i1=mesh.faces[f][1]
+                    i2=mesh.faces[f][2]
+                    i3=mesh.faces[f][3]                    
                     ## Get vertex for each index
                     v0=mesh.coordinates[i0,:]
                     v1=mesh.coordinates[i1,:]
                     v2=mesh.coordinates[i2,:]
                     v3=mesh.coordinates[i3,:]                    
                     canvas.coords(\
-                        self.polygons[i],\
+                        self.polygons[f],\
                         int(v0[0,0]), int(v0[0,1]), \
                         int(v1[0,0]), int(v1[0,1]), \
                         int(v2[0,0]), int(v2[0,1]), \
