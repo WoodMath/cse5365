@@ -1,0 +1,34 @@
+                                 Computer Graphics
+                                 Assignment 02
+                                 DUE DATE: Mar. 2, 2016
+
+Purpose:
+
+Practice in
+
+        3-dimensional composite transforms.
+        2-dimensional window to viewport mapping
+
+ 
+Task:
+Add the following commands to Assignment_01.  Your program should be able to read from an input file and display data (same as Assignment_01).
+
+    Rotate around x axis by D degrees in N incremental steps
+    This command rotates all the objects around line x axis by D degrees in N incremental steps. The intermediate results  should be  displayed
+    Rotate around y axis by D degrees in N incremental steps
+    This command rotates all the objects around line y axis by D degrees in N incremental steps. The intermediate results  should be  displayed
+    Rotate around z axis  by D degrees in N incremental steps
+    This command rotates all the objects around line z axis by D degrees in N incremental steps. The intermediate results  should be  displayed
+    Scale Sx, Sy, Sz around point Ax,Ay,Az in  N incremental steps
+    This command scales all the objects around point A(x,y,z)  by Sx, Sy, and Sz in N incremental steps. The intermediate results should be  displayed
+    The maximum number of steps is 10.
+
+ 
+Sample data files:
+
+    Pyramid
+    Cow
+    Teapot
+
+Demo solution of Assignment_02
+  Assignment 02 (Due date Mar. 2, 2016)
