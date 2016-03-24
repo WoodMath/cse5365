@@ -134,11 +134,15 @@ class cl_pannel_03:
         frame = Frame(master.ob_root_window)
         frame.pack()
 
-        self.filename = StringVar()
 
+        #############
+        ## 1st Row ##
+        #############
+        
+        self.filename = StringVar()
         self.file_location_label = Label(frame, text="File Name:").pack(side=LEFT,padx=10,pady=10)
-#        self.file_location_entry = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
-        self.file_location_labe = Label(frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
+        self.file_location_string = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
+#        self.file_location_string = Label(frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
 
         self.file_dialog_button = Button(frame, text="Browse", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
@@ -147,6 +151,11 @@ class cl_pannel_03:
         self.var_filename.set('')
         self.button = Button(frame, text="Load", fg="red", command=self.load_file)
         self.button.pack(side=LEFT)
+
+
+        #############
+        ## 2nd Row ##
+        #############
 
         axis_frame = Frame(master.ob_root_window)
         axis_frame.pack()
@@ -161,6 +170,7 @@ class cl_pannel_03:
 
         self.fDefaultZero = 0.0
         self.fDefaultOne = 1.0
+        self.fDefaultTen = 10.0
         
         self.fRotateAx = self.fDefaultZero
         self.sRotateAx = StringVar(value=str(round(self.fRotateAx,2)))
@@ -206,6 +216,10 @@ class cl_pannel_03:
         self.rotate_button = Button(axis_frame, text="Rotate", fg="green", command=self.rotate)
         self.rotate_button.pack(side=LEFT)                         
 
+        #############
+        ## 3rd Row ##
+        #############
+
         scale_frame = Frame(master.ob_root_window)
         scale_frame.pack()
 
@@ -213,7 +227,7 @@ class cl_pannel_03:
         self.scale_label = Label(scale_frame, text="Scale Ratio:").pack(side=LEFT,padx=0,pady=0)
         self.scale_all = Radiobutton(scale_frame, text="All", variable=self.i_scale_option, value=1).pack(side=LEFT,anchor=W)
 
-        self.sScaleSize=StringVar(value="1.00")
+        self.sScaleSize = StringVar(value="1.00")
         self.scale_size_spinbox = Spinbox(scale_frame, textvariable=self.sScaleSize, values=("0.25","0.50","0.75","1.00","1.25","1.50","1.75","2.00","2.25","2.50","2.75","3.00","3.25","3.50","3.75","4.00"), width=4)
         self.scale_size_spinbox.delete(0,"end")
         self.scale_size_spinbox.insert(0,"1.00")
@@ -245,7 +259,7 @@ class cl_pannel_03:
         self.scale_ay = Entry(scale_frame, textvariable=self.sScaleAy, width=3).pack(side=LEFT,padx=0, pady=0)
         self.scale_az = Entry(scale_frame, textvariable=self.sScaleAz, width=3).pack(side=LEFT,padx=0, pady=0)
 
-        self.sScaleSteps=StringVar(value='1')
+        self.sScaleSteps = StringVar(value='1')
         self.scale_steps_label = Label(scale_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
         self.scale_steps_spinbox = Spinbox(scale_frame, from_=0, to=10, width=3, textvariable=self.sScaleSteps)
         self.scale_steps_spinbox.delete(0,"end")
@@ -255,14 +269,77 @@ class cl_pannel_03:
         self.scale_button = Button(scale_frame, text="Scale", fg="green", command=self.scale)
         self.scale_button.pack(side=LEFT)
 
-#        disc_frame_one = Frame(master.ob_root_window)
-#        disc_frame_one.pack()
-#        self.disc_label_one = Label(disc_frame_one, text="NOTE: Transformations are cumulative").pack(side=LEFT,padx=0,pady=0)
+        #############
+        ## 4th Row ##
+        #############
 
-#        disc_frame_two = Frame(master.ob_root_window)
-#        disc_frame_two.pack()
-#        self.disc_label_two = Label(disc_frame_two, text="Click 'Draw' to reset transformation stack.").pack(side=LEFT,padx=0,pady=0)
+        trans_frame = Frame(master.ob_root_window)
+        trans_frame.pack()
 
+        self.fTransTx = self.fDefaultTen
+        self.sTransTx = StringVar(value=str(round(self.fTransTx,2)))
+        self.fTransTy = self.fDefaultTen
+        self.sTransTy = StringVar(value=str(round(self.fTransTy,2)))
+        self.fTransTz = self.fDefaultTen
+        self.sTransTz = StringVar(value=str(round(self.fTransTz,2)))
+
+        self.trans_label = Label(trans_frame, text="Translation ([dx,dy,dz]):").pack(side=LEFT,padx=0,pady=0)
+
+        self.trans_tx = Entry(trans_frame, textvariable=self.sTransTx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.trans_ty = Entry(trans_frame, textvariable=self.sTransTy, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.trans_tz = Entry(trans_frame, textvariable=self.sTransTz, width=3).pack(side=LEFT,padx=0, pady=0)
+
+        self.sTransSteps = StringVar(value='1')
+        self.trans_steps_label = Label(trans_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
+        self.trans_steps_spinbox = Spinbox(trans_frame, from_=0, to=10, width=3, textvariable=self.sTransSteps)
+        self.trans_steps_spinbox.delete(0,"end")
+        self.trans_steps_spinbox.insert(0,"1")
+        self.trans_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
+
+        self.trans_button = Button(trans_frame, text="Translate", fg="green", command=self.rotate)
+        self.trans_button.pack(side=LEFT)                         
+
+        #############
+        ## 4th Row ##
+        #############
+
+        vrp_frame = Frame(master.ob_root_window)
+        vrp_frame.pack()
+
+        self.fVRP1x = self.fDefaultZero
+        self.sVRP1x = StringVar(value=str(round(self.fVRP1x,2)))
+        self.fVRP1y = self.fDefaultZero
+        self.sVRP1y = StringVar(value=str(round(self.fVRP1y,2)))
+        self.fVRP1z = self.fDefaultZero
+        self.sVRP1z = StringVar(value=str(round(self.fVRP1z,2)))
+        
+        self.vrp_one_label = Label(vrp_frame, text="VRP 1([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
+        self.vrp_1x = Entry(vrp_frame, textvariable=self.sVRP1x, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_1y = Entry(vrp_frame, textvariable=self.sVRP1y, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_1z = Entry(vrp_frame, textvariable=self.sVRP1x, width=3).pack(side=LEFT,padx=0, pady=0)
+
+        self.fVRP2x = self.fDefaultOne
+        self.sVRP2x = StringVar(value=str(round(self.fVRP2x,2)))
+        self.fVRP2y = self.fDefaultOne
+        self.sVRP2y = StringVar(value=str(round(self.fVRP2y,2)))
+        self.fVRP2z = self.fDefaultOne
+        self.sVRP2z = StringVar(value=str(round(self.fVRP2z,2)))
+        
+        self.vrp_two_label = Label(vrp_frame, text="VRP 2([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
+        self.vrp_2x = Entry(vrp_frame, textvariable=self.sVRP2x, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_2y = Entry(vrp_frame, textvariable=self.sVRP2y, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_2z = Entry(vrp_frame, textvariable=self.sVRP2x, width=3).pack(side=LEFT,padx=0, pady=0)
+        
+        self.sFlySteps = StringVar(value='1')
+        self.fly_steps_label = Label(vrp_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
+        self.fly_steps_spinbox = Spinbox(vrp_frame, from_=0, to=10, width=3, textvariable=self.sFlySteps)
+        self.fly_steps_spinbox.delete(0,"end")
+        self.fly_steps_spinbox.insert(0,"1")
+        self.fly_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
+
+        self.fly_button = Button(vrp_frame, text="Fly", fg="green", command=self.fly)
+        self.fly_button.pack(side=LEFT)                         
+        
         disc_frame_thr = Frame(master.ob_root_window)
         disc_frame_thr.pack()
         self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load' to reset transformation stack.")
@@ -420,7 +497,106 @@ class cl_pannel_03:
         # Iterative callback used for animation and redisplay
         self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
             
+    def translate_callback(self,i_iteration):
+        if(i_iteration):
+            print(' self.scale_steps = ' + str(self.scale_steps))
+            self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
+            # Call redisplay() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            # self.master.ob_canvas_frame.canvas.update()
+            self.master.ob_root_window.after(50, self.scale_callback(i_iteration-1))
+        else:
+            return
 
+    def translate(self):
+        print(' scale button clicked ')
+
+        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
+            return
+        
+        self.scale_option = self.i_scale_option.get()
+
+        self.fScaleSy = float(self.sScaleSy.get())
+        self.fScaleSz = float(self.sScaleSz.get())
+
+        self.fScaleAx = float(self.sScaleAx.get())
+        self.fScaleAy = float(self.sScaleAy.get())
+        self.fScaleAz = float(self.sScaleAz.get())
+
+        self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
+        self.scale_size = [1.0,1.0,1.0]
+
+        # If uniform scale selected assign same scale to all array elements
+        if(self.scale_option==1):
+            self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
+        # Else assign differing scale to array based on dimension
+        else:
+            self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
+
+        self.scale_steps = int(self.sScaleSteps.get())
+        if(self.scale_steps<1):
+            self.scale_steps=1
+            
+        print(' self.scale_option = ' + str(self.scale_option))
+        print(' self.scale_uniform_size = ' + str(self.scale_uniform_size))
+        print(' self.scale_size = ' + str(self.scale_size))
+        print(' self.scale_center = ' + str(self.scale_center))
+        print(' self.scale_steps = ' + str(self.scale_steps))
+
+        # Iterative callback used for animation and redisplay
+        self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
+
+    def fly_callback(self,i_iteration):
+        if(i_iteration):
+            print(' self.scale_steps = ' + str(self.scale_steps))
+            self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
+            # Call redisplay() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            # self.master.ob_canvas_frame.canvas.update()
+            self.master.ob_root_window.after(50, self.scale_callback(i_iteration-1))
+        else:
+            return
+
+    def fly(self):
+        print(' fly button clicked ')
+
+        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
+            return
+        
+        self.scale_option = self.i_scale_option.get()
+
+        self.scale_uniform_size = float(self.sScaleSize.get())
+
+        self.fScaleSx = float(self.sScaleSx.get())
+        self.fScaleSy = float(self.sScaleSy.get())
+        self.fScaleSz = float(self.sScaleSz.get())
+
+        self.fScaleAx = float(self.sScaleAx.get())
+        self.fScaleAy = float(self.sScaleAy.get())
+        self.fScaleAz = float(self.sScaleAz.get())
+
+        self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
+        self.scale_size = [1.0,1.0,1.0]
+
+        # If uniform scale selected assign same scale to all array elements
+        if(self.scale_option==1):
+            self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
+        # Else assign differing scale to array based on dimension
+        else:
+            self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
+
+        self.scale_steps = int(self.sScaleSteps.get())
+        if(self.scale_steps<1):
+            self.scale_steps=1
+            
+        print(' self.scale_option = ' + str(self.scale_option))
+        print(' self.scale_uniform_size = ' + str(self.scale_uniform_size))
+        print(' self.scale_size = ' + str(self.scale_size))
+        print(' self.scale_center = ' + str(self.scale_center))
+        print(' self.scale_steps = ' + str(self.scale_steps))
+
+        # Iterative callback used for animation and redisplay
+        self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
 
 class MyDialog(simpledialog.Dialog):
     def body(self, master):
