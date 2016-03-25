@@ -1,7 +1,7 @@
 # Wood, Jeff
 # 100-103-5461
-# 2016-03-02
-# Assignment_02
+# 2016-04-08
+# Assignment_03
 
 from tkinter import *
 from math import *
@@ -15,7 +15,7 @@ import time
 class cl_widgets:
     def __init__(self,ob_root_window,ob_world=[],ob_mesh=mesh()):
         self.ob_root_window=ob_root_window
-        ob_root_window.title("Wood_Assignment_02")
+        ob_root_window.title("Wood_Assignment_03")
         self.ob_world=ob_world
         self.mesh=ob_mesh
         self.pannel_03 = cl_pannel_03(self,ob_root_window,ob_mesh)
@@ -119,7 +119,7 @@ class cl_canvas_frame:
         print ('canvas width', self.canvas.cget("width"))
         print ('canvas height', self.canvas.cget("height"))
 
-        # Call redisplay() method in 'wood_graphics_02.py'
+        # Call redisplay() method in 'wood_graphics_03.py'
         self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
 
 class cl_pannel_03:
@@ -296,7 +296,7 @@ class cl_pannel_03:
         self.trans_steps_spinbox.insert(0,"1")
         self.trans_steps_spinbox.pack(side=LEFT, padx=0, pady=0)
 
-        self.trans_button = Button(trans_frame, text="Translate", fg="green", command=self.rotate)
+        self.trans_button = Button(trans_frame, text="Translate", fg="green", command=self.translate)
         self.trans_button.pack(side=LEFT)                         
 
         #############
@@ -306,29 +306,29 @@ class cl_pannel_03:
         vrp_frame = Frame(master.ob_root_window)
         vrp_frame.pack()
 
-        self.fVRP1x = self.fDefaultZero
-        self.sVRP1x = StringVar(value=str(round(self.fVRP1x,2)))
-        self.fVRP1y = self.fDefaultZero
-        self.sVRP1y = StringVar(value=str(round(self.fVRP1y,2)))
-        self.fVRP1z = self.fDefaultZero
-        self.sVRP1z = StringVar(value=str(round(self.fVRP1z,2)))
+        self.fVRPAx = self.fDefaultZero
+        self.sVRPAx = StringVar(value=str(round(self.fVRPAx,2)))
+        self.fVRPAy = self.fDefaultZero
+        self.sVRPAy = StringVar(value=str(round(self.fVRPAy,2)))
+        self.fVRPAz = self.fDefaultZero
+        self.sVRPAz = StringVar(value=str(round(self.fVRPAz,2)))
         
-        self.vrp_one_label = Label(vrp_frame, text="VRP 1([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
-        self.vrp_1x = Entry(vrp_frame, textvariable=self.sVRP1x, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_1y = Entry(vrp_frame, textvariable=self.sVRP1y, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_1z = Entry(vrp_frame, textvariable=self.sVRP1x, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_a_label = Label(vrp_frame, text="VRP A([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
+        self.vrp_ax = Entry(vrp_frame, textvariable=self.sVRPAx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_ay = Entry(vrp_frame, textvariable=self.sVRPAy, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_az = Entry(vrp_frame, textvariable=self.sVRPAx, width=3).pack(side=LEFT,padx=0, pady=0)
 
-        self.fVRP2x = self.fDefaultOne
-        self.sVRP2x = StringVar(value=str(round(self.fVRP2x,2)))
-        self.fVRP2y = self.fDefaultOne
-        self.sVRP2y = StringVar(value=str(round(self.fVRP2y,2)))
-        self.fVRP2z = self.fDefaultOne
-        self.sVRP2z = StringVar(value=str(round(self.fVRP2z,2)))
+        self.fVRPBx = self.fDefaultOne
+        self.sVRPBx = StringVar(value=str(round(self.fVRPBx,2)))
+        self.fVRPBy = self.fDefaultOne
+        self.sVRPBy = StringVar(value=str(round(self.fVRPBy,2)))
+        self.fVRPBz = self.fDefaultOne
+        self.sVRPBz = StringVar(value=str(round(self.fVRPBz,2)))
         
-        self.vrp_two_label = Label(vrp_frame, text="VRP 2([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
-        self.vrp_2x = Entry(vrp_frame, textvariable=self.sVRP2x, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_2y = Entry(vrp_frame, textvariable=self.sVRP2y, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_2z = Entry(vrp_frame, textvariable=self.sVRP2x, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_b_label = Label(vrp_frame, text="VRP B([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
+        self.vrp_bx = Entry(vrp_frame, textvariable=self.sVRPBx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_by = Entry(vrp_frame, textvariable=self.sVRPBy, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_bz = Entry(vrp_frame, textvariable=self.sVRPBx, width=3).pack(side=LEFT,padx=0, pady=0)
         
         self.sFlySteps = StringVar(value='1')
         self.fly_steps_label = Label(vrp_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
@@ -359,7 +359,6 @@ class cl_pannel_03:
         if(len(self.mesh.filename)):
             self.mesh.set_file(self.mesh.filename)
             self.mesh.load()
-            
 
     def load_file(self):
         if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
@@ -369,10 +368,12 @@ class cl_pannel_03:
             # Calculate non-canvas size matrix transformations
             self.mesh.establish_matrices()
             print('window:')
-            print(' wxmin = ' + str(self.mesh.wx[0]))
-            print(' wxmax = ' + str(self.mesh.wx[1]))        
-            print(' wymin = ' + str(self.mesh.wy[0]))
-            print(' wymax = ' + str(self.mesh.wy[1]))        
+            print(' wumin = ' + str(self.mesh.wu[0]))
+            print(' wumax = ' + str(self.mesh.wu[1]))        
+            print(' wvmin = ' + str(self.mesh.wv[0]))
+            print(' wvmax = ' + str(self.mesh.wv[1]))        
+            print(' wnmin = ' + str(self.mesh.wn[0]))
+            print(' wnmax = ' + str(self.mesh.wn[1]))        
             print(' ')
             print('viewport:')
             print(' vxmin = ' + str(self.mesh.vx[0]))
@@ -499,61 +500,45 @@ class cl_pannel_03:
             
     def translate_callback(self,i_iteration):
         if(i_iteration):
-            print(' self.scale_steps = ' + str(self.scale_steps))
-            self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
+            print(' self.translate_steps = ' + str(self.translate_steps))
+            self.mesh.establish_translation_matrices(self.translate_steps, self.translate_units) 
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
             # self.master.ob_canvas_frame.canvas.update()
-            self.master.ob_root_window.after(50, self.scale_callback(i_iteration-1))
+            self.master.ob_root_window.after(50, self.translate_callback(i_iteration-1))
         else:
             return
 
     def translate(self):
-        print(' scale button clicked ')
+        print(' translate button clicked ')
 
         if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
             return
         
-        self.scale_option = self.i_scale_option.get()
+        self.fTransTx = float(self.sTransTx.get())
+        self.fTransTy = float(self.sTransTy.get())
+        self.fTransTz = float(self.sTransTz.get())
 
-        self.fScaleSy = float(self.sScaleSy.get())
-        self.fScaleSz = float(self.sScaleSz.get())
+        self.translate_units = [self.fTransTx, self.fTransTy, self.fTransTz]
 
-        self.fScaleAx = float(self.sScaleAx.get())
-        self.fScaleAy = float(self.sScaleAy.get())
-        self.fScaleAz = float(self.sScaleAz.get())
-
-        self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
-        self.scale_size = [1.0,1.0,1.0]
-
-        # If uniform scale selected assign same scale to all array elements
-        if(self.scale_option==1):
-            self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
-        # Else assign differing scale to array based on dimension
-        else:
-            self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
-
-        self.scale_steps = int(self.sScaleSteps.get())
-        if(self.scale_steps<1):
-            self.scale_steps=1
+        self.translate_steps = int(self.sTransSteps.get())
+        if(self.translate_steps<1):
+            self.translate_steps=1
             
-        print(' self.scale_option = ' + str(self.scale_option))
-        print(' self.scale_uniform_size = ' + str(self.scale_uniform_size))
-        print(' self.scale_size = ' + str(self.scale_size))
-        print(' self.scale_center = ' + str(self.scale_center))
-        print(' self.scale_steps = ' + str(self.scale_steps))
+        print(' self.translate_units = ' + str(self.translate_units))
+        print(' self.translate_steps = ' + str(self.translate_steps))
 
         # Iterative callback used for animation and redisplay
-        self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
+        self.master.ob_root_window.after(0, self.translate_callback(self.translate_steps))
 
     def fly_callback(self,i_iteration):
         if(i_iteration):
-            print(' self.scale_steps = ' + str(self.scale_steps))
+            print(' self.fly_steps = ' + str(self.fly_steps))
             self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
             # self.master.ob_canvas_frame.canvas.update()
-            self.master.ob_root_window.after(50, self.scale_callback(i_iteration-1))
+            self.master.ob_root_window.after(50, self.fly_callback(i_iteration-1))
         else:
             return
 
@@ -567,13 +552,13 @@ class cl_pannel_03:
 
         self.scale_uniform_size = float(self.sScaleSize.get())
 
-        self.fScaleSx = float(self.sScaleSx.get())
-        self.fScaleSy = float(self.sScaleSy.get())
-        self.fScaleSz = float(self.sScaleSz.get())
+        self.fVRPAx = float(self.sVRPAx.get())
+        self.fVRPAy = float(self.sVRPAy.get())
+        self.fVRPAz = float(self.sVRPAz.get())
 
-        self.fScaleAx = float(self.sScaleAx.get())
-        self.fScaleAy = float(self.sScaleAy.get())
-        self.fScaleAz = float(self.sScaleAz.get())
+        self.fVRPBx = float(self.sVRPBx.get())
+        self.fVRPBy = float(self.sVRPBy.get())
+        self.fVRPBz = float(self.sVRPBz.get())
 
         self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
         self.scale_size = [1.0,1.0,1.0]

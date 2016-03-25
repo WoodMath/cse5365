@@ -1,7 +1,8 @@
 # Wood, Jeff
 # 100-103-5461
-# 2016-03-02
-# Assignment_02
+# 2016-04-08
+# Assignment_03
+
 #!/~/anaconda3/bin/python3.5
 
 #   From:
@@ -62,8 +63,9 @@ class mesh:
         self.transformed_vertices=[]
         self.stack=np.matrix([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,0.0],[0.0,0.0,0.0,1.0]])
         self.faces=[]
-        self.wx=[]
-        self.wy=[]
+        self.wu=[]
+        self.wv=[]
+        self.wn=[]
         self.vx=[]
         self.vy=[]
         self.filename=[]
@@ -80,13 +82,19 @@ class mesh:
         self.box=[]
         self.step=0
         self.steps=0
+        self.vrp=None
+        self.vpn=None
+        self.vup=None
+        self.prp=None
+
     def set_file(self,filename):
         self.vertices=[]
         self.transformed_vertices=[]
         self.stack=np.matrix([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,0.0],[0.0,0.0,0.0,1.0]])
         self.faces=[]
-        self.wx=[]
-        self.wy=[]
+        self.wu=[]
+        self.wv=[]
+        self.wn=[]        
         self.vx=[]
         self.vy=[]
         self.filename=filename
@@ -103,13 +111,19 @@ class mesh:
         self.box=[]
         self.step=0
         self.steps=0
+        self.vrp=None
+        self.vpn=None
+        self.vup=None
+        self.prp=None
+
     def add_vertex(self,vertex):
         self.vertices.append(vertex)
     def add_face(self,face):
         self.faces.append(face)
     def add_window(self,window):
-        self.wx=[window[0],window[2]]
-        self.wy=[window[1],window[3]]
+        self.wu=[window[0],window[1]]
+        self.wv=[window[2],window[3]]
+        self.wn=[window[4],window[5]]        
     def add_viewport(self,viewport):
         self.vx=[viewport[0],viewport[2]]
         self.vy=[viewport[1],viewport[3]]
@@ -118,6 +132,14 @@ class mesh:
         self.bounding.append([viewport[2],viewport[3],0.0,1.0])
         self.bounding.append([viewport[0],viewport[3],0.0,1.0])
         self.bounding.append([viewport[0],viewport[1],0.0,1.0])
+    def add_vrp(self,prp):
+        self.vrp = np.array(prp)
+    def add_vpn(self,vpn):
+        self.vpn = np.array(vpn)
+    def add_vup(self,vup):
+        self.vup = np.array(vup)
+    def add_prp(self,prp):
+        self.prp = np.array(prp)
 
     def load(self):
         with open(self.filename) as openfileobject:
@@ -139,18 +161,31 @@ class mesh:
                     if(line_type=='s'):
                         line_parsed=vect_float(line_parsed[:])
                         self.add_viewport(line_parsed)
+                    if(line_type=='r'):
+                        line_parsed=vect_int(line_parsed[:])
+                        self.add_vrp(line_parsed)
+                    if(line_type=='n'):
+                        line_parsed=vect_int(line_parsed[:])
+                        self.add_vpn(line_parsed)
+                    if(line_type=='u'):
+                        line_parsed=vect_int(line_parsed[:])
+                        self.add_vup(line_parsed)
+                    if(line_type=='p'):
+                        line_parsed=vect_int(line_parsed[:])
+                        self.add_prp(line_parsed)
+                        
     def establish_matrices(self):
         print(' Establishing matrices ')
         self.vMat=np.matrix([[1,0,0,self.vx[0]],\
                             [0,1,0,self.vy[0]],\
                             [0,0,1,0],\
                             [0,0,0,1]])
-        self.sMat=np.matrix([[(self.vx[1]-self.vx[0])/(self.wx[1]-self.wx[0]),0,0,0],\
-                            [0,(self.vy[1]-self.vy[0])/(self.wy[1]-self.wy[0]),0,0],\
+        self.sMat=np.matrix([[(self.vx[1]-self.vx[0])/(self.wu[1]-self.wu[0]),0,0,0],\
+                            [0,(self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0]),0,0],\
                             [0,0,1,0],\
                             [0,0,0,1]])
-        self.wMat=np.matrix([[1,0,0,-self.wx[0]],\
-                            [0,1,0,-self.wy[0]],\
+        self.wMat=np.matrix([[1,0,0,-self.wu[0]],\
+                            [0,1,0,-self.wv[0]],\
                             [0,0,1,0],\
                             [0,0,0,1]])
         self.tMat=np.matrix([[1,0,0,0],[0,1,0,0],[0,0,0,1]])
@@ -326,6 +361,33 @@ class mesh:
         self.transformed_vertices = scaleMatrix * np.transpose(np.matrix(self.transformed_vertices))
         self.transformed_vertices = np.transpose(self.transformed_vertices)
 
+
+    def establish_translation_matrices(self, i_steps, v_trans):
+        print(' Establishing translation matrices ')
+
+        f_steps = float(i_steps)
+
+        v_inc_trans = [1.0,1.0,1.0]
+        v_inc_trans[0] = v_trans[0]/f_steps
+        v_inc_trans[1] = v_trans[1]/f_steps
+        v_inc_trans[2] = v_trans[2]/f_steps
+        print(' f_steps = ' + str(f_steps))
+        print(' v_trans = ' + str(v_trans))
+        print(' v_inc_trans = ' + str(v_inc_trans))
+
+        ## Establish matrix for translating all points
+        m_Trans = np.matrix(\
+            [[1,0,0,v_inc_trans[0]],\
+             [0,1,0,v_inc_trans[1]],\
+             [0,0,1,v_inc_trans[2]],\
+             [0,0,0,1]])
+
+        ## Rename translation matrix for consistancy
+        transMatrix = m_Trans
+
+        ## Transform vertices into coordinates
+        self.transformed_vertices = transMatrix * np.transpose(np.matrix(self.transformed_vertices))
+        self.transformed_vertices = np.transpose(self.transformed_vertices)
 
 ## Code used to test functionality
 #m=mesh()

@@ -1,7 +1,7 @@
 # Wood, Jeff
 # 100-103-5461
-# 2016-03-02
-# Assignment_02
+# 2016-04-08
+# Assignment_03
 
 #   From:
 #       http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/create_polygon.html
