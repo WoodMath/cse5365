@@ -509,6 +509,9 @@ class mesh:
 
         ##################################
 
+        ## Combine matrices
+        self.originMatrix = self.step1Matrix
+        self.viewMatrix = self.step6Matrix * self.step5Matrix * self.step4Matrix * self.step3Matrix * self.step2Matrix
         
         vMat=np.matrix(\
             [[1,0,0,self.vx[0]],\
@@ -528,6 +531,7 @@ class mesh:
         tMat=np.matrix(\
             [[1,0,0,0],\
              [0,1,0,0],\
+             [0,0,1,0],\
              [0,0,0,1]])
         self.world2viewMatrix = vMat * sMat * wMat;
         self.vertices=np.matrix(self.vertices)
