@@ -584,7 +584,6 @@ class mesh:
         # Transform viewport box
         self.box = self.view2screenMatrix * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
-
         
     def establish_rotation_matrices(self, i_steps, v_a, v_b, i_degree):
         # Establish the rotation matrices
@@ -722,10 +721,6 @@ class mesh:
         ## Combine rotation transformation to be applied to points
         self.rotationMatrix = m_Rotate_Trans_Inv * m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X * m_Rotate_Trans
 
-        ## Transform vertices into coordinates
-#        self.transformed_vertices = self.rotationMatrix * np.transpose(np.matrix(self.transformed_vertices))
-#        self.transformed_vertices = np.transpose(self.transformed_vertices)
-
     def establish_scale_matrices(self, i_steps, v_scale, v_center):
         print(' Establishing scale matrices ')
 
@@ -764,11 +759,6 @@ class mesh:
         ## Combine translation transformation to be applied to points
         self.scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans
 
-        ## Transform vertices into coordinates
-#        self.transformed_vertices = self.scaleMatrix * np.transpose(np.matrix(self.transformed_vertices))
-#        self.transformed_vertices = np.transpose(self.transformed_vertices)
-
-
     def establish_translation_matrices(self, i_steps, v_trans):
         print(' Establishing translation matrices ')
 
@@ -791,10 +781,6 @@ class mesh:
 
         ## Rename translation matrix for consistancy
         self.translationMatrix = m_Trans
-
-        ## Transform vertices into coordinates
-#        self.transformed_vertices = self.transMatrix * np.transpose(np.matrix(self.transformed_vertices))
-#        self.transformed_vertices = np.transpose(self.transformed_vertices)
 
 ## Code used to test functionality
 #m=mesh()

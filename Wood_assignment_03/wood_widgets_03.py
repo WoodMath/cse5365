@@ -134,9 +134,6 @@ class cl_pannel_03:
         self.mesh = ob_mesh
         self.world = ob_world
 
-
-
-
         file_frame = Frame(master.ob_root_window)
         file_frame.pack()
 
@@ -147,10 +144,9 @@ class cl_pannel_03:
         
         self.filename = StringVar()
         self.file_location_label = Label(file_frame, text="File Name:").pack(side=LEFT,padx=10,pady=10)
-
-        self.file_location_string = Entry(file_frame, text="File Name:", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
-#        self.file_location_string = Label(file_frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
-
+#        self.file_location_string = Entry(file_frame, text="File Name:", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
+        self.file_location_string = Label(file_frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
+        
         self.file_dialog_button = Button(file_frame, text="Browse", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
 
