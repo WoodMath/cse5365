@@ -369,7 +369,7 @@ class cl_pannel_03:
         else:
             
             # Calculate non-canvas size matrix transformations
-            self.mesh.establish_matrices()
+            self.mesh.establish_view_matrix()
             print('window:')
             print(' wumin = ' + str(self.mesh.wu[0]))
             print(' wumax = ' + str(self.mesh.wu[1]))        
@@ -446,9 +446,9 @@ class cl_pannel_03:
         print(' self.rotation_steps = ' + str(self.rotation_steps))
 
         # Iterative for animation and redisplay
-        self.mesh.establish_rotation_matrices(self.rotation_steps, self.v_a, self.v_b, self.rotation_degrees) 
+        self.mesh.establish_rotation_matrix(self.rotation_steps, self.v_a, self.v_b, self.rotation_degrees) 
         
-        print(" self.mesh.translationMatrix = ",end='')
+        print(" self.mesh.translationMatrix = ")
         print(self.mesh.rotationMatrix)
         
         for i_inc in range(self.rotation_steps):
@@ -498,9 +498,9 @@ class cl_pannel_03:
         print(' self.scale_steps = ' + str(self.scale_steps))
 
         # Iterative for animation and redisplay
-        self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
+        self.mesh.establish_scale_matrix(self.scale_steps, self.scale_size, self.scale_center)
         
-        print(" self.mesh.scaleMatrix = ",end='')
+        print(" self.mesh.scaleMatrix = ")
         print(self.mesh.scaleMatrix)
         
         for i_inc in range(self.scale_steps):
@@ -531,9 +531,9 @@ class cl_pannel_03:
         print(' self.translation_steps = ' + str(self.translation_steps))
 
         # Iterative for animation and redisplay
-        self.mesh.establish_translation_matrices(self.translation_steps, self.translation_units) 
+        self.mesh.establish_translation_matrix(self.translation_steps, self.translation_units) 
         
-        print(" self.mesh.translationMatrix = ",end='')
+        print(" self.mesh.translationMatrix = ")
         print(self.mesh.translationMatrix)
         
         for i_inc in range(self.translation_steps):

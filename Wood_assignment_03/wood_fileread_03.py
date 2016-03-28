@@ -316,6 +316,8 @@ class mesh:
         self.wn=[]
         self.vx=[]
         self.vy=[]
+        self.sx=[]
+        self.sy=[]
         self.filename=[]
         self.coordinates=[]
         self.world2viewMatrix=[]
@@ -349,9 +351,11 @@ class mesh:
         self.faces=[]
         self.wu=[]
         self.wv=[]
-        self.wn=[]        
+        self.wn=[]
         self.vx=[]
         self.vy=[]
+        self.sx=[]
+        self.sy=[]
         self.filename=filename
         self.coordinates=[]
         self.world2viewMatrix=[]
@@ -440,9 +444,35 @@ class mesh:
                     if(line_type=='p'):
                         line_parsed=vect_int(line_parsed[:])
                         self.add_prp(line_parsed)
-                        
-    def establish_matrices(self):
-        print(' Establishing matrices ')
+
+        self.sx = (self.vx[1]-self.vx[0])/(self.wu[1]-self.wu[0])
+        self.sy = (self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0])
+
+    def establish_coordinates(self,iWidth,iHeight):
+
+        self.view2screenMatrix = np.matrix(\
+            [[float(iWidth),0,0,0],\
+             [0,float(iHeight),0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+
+#        self.view2screenMatrix  = self.view2screenMatrix * np.matrix(\
+#            [[ 1, 0, 0, 0],\
+#             [ 0,-1, 0, 1],\
+#             [ 0, 0, 1, 0],\
+#             [ 0, 0, 0, 1]])
+
+        print(' Establishing coordinates ')
+        # Transform vertices into coordinates
+        self.coordinates = self.view2screenMatrix * self.world2viewMatrix * self.stackMatrix * np.transpose(np.matrix(self.transformed_vertices))
+        self.coordinates = np.transpose(self.coordinates)
+
+        # Transform viewport box
+        self.box = self.view2screenMatrix * np.transpose(np.matrix(self.bounding))
+        self.box = np.transpose(self.box)
+        
+    def establish_view_matrix(self):
+        print(' Establishing view matrix ')
 
         tObj = viewTransform()
 
@@ -535,10 +565,10 @@ class mesh:
         ## Combine matrices
         self.originMatrix = self.step1Matrix
         self.viewMatrix = self.step6Matrix * self.step5Matrix * self.step4Matrix * self.step3Matrix * self.step2Matrix
-        
-        vMat=np.matrix(\
-            [[1,0,0,self.vx[0]],\
-             [0,1,0,self.vy[0]],\
+
+        wMat=np.matrix(\
+            [[1,0,0,-self.wu[0]],\
+             [0,1,0,-self.wv[0]],\
              [0,0,1,0],\
              [0,0,0,1]])
         sMat=np.matrix(\
@@ -546,9 +576,9 @@ class mesh:
              [0,(self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0]),0,0],\
              [0,0,1,0],\
              [0,0,0,1]])
-        wMat=np.matrix(\
-            [[1,0,0,-self.wu[0]],\
-             [0,1,0,-self.wv[0]],\
+        vMat=np.matrix(\
+            [[1,0,0,self.vx[0]],\
+             [0,1,0,self.vy[0]],\
              [0,0,1,0],\
              [0,0,0,1]])
         tMat=np.matrix(\
@@ -558,37 +588,41 @@ class mesh:
              [0,0,0,1]])
         
         self.world2viewMatrix = vMat * sMat * wMat;
+
+        wMat=np.matrix(\
+            [[1,0,0,-self.wu[0]],\
+             [0,-1,0,self.wv[1]],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        sMat=np.matrix(\
+            [[self.sx,0,0,0],\
+             [0,self.sy,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        vMat=np.matrix(\
+            [[1,0,0,self.vx[0]],\
+             [0,1,0,self.vy[0]],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        tMat=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+
+        self.world2viewMatrix = vMat * sMat * wMat;
+
+
         self.vertices=np.matrix(self.vertices)
 
         ## Do not transfer from 'object space' into 'world space' until
-        ## 'establish_matrices' called from 'load_file' in 'wood_widgets_03.py'
+        ## 'establish_view_matrix' called from 'load_file' in 'wood_widgets_03.py'
         self.transformed_vertices = copy.copy(self.vertices)
-
-    def establish_coordinates(self,iWidth,iHeight):
-        self.view2screenMatrix = np.matrix(\
-            [[float(iWidth),0,0,0],\
-             [0,float(iHeight),0,0],\
-             [0,0,1,0],\
-             [0,0,0,1]])
-        self.view2screenMatrix  = self.view2screenMatrix * np.matrix(\
-            [[ 1, 0, 0, 0],\
-             [ 0,-1, 0, 1],\
-             [ 0, 0, 1, 0],\
-             [ 0, 0, 0, 1]])
-
-        print(' Establishing coordinates ')
-        # Transform vertices into coordinates
-        self.coordinates = self.view2screenMatrix * self.world2viewMatrix * self.stackMatrix * np.transpose(np.matrix(self.transformed_vertices))
-        self.coordinates = np.transpose(self.coordinates)
-
-        # Transform viewport box
-        self.box = self.view2screenMatrix * np.transpose(np.matrix(self.bounding))
-        self.box = np.transpose(self.box)
         
-    def establish_rotation_matrices(self, i_steps, v_a, v_b, i_degree):
-        # Establish the rotation matrices
+    def establish_rotation_matrix(self, i_steps, v_a, v_b, i_degree):
+        # Establish the rotation matrix
         
-        print(' Establishing rotation matrices ')
+        print(' Establishing rotation matrix ')
         v_a = np.array(v_a)
         v_b = np.array(v_b)
         v_ab = v_b-v_a
@@ -721,8 +755,8 @@ class mesh:
         ## Combine rotation transformation to be applied to points
         self.rotationMatrix = m_Rotate_Trans_Inv * m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X * m_Rotate_Trans
 
-    def establish_scale_matrices(self, i_steps, v_scale, v_center):
-        print(' Establishing scale matrices ')
+    def establish_scale_matrix(self, i_steps, v_scale, v_center):
+        print(' Establishing scale matrix ')
 
         f_steps = float(i_steps)
 
@@ -759,8 +793,8 @@ class mesh:
         ## Combine translation transformation to be applied to points
         self.scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans
 
-    def establish_translation_matrices(self, i_steps, v_trans):
-        print(' Establishing translation matrices ')
+    def establish_translation_matrix(self, i_steps, v_trans):
+        print(' Establishing translation matrix ')
 
         f_steps = float(i_steps)
 
@@ -787,7 +821,7 @@ class mesh:
 #m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/pyramid_01.txt')
 #m.set_file('/home/jeff/Dropbox/cse5365/assignments/Wood_assignment_01/teapot_01.txt')
 #m.load()
-#m.establish_matrices()
+#m.establish_matrix()
 #m.establish_coordinates(500,500)
 
 
