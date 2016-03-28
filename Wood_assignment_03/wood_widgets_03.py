@@ -3,6 +3,10 @@
 # 2016-04-08
 # Assignment_03
 
+
+#   From:
+#       http://pythoncentral.io/pythons-time-sleep-pause-wait-sleep-stop-your-code/
+
 from tkinter import *
 from math import *
 from tkinter import messagebox
@@ -12,13 +16,14 @@ from wood_fileread_03 import *
 
 import time
 
+fDelay = 0.05
 class cl_widgets:
     def __init__(self,ob_root_window,ob_world=[],ob_mesh=mesh()):
         self.ob_root_window=ob_root_window
         ob_root_window.title("Wood_Assignment_03")
         self.ob_world=ob_world
         self.mesh=ob_mesh
-        self.pannel_03 = cl_pannel_03(self,ob_root_window,ob_mesh)
+        self.pannel_03 = cl_pannel_03(self,ob_root_window,ob_world,ob_mesh)
         self.ob_canvas_frame=cl_canvas_frame(self)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
         self.ob_canvas_frame.canvas.delete("all")
@@ -123,16 +128,17 @@ class cl_canvas_frame:
         self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
 
 class cl_pannel_03:
-    def __init__(self, master, ob_root_window, ob_mesh):
-        self.master=master
+    def __init__(self, master, ob_root_window, ob_world, ob_mesh):
+        self.master = master
         self.canvas = master.ob_root_window
         self.mesh = ob_mesh
+        self.world = ob_world
 
 
 
 
-        frame = Frame(master.ob_root_window)
-        frame.pack()
+        file_frame = Frame(master.ob_root_window)
+        file_frame.pack()
 
 
         #############
@@ -140,16 +146,17 @@ class cl_pannel_03:
         #############
         
         self.filename = StringVar()
-        self.file_location_label = Label(frame, text="File Name:").pack(side=LEFT,padx=10,pady=10)
-        self.file_location_string = Entry(frame, text="File Name", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
-#        self.file_location_string = Label(frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
+        self.file_location_label = Label(file_frame, text="File Name:").pack(side=LEFT,padx=10,pady=10)
 
-        self.file_dialog_button = Button(frame, text="Browse", fg="blue", command=self.browse_file)
+        self.file_location_string = Entry(file_frame, text="File Name:", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
+#        self.file_location_string = Label(file_frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
+
+        self.file_dialog_button = Button(file_frame, text="Browse", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
 
         self.var_filename = StringVar()
         self.var_filename.set('')
-        self.button = Button(frame, text="Load", fg="red", command=self.load_file)
+        self.button = Button(file_frame, text="Load", fg="red", command=self.load_file)
         self.button.pack(side=LEFT)
 
 
@@ -382,21 +389,19 @@ class cl_pannel_03:
             print(' vymax = ' + str(self.mesh.vy[1])) 
             print(' ')
 
-            # Call create_graphic_objects() method in 'wood_graphics_02.py'
-            self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas,self.mesh)
+#            print(' self.mesh.vertices = ',self.mesh.vertices)
+#            print(' self.mesh.transformed_vertices = ',self.mesh.transformed_vertices)
+
+
+            print(' len(self.world.polygons) = ' + str(len(self.world.polygons)))
+            # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
+            if(self.world.polygons):
+                self.mesh.resetStack()
+                self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas, event=None)
+            else:
+                self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
 
             print ( "called the draw callback!")
-
-    def rotate_callback(self,i_iteration):
-        
-        if(i_iteration):
-            self.mesh.establish_rotation_matrices(self.rotate_steps, self.v_a, self.v_b, self.rotate_degrees)
-            # Call redisplay() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-            # self.master.ob_canvas_frame.canvas.update()
-            self.master.ob_root_window.after(50, self.rotate_callback(i_iteration-1))
-        else:
-            return
             
     def rotate(self):
         print(' rotate button pushed ')
@@ -406,16 +411,16 @@ class cl_pannel_03:
 
         self.v_a = [0.0,0.0,0.0]
 
-        self.rotate_option = self.i_rotate_option.get()
+        self.rotation_option = self.i_rotate_option.get()
 
         # If X-axis selected
-        if(self.rotate_option==1):
+        if(self.rotation_option==1):
             self.v_b = [1.0,0.0,0.0]
         # If Y-axis selected
-        elif(self.rotate_option==2):
+        elif(self.rotation_option==2):
             self.v_b = [0.0,1.0,0.0]
         # If Z-axis selected
-        elif(self.rotate_option==3):
+        elif(self.rotation_option==3):
             self.v_b = [0.0,0.0,1.0]
         # Else assign axis based on vector 'ab'
         else:
@@ -431,31 +436,32 @@ class cl_pannel_03:
             self.v_b = [self.fRotateBx, self.fRotateBy, self.fRotateBz]
             
 
-        self.rotate_degrees = int(self.sRotateDegrees.get())
-        self.rotate_steps = int(self.sRotateSteps.get())
+        self.rotation_degrees = int(self.sRotateDegrees.get())
+        self.rotation_steps = int(self.sRotateSteps.get())
 
-        if(self.rotate_steps<1):
-            self.rotate_steps=1
+        if(self.rotation_steps<1):
+            self.rotation_steps=1
 
-        print(' self.rotate_option = ' + str(self.rotate_option))
+        
+        print(' self.rotation_option = ' + str(self.rotation_option))
         print(' self.v_a = ' + str(self.v_a))
         print(' self.v_b = ' + str(self.v_b))
-        print(' self.rotate_degrees = ' + str(self.rotate_degrees))
-        print(' self.rotate_steps = ' + str(self.rotate_steps))
+        print(' self.rotation_degrees = ' + str(self.rotation_degrees))
+        print(' self.rotation_steps = ' + str(self.rotation_steps))
 
-        # Iterative callback used for animation and redisplay
-        self.master.ob_root_window.after(0, self.rotate_callback(self.rotate_steps))
+        # Iterative for animation and redisplay
+        self.mesh.establish_rotation_matrices(self.rotation_steps, self.v_a, self.v_b, self.rotation_degrees) 
+        
+        print(" self.mesh.translationMatrix = ",end='')
+        print(self.mesh.rotationMatrix)
+        
+        for i_inc in range(self.rotation_steps):
+            self.mesh.stackMatrix = self.mesh.rotationMatrix * self.mesh.stackMatrix
 
-    def scale_callback(self,i_iteration):
-        if(i_iteration):
-            print(' self.scale_steps = ' + str(self.scale_steps))
-            self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-            # self.master.ob_canvas_frame.canvas.update()
-            self.master.ob_root_window.after(50, self.scale_callback(i_iteration-1))
-        else:
-            return
+            if(self.rotation_steps>1):
+                time.sleep(fDelay)
 
     def scale(self):
         print(' scale button clicked ')
@@ -495,19 +501,19 @@ class cl_pannel_03:
         print(' self.scale_center = ' + str(self.scale_center))
         print(' self.scale_steps = ' + str(self.scale_steps))
 
-        # Iterative callback used for animation and redisplay
-        self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
-            
-    def translate_callback(self,i_iteration):
-        if(i_iteration):
-            print(' self.translate_steps = ' + str(self.translate_steps))
-            self.mesh.establish_translation_matrices(self.translate_steps, self.translate_units) 
+        # Iterative for animation and redisplay
+        self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
+        
+        print(" self.mesh.scaleMatrix = ",end='')
+        print(self.mesh.scaleMatrix)
+        
+        for i_inc in range(self.scale_steps):
+            self.mesh.stackMatrix = self.mesh.scaleMatrix * self.mesh.stackMatrix
+
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-            # self.master.ob_canvas_frame.canvas.update()
-            self.master.ob_root_window.after(50, self.translate_callback(i_iteration-1))
-        else:
-            return
+            if(self.scale_steps>1):
+                time.sleep(fDelay)
 
     def translate(self):
         print(' translate button clicked ')
@@ -519,38 +525,34 @@ class cl_pannel_03:
         self.fTransTy = float(self.sTransTy.get())
         self.fTransTz = float(self.sTransTz.get())
 
-        self.translate_units = [self.fTransTx, self.fTransTy, self.fTransTz]
+        self.translation_units = [self.fTransTx, self.fTransTy, self.fTransTz]
 
-        self.translate_steps = int(self.sTransSteps.get())
-        if(self.translate_steps<1):
-            self.translate_steps=1
+        self.translation_steps = int(self.sTransSteps.get())
+        if(self.translation_steps<1):
+            self.translation_steps=1
             
-        print(' self.translate_units = ' + str(self.translate_units))
-        print(' self.translate_steps = ' + str(self.translate_steps))
+        print(' self.translation_units = ' + str(self.translation_units))
+        print(' self.translation_steps = ' + str(self.translation_steps))
 
-        # Iterative callback used for animation and redisplay
-        self.master.ob_root_window.after(0, self.translate_callback(self.translate_steps))
+        # Iterative for animation and redisplay
+        self.mesh.establish_translation_matrices(self.translation_steps, self.translation_units) 
+        
+        print(" self.mesh.translationMatrix = ",end='')
+        print(self.mesh.translationMatrix)
+        
+        for i_inc in range(self.translation_steps):
+            self.mesh.stackMatrix = self.mesh.translationMatrix * self.mesh.stackMatrix
 
-    def fly_callback(self,i_iteration):
-        if(i_iteration):
-            print(' self.fly_steps = ' + str(self.fly_steps))
-            self.mesh.establish_scale_matrices(self.scale_steps, self.scale_size, self.scale_center)
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-            # self.master.ob_canvas_frame.canvas.update()
-            self.master.ob_root_window.after(50, self.fly_callback(i_iteration-1))
-        else:
-            return
+            if(self.translation_steps>1):
+                time.sleep(fDelay)
 
     def fly(self):
-        print(' fly button clicked ')
+        print(' Fly button clicked ')
 
         if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
             return
-        
-        self.scale_option = self.i_scale_option.get()
-
-        self.scale_uniform_size = float(self.sScaleSize.get())
 
         self.fVRPAx = float(self.sVRPAx.get())
         self.fVRPAy = float(self.sVRPAy.get())

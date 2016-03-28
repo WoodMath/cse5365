@@ -320,10 +320,16 @@ class mesh:
         self.coordinates=[]
         self.world2viewMatrix=[]
         self.view2screenMatrix=[]
-        self.stackMatrix=np.matrix([[1,0,0,0],\
-                                    [0,1,0,0],\
-                                    [0,0,1,0],\
-                                    [0,0,0,1]])
+        self.startMatrix=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        self.stackMatrix=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
         self.bounding=[]
         self.box=[]
         self.step=0
@@ -332,6 +338,9 @@ class mesh:
         self.vpn=None
         self.vup=None
         self.prp=None
+        self.scaleMatrix=None
+        self.rotationMatrix=None
+        self.translationMatrix=None
 
     def set_file(self,filename):
         self.vertices=[]
@@ -347,10 +356,16 @@ class mesh:
         self.coordinates=[]
         self.world2viewMatrix=[]
         self.view2screenMatrix=[]
-        self.stackMatrix=np.matrix([[1,0,0,0],\
-                                    [0,1,0,0],\
-                                    [0,0,1,0],\
-                                    [0,0,0,1]])
+        self.startMatrix=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        self.stackMatrix=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
         self.bounding=[]
         self.box=[]
         self.step=0
@@ -359,6 +374,9 @@ class mesh:
         self.vpn=None
         self.vup=None
         self.prp=None
+        self.scaleMatrix=None
+        self.rotationMatrix=None
+        self.translationMatrix=None
 
     def add_vertex(self,vertex):
         self.vertices.append(vertex)
@@ -384,7 +402,12 @@ class mesh:
         self.vup = vup
     def add_prp(self,prp):
         self.prp = prp
-
+    def resetStack(self):
+        self.stackMatrix=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
     def load(self):
         with open(self.filename) as openfileobject:
             for line in openfileobject:
@@ -533,21 +556,29 @@ class mesh:
              [0,1,0,0],\
              [0,0,1,0],\
              [0,0,0,1]])
+        
         self.world2viewMatrix = vMat * sMat * wMat;
         self.vertices=np.matrix(self.vertices)
 
         ## Do not transfer from 'object space' into 'world space' until
         ## 'establish_matrices' called from 'load_file' in 'wood_widgets_03.py'
-        self.transformed_vertices=copy.copy(self.vertices)
+        self.transformed_vertices = copy.copy(self.vertices)
 
     def establish_coordinates(self,iWidth,iHeight):
-        self.view2screenMatrix = np.matrix([[float(iWidth),0,0,0],[0,float(iHeight),0,0],[0,0,1,0],[0,0,0,1]])
-        self.view2screenMatrix  = self.view2screenMatrix  * np.matrix([[1,0,0,0],[0,-1,0,1],[0,0,1,0],[0,0,0,1]])
+        self.view2screenMatrix = np.matrix(\
+            [[float(iWidth),0,0,0],\
+             [0,float(iHeight),0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        self.view2screenMatrix  = self.view2screenMatrix * np.matrix(\
+            [[ 1, 0, 0, 0],\
+             [ 0,-1, 0, 1],\
+             [ 0, 0, 1, 0],\
+             [ 0, 0, 0, 1]])
 
         print(' Establishing coordinates ')
-
         # Transform vertices into coordinates
-        self.coordinates = self.view2screenMatrix * self.world2viewMatrix * np.transpose(np.matrix(self.transformed_vertices))
+        self.coordinates = self.view2screenMatrix * self.world2viewMatrix * self.stackMatrix * np.transpose(np.matrix(self.transformed_vertices))
         self.coordinates = np.transpose(self.coordinates)
 
         # Transform viewport box
@@ -591,7 +622,7 @@ class mesh:
              [0,0,0,1]])
 
         ## compute new vector for X-rotation matrix
-        m_xyz_p = m_Rotate_trans * m_xyz
+        m_xyz_p = m_Rotate_Trans * m_xyz
         v_xyz_p = np.array(m_xyz_p.T)[0]
         f_x_p = v_xyz_p[0]
         f_y_p = v_xyz_p[1]
@@ -689,11 +720,11 @@ class mesh:
         print(' cos_Z_axis = ' + str(cos_Z_axis))
         
         ## Combine rotation transformation to be applied to points
-        rotationMatrix = m_Rotate_Trans_Inv * m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X * m_Rotate_Trans
+        self.rotationMatrix = m_Rotate_Trans_Inv * m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X * m_Rotate_Trans
 
         ## Transform vertices into coordinates
-        self.transformed_vertices = rotationMatrix * np.transpose(np.matrix(self.transformed_vertices))
-        self.transformed_vertices = np.transpose(self.transformed_vertices)
+#        self.transformed_vertices = self.rotationMatrix * np.transpose(np.matrix(self.transformed_vertices))
+#        self.transformed_vertices = np.transpose(self.transformed_vertices)
 
     def establish_scale_matrices(self, i_steps, v_scale, v_center):
         print(' Establishing scale matrices ')
@@ -731,11 +762,11 @@ class mesh:
              [0,0,0,1]])
 
         ## Combine translation transformation to be applied to points
-        scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans
+        self.scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans
 
         ## Transform vertices into coordinates
-        self.transformed_vertices = scaleMatrix * np.transpose(np.matrix(self.transformed_vertices))
-        self.transformed_vertices = np.transpose(self.transformed_vertices)
+#        self.transformed_vertices = self.scaleMatrix * np.transpose(np.matrix(self.transformed_vertices))
+#        self.transformed_vertices = np.transpose(self.transformed_vertices)
 
 
     def establish_translation_matrices(self, i_steps, v_trans):
@@ -759,11 +790,11 @@ class mesh:
              [0,0,0,1]])
 
         ## Rename translation matrix for consistancy
-        transMatrix = m_Trans
+        self.translationMatrix = m_Trans
 
         ## Transform vertices into coordinates
-        self.transformed_vertices = transMatrix * np.transpose(np.matrix(self.transformed_vertices))
-        self.transformed_vertices = np.transpose(self.transformed_vertices)
+#        self.transformed_vertices = self.transMatrix * np.transpose(np.matrix(self.transformed_vertices))
+#        self.transformed_vertices = np.transpose(self.transformed_vertices)
 
 ## Code used to test functionality
 #m=mesh()

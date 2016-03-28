@@ -72,7 +72,7 @@ class mesh:
         self.sMat=[]
         self.wMat=[]
         self.mMat=[]
-        self.StackMatrix=np.matrix([[1,0,0,0],\
+        self.stackMatrix=np.matrix([[1,0,0,0],\
                                     [0,1,0,0],\
                                     [0,0,1,0],\
                                     [0,0,0,1]])
@@ -95,7 +95,7 @@ class mesh:
         self.sMat=[]
         self.wMat=[]
         self.mMat=[]
-        self.StackMatrix=np.matrix([[1,0,0,0],\
+        self.stackMatrix=np.matrix([[1,0,0,0],\
                                     [0,1,0,0],\
                                     [0,0,1,0],\
                                     [0,0,0,1]])

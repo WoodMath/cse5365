@@ -110,4 +110,21 @@ class cl_world:
                 canvas.coords(self.polygons[f], v_polygon)
             canvas.update()
 
+    def clear(self,canvas,event):
+        mesh=self.mesh
+        print(' Clear called ')
+            
+        # DELETE viewport box object
+        if self.borders:
+            for i in range(0,len(self.borders)):
+                canvas.delete(self.borders[i])
+
+        if self.polygons:
+
+            ## DELETE all polygons
+            for i in range(0,len(self.polygons)):
+                canvas.delete(self.polygons[i])
+                
+        canvas.update()
+
 
