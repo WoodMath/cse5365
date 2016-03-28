@@ -533,7 +533,7 @@ class mesh:
         self.vertices=np.matrix(self.vertices)
 
         ## Do not transfer from 'object space' into 'world space' until
-        ## 'establish_matrices' called from 'load_file' in 'wood_widgets_02.py'
+        ## 'establish_matrices' called from 'load_file' in 'wood_widgets_03.py'
         self.transformed_vertices=copy.copy(self.vertices)
 
     def establish_coordinates(self,iWidth,iHeight):
