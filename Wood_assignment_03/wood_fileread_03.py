@@ -61,272 +61,249 @@ vect_int=np.vectorize(int)
 vect_int_less_one=np.vectorize(single_int_less_one)
 vect_float=np.vectorize(float)
 
-def iszero(numeric):
-    if abs(numeric)*500==0 :
-        return True
-    else:
-        return False
-    
-def vector_projection(vVectorU, vVectorV):
-    ## Returns projection of vector U along vector V
-    vDotUV = np.dot(np.array(vVectorU), np.array(vVectorV))
-    vDotVV = np.dot(np.array(vVectorV), np.array(vVectorV))
-    vReturn = np.array(vVectorV)*vDotUV/vDotVV
-#    return vReturn
-    return vDotUV/vDotVV
-
-def old_vector_perpendicular(u):
-    v=np.array(u)
-    if iszero(v[0]) and iszero(v[1]):
-        if iszero(v[2]):
-            # v is Vector(0, 0, 0)
-            raise ValueError('zero vector')
-
-        # v is Vector(0, 0, v.z)
-        return np.array([0,1,0])
-
-    return np.array([-v[1], v[0], 0])
-
-def vector_perpendicular(u):
-    v=np.array(u)
-    r""" Finds an arbitrary perpendicular vector to *v*."""
-    # for two vectors (x, y, z) and (a, b, c) to be perpendicular,
-    # the following equation has to be fulfilled
-    #     0 = ax + by + cz
-
-    # x = y = z = 0 is not an acceptable solution
-    if v[0] == v[1] == v[2] == 0:
-        raise ValueError('zero-vector')
-
-    # If one dimension is zero, this can be solved by setting that to
-    # non-zero and the others to zero. Example: (4, 2, 0) lies in the
-    # x-y-Plane, so (0, 0, 1) is orthogonal to the plane.
-    if v[0] == 0:
-        return np.array([1, 0, 0])
-    if v[1] == 0:
-        return np.array([0, 1, 0])
-    if v[2] == 0:
-        return np.array([0, 0, 1])
-
-    # arbitrarily set a = b = 1
-    # then the equation simplifies to
-    #     c = -(x + y)/z
-#    return Vector(1, 1, -1.0 * (v.x + v.y) / v.z)
-    return np.array([1,1,-1*(v[0]+v[1])/v[2]])
-
-#old_vector_perpendicular(np.array([1,1,1]))
-
-
-def vector_rotate(vVector0, vVector1):
-    ## Returns the matrix necessary to rotate a vector vVector0 onto vVector1 
-
-    v0 = copy.copy(np.array(vVector0))
-    v1 = copy.copy(np.array(vVector1))
-    fLength0 = LA.norm(v0)
-    fLength1 = LA.norm(v1)
-    v0 = np.array(vVector0)/fLength0
-    v1 = np.array(vVector1)/fLength1
-
-
-    v0_len = LA.norm(v0)
-    v1_len = LA.norm(v1)
-
-    print('v0_len = ', v0_len)
-    print('v1_len = ', v1_len)
-    
-    
-    ## Assign v0 as vU axis
-    vU = copy.copy(v0)
-    ## Make v1 span vU and vV axis and caluculate vV = v1-vU
-
-
-    vW_nn = np.cross(v0,v1)
-    vW_len = LA.norm(vW_nn)
-    if not(vW_len):
-        ## For special case when v0 and v1 are co-linear
-        ## Set arbitrary rotation axis (vW)
-        vW_nn = old_vector_perpendicular(v0)
-        vW_len = LA.norm(vW_nn)
+class viewTransform:
+    def __init__(self):
+        self.parent = self
+        self.vU = []
+        self.vV = []
+        self.vN = []
+        self.vNDCx = [-1,1]
+        self.vNDCy = [-1,1]
+        self.vNDCz = [0,1]
+        self.updateNDC()
+    def updateNDC(self):
+        self.fNDCx = self.vNDCx[1]-self.vNDCx[0]
+        self.fNDCy = self.vNDCy[1]-self.vNDCy[0]
+        self.fNDCz = self.vNDCz[1]-self.vNDCz[0]
         
-    vW = vW_nn/vW_len        
-    vV_nn = np.cross(vW,vU)
-    vV_len = LA.norm(vV_nn)
-    vV = vV_nn/vV_len
-
-    vU_len = LA.norm(vU)
-    vV_len = LA.norm(vV)
-    vW_len = LA.norm(vW)
-
-    print('vU_len = ', vU_len)
-    print('vV_len = ', vV_len)
-    print('vW_len = ', vW_len)
+    def array2matrix(self,v_Array):
+        vArray = np.array(v_Array)
+        mReturn = np.transpose(np.matrix(vArray))
+        return mReturn
+    def matrix2array(self,m_Matrix):
+        mMatrix = np.matrix(m_Matrix)
+        vReturn = np.array(mMatrix.T)[0]
+        return vReturn
+    def arrayAdd1(self, v_Array):
+        vArray = np.array(v_Array)
+        vArray = np.append(vArray,1)
+        return vArray
+    def arrayRemove1(self, v_Array):
+        vArray = np.array(v_Array)
+        if(vArray[len(vArray)-1]==1):
+            vReturn = np.delete(vArray,len(vArray)-1)
+        else:
+            vReturn = vArray
+        return vReturn
     
+    def transformVRP2Origin(self,v_VRP):
+        vVRP = np.array(v_VRP)
 
+        f_x = vVRP[0]
+        f_y = vVRP[1]
+        f_z = vVRP[2]
 
-    print('v0 = ', end='')
-    print(v0)
-    print('v1 = ', end='')
-    print(v1)
+        m_Translate = np.matrix(\
+            [[1,0,0,-f_x],\
+             [0,1,0,-f_y],\
+             [0,0,1,-f_z],\
+             [0,0,0,1]])
 
-    print('vU = ', end='')
-    print(vU)
-    print('vV = ', end='')
-    print(vV)
-    print('vW = ', end='')
-    print(vW)
+        mReturn = m_Translate
+
+        return mReturn
+        
+    def transformVPN2Z(self,v_VPN):
+        vVPN = np.array(v_VPN)
+        
+        f_x = vVPN[0]
+        f_y = vVPN[1]
+        f_z = vVPN[2]
+        v_xyz = np.array([f_x,f_y,f_z,1])
+        m_xyz = np.transpose(np.matrix(v_xyz))
+
+        ###############################
+
+        ## If not the X-axis as indicated by 0 length along Y-axis and Z-axis
+        ## Needed or results in divide by 0 error
+        if(f_y**2 + f_z**2):
+            sin_X_axis = f_y / np.sqrt(f_y**2+f_z**2)
+            cos_X_axis = f_z / np.sqrt(f_y**2+f_z**2)
+        else:
+            sin_X_axis = float(0.0)
+            cos_X_axis = float(1.0)
+        
+        ## Establish matrix for VPN about X-axis
+        ## such that vector VPN lies in XZ-plane
+        m_Rotate_X = np.matrix(\
+            [[1,0,0,0],\
+             [0,cos_X_axis,-sin_X_axis,0],\
+             [0,sin_X_axis,cos_X_axis,0],\
+             [0,0,0,1]])
+
+        ## compute new vector for Y-rotation matrix
+        m_xyz_p = m_Rotate_X * m_xyz
+        v_xyz_p = np.array(m_xyz_p.T)[0]
+        f_x_p = v_xyz_p[0]
+        f_y_p = v_xyz_p[1]
+        f_z_p = v_xyz_p[2]
+
+        ###############################
+        
+        ## If not the Y-axis as indicated by 0 length along X-axis and Z-axis
+        ## Needed or results in divide by 0 error
+        if(f_x_p**2 + f_z_p**2):
+            sin_Y_axis = f_x_p / np.sqrt(f_x_p**2+f_z_p**2)
+            cos_Y_axis = f_z_p / np.sqrt(f_x_p**2+f_z_p**2)
+        else:
+            sin_Y_axis = float(0.0)
+            cos_Y_axis = float(1.0)
+
+        ## Establish matrix for VPN about Y-axis
+        ## such that vector VPN lies along Z-axis
+        m_Rotate_Y = np.matrix(\
+            [[cos_Y_axis,0,-sin_Y_axis,0],\
+             [0,1,0,0],\
+             [sin_Y_axis,0,cos_Y_axis,0],\
+             [0,0,0,1]])
+
+        ## compute new vector for Z-rotation matrix (though not needed)
+        m_xyz_p = m_Rotate_X * m_xyz
+        v_xyz_p = np.array(m_xyz_p.T)[0]
+        f_x_p = v_xyz_p[0]
+        f_y_p = v_xyz_p[1]
+        f_z_p = v_xyz_p[2]
+
+        ###############################
+        
+        ## Combine rotation transformation to be applied to vector
+        mReturn = m_Rotate_Y * m_Rotate_X
+
+        return mReturn
     
-    if(np.dot(vU,vV) or np.dot(vU,vW)):
-        raise ValueError('Vectors are not orthogonal')
+    def transformVUP2YZ(self,v_VUP):
+        vVUP = np.array(v_VUP)
+        
+        f_x = vVUP[0]
+        f_y = vVUP[1]
+        f_z = vVUP[2]
+        v_xyz = np.array([f_x,f_y,f_z,1])
+        m_xyz = np.transpose(np.matrix(v_xyz))
 
-    vAxis = vW
+        ###############################
 
-    ## Get horizontal and vertical components of v1 with respect to v0
-    fU = vector_projection(v1,vU)
-    fV = vector_projection(v1,vV)
+        ## If not the Z-axis as indicated by 0 length along X-axis and Y-axis
+        ## Needed or results in divide by 0 error
+        if(f_x**2 + f_y**2):
+            sin_Z_axis = f_x / np.sqrt(f_x**2+f_y**2)
+            cos_Z_axis = f_y / np.sqrt(f_x**2+f_y**2)
+        else:
+            sin_Z_axis = float(0.0)
+            cos_Z_axis = float(1.0)
+        
+        ## Establish matrix for VUP about Z-axis
+        ## such that vector VUP lies in YZ-plane
+        m_Rotate_Z = np.matrix(\
+            [[cos_Z_axis,-sin_Z_axis,0,0],\
+             [sin_Z_axis,cos_Z_axis,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
 
-    print('fU = ', end='')
-    print(fU)
-    print('fV = ', end='')
-    print(fV)
+        ## compute new vector for Y-rotation matrix
+        m_xyz_p = m_Rotate_Z * m_xyz
+        v_xyz_p = np.array(m_xyz_p.T)[0]
+        f_x_p = v_xyz_p[0]
+        f_y_p = v_xyz_p[1]
+        f_z_p = v_xyz_p[2]
 
-        ## Assign Sin outputs based on results
-    sin_Z_axis = fV / np.sqrt(fU**2+fV**2)
-    cos_Z_axis = fU / np.sqrt(fU**2+fV**2)
-#    else:
-#        sin_Z_axis = float(0.0)
-#        cos_Z_axis = float(1.0)
+        ###############################
+                
+        mReturn = m_Rotate_Z
 
+        return mReturn
 
-
-    ## Establish the rotation matrices
+    def getUfromVPNandVUP(this,v_VPN,v_VUP):
+        vVPN = np.array(v_VPN)
+        vVUP = np.array(v_VUP)
+        vU_nn = np.cross(vVUP,vVPN)
+        vU_len = LA.norm(vU_nn)
+        vU = vU_nn/vU_len
+        return vU
     
-    f_x = vAxis[0]
-    f_y = vAxis[1]
-    f_z = vAxis[2]
+    def getVfromVPNandU(this,v_VPN,v_U):
+        vVPN = np.array(v_VPN)
+        vU = np.array(v_U)
+        vV_nn = np.cross(vVPN,vU)
+        vV_len = LA.norm(vV_nn)
+        vV = vV_nn/vV_len
+        return vV
 
+    def getUVfromVPNandVUP(this,v_VPN,v_VUP):
+        vVPN = np.array(v_VPN)
+        vVUP = np.array(v_VUP)
+        vU_nn = np.cross(vVUP,vVPN)
+        vU_len = LA.norm(vU_nn)
+        vU = vU_nn/vU_len
+        vV_nn = np.cross(vVPN,vU)
+        vV_len = LA.norm(vV_nn)
+        vV = vV_nn/vV_len
+        return (vU,vV)
 
-    ## If not the X-axis as indicated by 0 length along Y-axis and Z-axis
-    ## Needed or results in divide by 0 error
-    if(f_y**2 + f_z**2):
-        sin_X_axis = f_y / np.sqrt(f_y**2+f_z**2)
-        cos_X_axis = f_z / np.sqrt(f_y**2+f_z**2)
-    else:
-        sin_X_axis = float(0.0)
-        cos_X_axis = float(1.0)
+    def transformVRCshear(this,v_PRP,v_Dim_U,v_Dim_V):
+        vPRP = np.array(v_PRP)
+        vDim_U = np.array(v_Dim_U)
+        vDim_V = np.array(v_Dim_V)
+        fCW_U = (vDim_U[1]+vDim_U[0])/2
+        fCW_V = (vDim_V[1]+vDim_V[0])/2
+        fPRP_X = vPRP[0]
+        fPRP_Y = vPRP[1]
+        fPRP_Z = vPRP[2]
+        
+        fSh_X = -(fPRP_X - fCW_U)/fPRP_Z
+        fSh_Y = -(fPRP_Y - fCW_V)/fPRP_Z
 
-    ## If not the Y-axis as indicated by 0 length along X-axis and Z-axis
-    ## Needed or results in divide by 0 error
-    if(f_x**2 + f_z**2):
-        sin_Y_axis = f_x / np.sqrt(f_x**2+f_z**2)
-        cos_Y_axis = f_z / np.sqrt(f_x**2+f_z**2)
-    else:
-        sin_Y_axis = float(0.0)
-        cos_Y_axis = float(1.0)
-            
-    ## If not the Y-axis as indicated by 0 length along X-axis and Z-axis
-    ## Needed or results in divide by 0 error
+        mReturn = np.matrix(\
+            [[1, 0, fSh_X, 0],\
+             [0, 1, fSh_Y, 0],\
+             [0, 0, 1, 0],\
+             [0, 0, 0, 1]])
 
-    print(' sin_X_axis = ' + str(sin_X_axis))
-    print(' cos_X_axis = ' + str(cos_X_axis))
-    print(' sin_Y_axis = ' + str(sin_Y_axis))
-    print(' cos_Y_axis = ' + str(cos_Y_axis))
-    print(' sin_Z_axis = ' + str(sin_Z_axis))
-    print(' cos_Z_axis = ' + str(cos_Z_axis))
+        return mReturn
 
-    ## Establish matrix for rotating all points about X-axis
-    ## such that vector 'ab' lies in XZ-plane
-    m_Rotate_X = np.matrix(\
-        [[1,0,0,0],\
-         [0,cos_X_axis,-sin_X_axis,0],\
-         [0,sin_X_axis,cos_X_axis,0],\
-         [0,0,0,1]])
-    ## establish inverse matrix (to save time vs. 'np.inverse(m_Rotate_X_Inv)')
-    ## to rotate points back again at end of process
-    m_Rotate_X_Inv = np.matrix(\
-        [[1,0,0,0],\
-         [0,cos_X_axis,sin_X_axis,0],\
-         [0,-sin_X_axis,cos_X_axis,0],\
-         [0,0,0,1]])
+    def transformVRCtranslate(this,v_Dim_U,v_Dim_V,v_Dim_N):
+        vDim_U = np.array(v_Dim_U)
+        vDim_V = np.array(v_Dim_V)
+        vDim_N = np.array(v_Dim_N)
+        fCW_U = (vDim_U[1]+vDim_U[0])/2
+        fCW_V = (vDim_V[1]+vDim_V[0])/2
+        fMin_N = vDim_N[0] if vDim_N[0] <= vDim_N[1] else vDim_N[1]
+        fMin_N = vDim_N[0]
+        
+        mReturn = np.matrix(\
+            [[1, 0, 0, -fCW_U],\
+             [0, 1, 0, -fCW_V],\
+             [0, 0, 1, -fMin_N],\
+             [0, 0, 0, 1]])
 
-    ## Establish matrix for rotating all points about Y-axis
-    ## such that vector 'ab' lies along Z-axis
-    m_Rotate_Y = np.matrix(\
-        [[cos_Y_axis,0,-sin_Y_axis,0],\
-         [0,1,0,0],\
-         [sin_Y_axis,0,cos_Y_axis,0],\
-         [0,0,0,1]])
-    ## establish inverse matrix (to save time vs. 'np.inverse(m_Rotate_Y_Inv)')
-    ## to rotate points back again at end of process
-    m_Rotate_Y_Inv = np.matrix(\
-        [[cos_Y_axis,0,sin_Y_axis,0],\
-         [0,1,0,0],\
-         [-sin_Y_axis,0,cos_Y_axis,0],\
-         [0,0,0,1]])
+        return mReturn
 
-    ## Establish matrix for rotating all points about Z-axis
-    ## such that the actual rotation by 'i_degrees' takes place
-    m_Rotate_Z = np.matrix(\
-        [[cos_Z_axis,-sin_Z_axis,0,0],\
-         [sin_Z_axis,cos_Z_axis,0,0],\
-         [0,0,1,0],\
-         [0,0,0,1]])
-    m_Rotate_Z_Inv = np.matrix(\
-        [[cos_Z_axis,sin_Z_axis,0,0],\
-         [-sin_Z_axis,cos_Z_axis,0,0],\
-         [0,0,1,0],\
-         [0,0,0,1]])
+    def transformVRCscale(this,v_Dim_U,v_Dim_V,v_Dim_N):
+        vDim_U = np.array(v_Dim_U)
+        vDim_V = np.array(v_Dim_V)
+        vDim_N = np.array(v_Dim_N)
+        fScale_U = self.fNDCx/(vDim_U[1]-vDim_U[0])
+        fScale_V = self.fNDCy/(vDim_V[1]-vDim_V[0])
+        fScale_N = self.fNDCz/(vDim_N[1]-vDim_N[0])
+        mReturn = np.matrix(\
+            [[fScale_U, 0, 0, 0],\
+             [0, fScale_V, 0, 0],\
+             [0, 0, fScale_N, 0],\
+             [0, 0, 0, 1]])
 
-
-    ## Due to Gimball lock will need to reverse angle if negative
-    v_Test = m_Rotate_Y * m_Rotate_X * np.transpose(np.matrix([v0[0],v0[1],v0[2],1]));
-    v_Test = np.array(v_Test.T)[0]
-
-    print('v_Test = ',end='')
-    print(v_Test)
-#    print('v_Test[1][0] = ',end='')
-#    print(v_Test[1][0])    
-
-    ## Due to Gimball lock will need to reverse angle if negative Y-coordinate for Z-rotation
-    if(v_Test[1]<0):
-        print(' m_Rotate_Z = ')
-        print(m_Rotate_Z)
-
-        m_Rotate_Z = np.transpose(m_Rotate_Z)
-        m_Rotate_Z_Inv = np.transpose(m_Rotate_Z_Inv)
-
-        print(' m_Rotate_Z = ')
-        print(m_Rotate_Z)
-
-#        m_Temp = m_Rotate_Z
-#        m_Rotate_Z = m_Rotate_Z_Inv
-#        m_Rotate_Z_Inv = m_Temp
-
-
-    ## Combine rotation transformation to be applied to points
-    rotationMatrix = m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X
-
-
-    checkResult = rotationMatrix*np.transpose(np.matrix([[v0[0],v0[1],v0[2],1]]))
+        return mReturn
 
 
 
-    print(' m_Rotate_X = ')
-    print(m_Rotate_X)
-
-    print(' m_Rotate_Y = ')
-    print(m_Rotate_Y)
-
-    print(' m_Rotate_Z = ')
-    print(m_Rotate_Z)
-
-    print(' checkResult = ',end='')
-    print(np.array(np.transpose(checkResult)))
-    print(' v1 = ',end='')
-    print(v1)
-
-    return rotationMatrix
-
-print(vector_rotate([1,0,0],[0,-1,0]))
 
 class mesh:
     def __init__(self):
@@ -443,16 +420,101 @@ class mesh:
                         
     def establish_matrices(self):
         print(' Establishing matrices ')
+
+        tObj = viewTransform()
+
+        ##################################
+
+        ## Translate VRP vector 2 origin (Step 1)
+        self.step1Matrix = tObj.transformVRP2Origin(self.vrp)
+
+        ## Test VRP vector [0,0,0]
+        mTempVRP = tObj.array2matrix(tObj.arrayAdd1(self.vrp))
+        mTempVRP = self.step1Matrix * mTempVRP
+        vTempVRP = tObj.arrayRemove1(tObj.matrix2array(mTempVRP))
+        print(' vTempVRP = ',end='')
+        print(vTempVRP)
         
-        stepOneMatrix=np.matrix(\
-            [[1,0,0,-self.vrp[0]],\
-             [0,1,0,-self.vrp[1]],\
-             [0,0,1,-self.vrp[2]],\
-             [0,0,0,1]])
+        ##################################
+
+        ## Rotate VPN vector 2 Z-Axis (Step 2)
+        self.step2Matrix = tObj.transformVPN2Z(self.vpn)
+
+        ## Test new VPN vector [0,0,a]
+        mTempVPN = tObj.array2matrix(tObj.arrayAdd1(self.vpn))
+        mTempVPN = self.step2Matrix * mTempVPN
+        vTempVPN = tObj.arrayRemove1(tObj.matrix2array(mTempVPN))
+        print(' vTempVPN = ',end='')
+        print(vTempVPN)
+
+        ##################################
+        
+        ## Get new VUP vector
+        mTempVUP = tObj.array2matrix(tObj.arrayAdd1(self.vup))
+        mTempVUP = self.step2Matrix * mTempVUP
+        vTempVUP = tObj.arrayRemove1(tObj.matrix2array(mTempVUP))
+
+        ## Rotate new VUP vector 2 YZ-Plane (Step 3)
+        self.step3Matrix = tObj.transformVUP2YZ(vTempVUP)
+
+        ## Test new VUP vector [0,b,c]
+        mTempVUP = tObj.array2matrix(tObj.arrayAdd1(vTempVUP))
+        mTempVUP = self.step3Matrix * mTempVUP
+        vTempVUP = tObj.arrayRemove1(tObj.matrix2array(mTempVUP))
+
+        print(' vTempVUP = ',end='')
+        print(vTempVUP)
+
+        ##################################
+
+        ## Define (W)indowed view volume
+        v_Dim_U = self.wu
+        v_Dim_V = self.wv
+        v_Dim_N = self.wn
+
+        ## Shear DOP = (PRP-CW) to be prallel to Z-Axis (Step 4)
+        self.step4Matrix = tObj.transformVRCshear(self.prp,v_Dim_U,v_Dim_V)
+
+        ## Test new VUP vector [CW_x,CW_y,PRP_z]
+        mTempPRP = tObj.array2matrix(tObj.arrayAdd1(self.prp))
+        mTempPRP = self.step4Matrix * mTempPRP
+        vTempPRP = tObj.arrayRemove1(tObj.matrix2array(mTempPRP))
+
+        print(' vTempPRP = ',end='')
+        print(vTempPRP)
+
+        ##################################
+
+        ## Translate viewing volume to origin (Step 5)
+        self.step5Matrix = tObj.transformVRCtranslate(v_Dim_U,v_Dim_V,v_Dim_N)
+
+        ## Define Center of (W)indow
+        fCW_U = (v_Dim_U[1]+v_Dim_U[0])/2
+        fCW_V = (v_Dim_V[1]+v_Dim_V[0])/2
+        fMin_N = v_Dim_N[0] if v_Dim_N[0] <= v_Dim_N[1] else v_Dim_N[1]
+        fMin_N = v_Dim_N[0]
+                
+        ## Test new CW vector [0,0,0]
+        mTempUVN = tObj.array2matrix(tObj.arrayAdd1([fCW_U,fCW_V,fMin_N]))
+        mTempUVN = self.step5Matrix * mTempUVN
+        vTempUVN = tObj.arrayRemove1(tObj.matrix2array(mTempUVN))
+
+        print(' vTempUVN = ',end='')
+        print(vTempUVN)
+
+        ##################################
+
+        ## Scale viewing volume to NDC (Step 6)
+        self.step6Matrix = tObj.transformVRCtranslate(v_Dim_U,v_Dim_V,v_Dim_N)
+
+        ##################################
+
+        
         vMat=np.matrix(\
             [[1,0,0,self.vx[0]],\
              [0,1,0,self.vy[0]],\
-             [0,0,1,0],[0,0,0,1]])
+             [0,0,1,0],\
+             [0,0,0,1]])
         sMat=np.matrix(\
             [[(self.vx[1]-self.vx[0])/(self.wu[1]-self.wu[0]),0,0,0],\
              [0,(self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0]),0,0],\
@@ -496,13 +558,18 @@ class mesh:
         v_a = np.array(v_a)
         v_b = np.array(v_b)
         v_ab = v_b-v_a
+        
         f_x = v_ab[0]
         f_y = v_ab[1]
         f_z = v_ab[2]
+        v_xyz = np.array([f_x,f_y,f_z,1])
+        m_xyz = np.transpose(np.matrix(v_xyz))
 
         f_degree = float(i_degree)
         f_steps = float(i_steps)
         f_degree = f_degree / f_steps
+
+        ###############################
 
         ## Establish matrix for translating all points
         ## such that vector 'a' lies at origin
@@ -519,33 +586,23 @@ class mesh:
              [0,0,1,v_a[2]],\
              [0,0,0,1]])
 
+        ## compute new vector for X-rotation matrix
+        m_xyz_p = m_Rotate_trans * m_xyz
+        v_xyz_p = np.array(m_xyz_p.T)[0]
+        f_x_p = v_xyz_p[0]
+        f_y_p = v_xyz_p[1]
+        f_z_p = v_xyz_p[2]        
+
+        ###############################
+
         ## If not the X-axis as indicated by 0 length along Y-axis and Z-axis
         ## Needed or results in divide by 0 error
-        if(f_y**2 + f_z**2):
-            sin_X_axis = f_y / np.sqrt(f_y**2+f_z**2)
-            cos_X_axis = f_z / np.sqrt(f_y**2+f_z**2)
+        if(f_y_p**2 + f_z_p**2):
+            sin_X_axis = f_y_p / np.sqrt(f_y_p**2+f_z_p**2)
+            cos_X_axis = f_z_p / np.sqrt(f_y_p**2+f_z_p**2)
         else:
             sin_X_axis = float(0.0)
             cos_X_axis = float(1.0)
-
-        ## If not the Y-axis as indicated by 0 length along X-axis and Z-axis
-        ## Needed or results in divide by 0 error
-        if(f_x**2 + f_z**2):
-            sin_Y_axis = f_x / np.sqrt(f_x**2+f_z**2)
-            cos_Y_axis = f_z / np.sqrt(f_x**2+f_z**2)
-        else:
-            sin_Y_axis = float(0.0)
-            cos_Y_axis = float(1.0)
-            
-        sin_Z_axis = np.sin(float(f_degree)*np.pi/180.0)
-        cos_Z_axis = np.cos(float(f_degree)*np.pi/180.0)
-
-        print(' sin_X_axis = ' + str(sin_X_axis))
-        print(' cos_X_axis = ' + str(cos_X_axis))
-        print(' sin_Y_axis = ' + str(sin_Y_axis))
-        print(' cos_Y_axis = ' + str(cos_Y_axis))
-        print(' sin_Z_axis = ' + str(sin_Z_axis))
-        print(' cos_Z_axis = ' + str(cos_Z_axis))
 
         ## Establish matrix for rotating all points about X-axis
         ## such that vector 'ab' lies in XZ-plane
@@ -562,6 +619,24 @@ class mesh:
              [0,-sin_X_axis,cos_X_axis,0],\
              [0,0,0,1]])
 
+        ## compute new vector for Y-rotation matrix
+        m_xyz_pp = m_Rotate_X * m_xyz_p
+        v_xyz_pp = np.array(m_xyz_pp.T)[0]
+        f_x_pp = v_xyz_pp[0]
+        f_y_pp = v_xyz_pp[1]
+        f_z_pp = v_xyz_pp[2] 
+
+        ###############################
+        
+        ## If not the Y-axis as indicated by 0 length along X-axis and Z-axis
+        ## Needed or results in divide by 0 error
+        if(f_x_pp**2 + f_z_pp**2):
+            sin_Y_axis = f_x_pp / np.sqrt(f_x_pp**2+f_z_pp**2)
+            cos_Y_axis = f_z_pp / np.sqrt(f_x_pp**2+f_z_pp**2)
+        else:
+            sin_Y_axis = float(0.0)
+            cos_Y_axis = float(1.0)
+
         ## Establish matrix for rotating all points about Y-axis
         ## such that vector 'ab' lies along Z-axis
         m_Rotate_Y = np.matrix(\
@@ -577,6 +652,18 @@ class mesh:
              [-sin_Y_axis,0,cos_Y_axis,0],\
              [0,0,0,1]])
 
+        ## compute new vector for Z-rotation matrix (though not needed)
+        m_xyz_ppp = m_Rotate_Y * m_xyz_pp
+        v_xyz_ppp = np.array(m_xyz_ppp.T)[0]
+        f_x_ppp = v_xyz_ppp[0]
+        f_y_ppp = v_xyz_ppp[1]
+        f_z_ppp = v_xyz_ppp[2]
+
+        ###############################
+        
+        sin_Z_axis = np.sin(float(f_degree)*np.pi/180.0)
+        cos_Z_axis = np.cos(float(f_degree)*np.pi/180.0)
+
         ## Establish matrix for rotating all points about Z-axis
         ## such that the actual rotation by 'i_degrees' takes place
         m_Rotate_Z = np.matrix(\
@@ -584,12 +671,19 @@ class mesh:
              [sin_Z_axis,cos_Z_axis,0,0],\
              [0,0,1,0],\
              [0,0,0,1]])
-#        m_Rotate_Z_Inv = np.matrix(\
-#            [[cos_Z_axis,sin_Z_axis,0,0],\
-#             [-sin_Z_axis,cos_Z_axis,0,0],\
-#             [0,0,1,0],\
-#             [0,0,0,1]])
+        m_Rotate_Z_Inv = np.matrix(\
+            [[cos_Z_axis,sin_Z_axis,0,0],\
+             [-sin_Z_axis,cos_Z_axis,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
 
+        print(' sin_X_axis = ' + str(sin_X_axis))
+        print(' cos_X_axis = ' + str(cos_X_axis))
+        print(' sin_Y_axis = ' + str(sin_Y_axis))
+        print(' cos_Y_axis = ' + str(cos_Y_axis))
+        print(' sin_Z_axis = ' + str(sin_Z_axis))
+        print(' cos_Z_axis = ' + str(cos_Z_axis))
+        
         ## Combine rotation transformation to be applied to points
         rotationMatrix = m_Rotate_Trans_Inv * m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X * m_Rotate_Trans
 
