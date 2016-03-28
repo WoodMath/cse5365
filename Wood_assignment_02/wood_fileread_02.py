@@ -141,19 +141,26 @@ class mesh:
                         self.add_viewport(line_parsed)
     def establish_matrices(self):
         print(' Establishing matrices ')
-        self.vMat=np.matrix([[1,0,0,self.vx[0]],\
-                            [0,1,0,self.vy[0]],\
-                            [0,0,1,0],\
-                            [0,0,0,1]])
-        self.sMat=np.matrix([[(self.vx[1]-self.vx[0])/(self.wx[1]-self.wx[0]),0,0,0],\
-                            [0,(self.vy[1]-self.vy[0])/(self.wy[1]-self.wy[0]),0,0],\
-                            [0,0,1,0],\
-                            [0,0,0,1]])
-        self.wMat=np.matrix([[1,0,0,-self.wx[0]],\
-                            [0,1,0,-self.wy[0]],\
-                            [0,0,1,0],\
-                            [0,0,0,1]])
-        self.tMat=np.matrix([[1,0,0,0],[0,1,0,0],[0,0,0,1]])
+        self.vMat=np.matrix(\
+            [[1,0,0,self.vx[0]],\
+             [0,1,0,self.vy[0]],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        self.sMat=np.matrix(\
+            [[(self.vx[1]-self.vx[0])/(self.wx[1]-self.wx[0]),0,0,0],\
+             [0,(self.vy[1]-self.vy[0])/(self.wy[1]-self.wy[0]),0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        self.wMat=np.matrix(\
+            [[1,0,0,-self.wx[0]],\
+             [0,1,0,-self.wy[0]],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        self.tMat=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
         self.mMat=self.vMat*self.sMat*self.wMat;
         self.vertices=np.matrix(self.vertices)
 
