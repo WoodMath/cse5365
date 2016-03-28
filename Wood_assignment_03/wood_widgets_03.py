@@ -276,11 +276,11 @@ class cl_pannel_03:
         trans_frame = Frame(master.ob_root_window)
         trans_frame.pack()
 
-        self.fTransTx = self.fDefaultTen
+        self.fTransTx = self.fDefaultOne
         self.sTransTx = StringVar(value=str(round(self.fTransTx,2)))
-        self.fTransTy = self.fDefaultTen
+        self.fTransTy = self.fDefaultOne
         self.sTransTy = StringVar(value=str(round(self.fTransTy,2)))
-        self.fTransTz = self.fDefaultTen
+        self.fTransTz = self.fDefaultOne
         self.sTransTz = StringVar(value=str(round(self.fTransTz,2)))
 
         self.trans_label = Label(trans_frame, text="Translation ([dx,dy,dz]):").pack(side=LEFT,padx=0,pady=0)
