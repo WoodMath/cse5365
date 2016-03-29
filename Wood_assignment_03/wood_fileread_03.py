@@ -325,8 +325,12 @@ class mesh:
         self.vy=[]
         self.sx=[]
         self.sy=[]
-        self.world2viewMatrix=[]
-        self.view2screenMatrix=[]
+        self.viewMatrix=[]
+        self.originMatrix=[]
+        self.world2NDCMatrix=[]
+        self.NDC2viewportMatrix=[]
+        self.world2viewportMatrix=[]
+        self.viewport2screenMatrix=[]
         self.startMatrix=np.matrix(\
             [[1,0,0,0],\
              [0,1,0,0],\
@@ -351,7 +355,7 @@ class mesh:
         
     def set_file(self,filename):
         self.filename=filename
-        #self.init()
+
 
     def add_vertex(self,vertex):
         self.vertices.append(vertex)
@@ -422,32 +426,23 @@ class mesh:
 
     def establish_screen_coordinates(self,iWidth,iHeight):
 
-        self.view2screenMatrix = np.matrix(\
+        self.viewport2screenMatrix = np.matrix(\
             [[float(iWidth),0,0,0],\
              [0,float(iHeight),0,0],\
              [0,0,1,0],\
              [0,0,0,1]])
 
-#        self.view2screenMatrix  = self.view2screenMatrix * np.matrix(\
-#            [[ 1, 0, 0, 0],\
-#             [ 0,-1, 0, 1],\
-#             [ 0, 0, 1, 0],\
-#             [ 0, 0, 0, 1]])
-
         print(' Establishing Screen coordinates ')
         # Transform vertices into coordinates
-        self.screen_coordinates = self.view2screenMatrix *\
-                                  self.world2viewMatrix * \
+        self.screen_coordinates = self.viewport2screenMatrix *\
+                                  self.world2viewportMatrix * \
                                   self.stackMatrix * \
                                   np.transpose(np.matrix(self.object_coordinates))
-
-#        print(' self.object_coordinates = ')
-#        print(self.object_coordinates)
         
         self.screen_coordinates = np.transpose(self.screen_coordinates)
 
         # Transform viewport box
-        self.box = self.view2screenMatrix * np.transpose(np.matrix(self.bounding))
+        self.box = self.viewport2screenMatrix * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
         
     def establish_parallel_view_matrix(self):
@@ -550,59 +545,6 @@ class mesh:
         ##################################
         ##      Clipping Occurs Here    ##
         ##################################       
-
-        vNDCx = tObj.vNDCx
-        vNDCy = tObj.vNDCy
-        vNDCz = tObj.vNDCz
-
-#        sNDCx = (self.vx[1]-self.vx[0])/(vNDCx[1]-vNDCx[0])
-#        sNDCy = (self.vy[1]-self.vy[0])/(vNDCy[1]-vNDCy[0])
-#        sNDCz = 1 /(vNDCz[1]-vNDCz[0])
-
-        sNDCx = (self.wu[1]-self.wu[0])/(vNDCx[1]-vNDCx[0])
-        sNDCy = (self.wv[1]-self.wv[0])/(vNDCy[1]-vNDCy[0])
-        sNDCz = (self.wn[1]-self.wn[0])/(vNDCz[1]-vNDCz[0])
-
-        print(' sNDCx = ', sNDCx)
-        print(' sNDCy = ', sNDCy)
-        print(' sNDCz = ', sNDCz)
-
-        print(' vNDCx = ', vNDCx)
-        print(' vNDCy = ', vNDCy)
-        print(' vNDCz = ', vNDCz)
-
-        print(' self.world2NDCMatrix = ')
-        print(self.world2NDCMatrix)
-        
-        wMat=np.matrix(\
-            [[1,0,0,-vNDCx[0]],\
-             [0,1,0,-vNDCy[0]],\
-             [0,0,1,-vNDCz[0]],\
-             [0,0,0,1]])
-        sMat=np.matrix(\
-            [[sNDCx,0,0,0],\
-             [0,sNDCy,0,0],\
-             [0,0,sNDCz,0],\
-             [0,0,0,1]])
-        vMat=np.matrix(\
-            [[1,0,0,self.wu[0]],\
-             [0,1,0,self.wv[0]],\
-             [0,0,1,self.wn[0]],\
-             [0,0,0,1]])
-
-        print(' wMat = ')
-        print(wMat)
-        print(' sMat = ')
-        print(sMat)
-        print(' vMat = ')
-        print(vMat)
-        
-        self.NDC2viewvolumeMatrix = sMat ;
-        self.NDC2viewvolumeMatrix = vMat * sMat * wMat;
-
-        self.world2viewvolumeMatrix = self.NDC2viewvolumeMatrix * self.world2NDCMatrix
-        self.world2viewvolumeMatrix = self.world2NDCMatrix
-
         
         wMat=np.matrix(\
             [[1,0,0,-self.wu[0]],\
@@ -620,9 +562,8 @@ class mesh:
              [0,0,1,0],\
              [0,0,0,1]])
 
-
-        self.viewvolume2viewportMatrix = vMat * sMat * wMat;
-        self.world2viewMatrix = self.viewvolume2viewportMatrix * self.world2viewvolumeMatrix
+        self.NDC2viewportMatrix = vMat * sMat * wMat;
+        self.world2viewportMatrix = self.NDC2viewportMatrix * self.world2NDCMatrix
 
 
         #self.world2viewMatrix = self.viewvolume2viewportMatrix
