@@ -22,6 +22,7 @@ class cl_world:
         self.borders=borders
         self.edges=edges
         self.mesh=mesh
+        self.canvas=None
         
  
     def add_canvas(self,canvas):
@@ -32,13 +33,13 @@ class cl_world:
         self.polygons=[]                                # Array storing Triangles and Quads
         self.borders=[]                                 # Array storing Viewport Box
         self.edges=[]
-
+        
         canvas.delete('all')                            # Clear screen of all objects
-        if(not len(mesh.transformed_vertices)):         # If no objects do not attempt to draw.
+        if(not len(mesh.vertices)):         # If no objects do not attempt to draw.
             return
 
         # Establish proper coordinates based on window size
-        mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
+        mesh.establish_screen_coordinates(canvas.cget("width"),canvas.cget("height"))
 
 
         # DRAW viewport box
@@ -58,7 +59,7 @@ class cl_world:
             for i in range(0,len(mesh.faces[f])):
                 i_index= mesh.faces[f][i]
                 i_indices.append(i_index)
-                v_to_add = mesh.coordinates[i_index,:]
+                v_to_add = mesh.screen_coordinates[i_index,:]
                 
                 v_polygon.append(int(v_to_add[0,0]))
                 v_polygon.append(int(v_to_add[0,1]))
@@ -71,13 +72,13 @@ class cl_world:
         mesh=self.mesh
         print(' Redisplay called ')
 
-        if(not len(mesh.transformed_vertices)):         # If no objects do not attempt to draw.
+        if(not len(mesh.vertices)):         # If no objects do not attempt to draw.
             return
         
         # If there are drawn objects
         if(self.borders or self.polygons):
             # RE-Establish proper coordinates based on window size
-            mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
+            mesh.establish_screen_coordinates(canvas.cget("width"),canvas.cget("height"))
             
         # REPOSITION viewport box object
         if self.borders:
@@ -89,10 +90,8 @@ class cl_world:
                 )
 
         if self.polygons:
-
             ## REPOSITION all faces
             for f in range(0,len(mesh.faces)):
-
                 v_polygon=[]
                 i_indices=[]
 
@@ -101,7 +100,7 @@ class cl_world:
                 for i in range(0,len(mesh.faces[f])):
                     i_index= mesh.faces[f][i]
                     i_indices.append(i_index)
-                    v_to_add = mesh.coordinates[i_index,:]
+                    v_to_add = mesh.screen_coordinates[i_index,:]
 
                     v_polygon.append(v_to_add[0,0])
                     v_polygon.append(v_to_add[0,1])
@@ -110,21 +109,28 @@ class cl_world:
                 canvas.coords(self.polygons[f], v_polygon)
             canvas.update()
 
-    def clear(self,canvas,event):
+    def clear(self,canvas,event=None):
         mesh=self.mesh
         print(' Clear called ')
-            
+
+        canvas.delete('all')
+        canvas.delete(ALL)
+        
         # DELETE viewport box object
         if self.borders:
             for i in range(0,len(self.borders)):
+                self.borders[i]
                 canvas.delete(self.borders[i])
 
         if self.polygons:
 
             ## DELETE all polygons
             for i in range(0,len(self.polygons)):
-                canvas.delete(self.polygons[i])
-                
-        canvas.update()
+                j=self.polygons[i]
+                k=canvas.delete(self.polygons[i])
+
+        self.borders=[]
+        self.polygons=[]
+        #canvas.update()
 
 

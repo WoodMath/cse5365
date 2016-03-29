@@ -361,15 +361,24 @@ class cl_pannel_03:
         print(" Loading file '" + str(filename) + "'")
         if(len(self.mesh.filename)):
             self.mesh.set_file(self.mesh.filename)
-            self.mesh.load()
+            
+            
 
     def load_file(self):
+        ## Reset Mesh info
+        self.mesh.init()
+        ## Clear drawed objects
+        self.world.clear(self.master.ob_canvas_frame.canvas, event=None)
+
+
+        ## Reload file
+        self.mesh.load()
         if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
         else:
             
             # Calculate non-canvas size matrix transformations
-            self.mesh.establish_view_matrix()
+            self.mesh.establish_parallel_view_matrix()
             print('window:')
             print(' wumin = ' + str(self.mesh.wu[0]))
             print(' wumax = ' + str(self.mesh.wu[1]))        
@@ -389,9 +398,8 @@ class cl_pannel_03:
 #            print(' self.mesh.transformed_vertices = ',self.mesh.transformed_vertices)
 
 
-            print(' len(self.world.polygons) = ' + str(len(self.world.polygons)))
             # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
-            if(self.world.polygons):
+            if(len(self.world.polygons)>0):
                 self.mesh.resetStack()
                 self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas, event=None)
             else:
@@ -402,7 +410,7 @@ class cl_pannel_03:
     def rotate(self):
         print(' rotate button pushed ')
 
-        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
+        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
 
         self.v_a = [0.0,0.0,0.0]
@@ -462,7 +470,7 @@ class cl_pannel_03:
     def scale(self):
         print(' scale button clicked ')
 
-        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
+        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
         
         self.scale_option = self.i_scale_option.get()
@@ -479,7 +487,7 @@ class cl_pannel_03:
 
         self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
         self.scale_size = [1.0,1.0,1.0]
-
+        
         # If uniform scale selected assign same scale to all array elements
         if(self.scale_option==1):
             self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
@@ -514,7 +522,7 @@ class cl_pannel_03:
     def translate(self):
         print(' translate button clicked ')
 
-        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
+        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
         
         self.fTransTx = float(self.sTransTx.get())
