@@ -405,7 +405,7 @@ class cl_pannel_03:
             print(' self.sVRPAz = ' + self.sVRPAz.get())
 
             # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
-            if(len(self.world.polygons)>0):
+            if(len(self.world.lines)>0):
                 self.mesh.resetStack()
                 self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas, event=None)
             else:

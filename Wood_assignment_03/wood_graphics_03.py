@@ -15,10 +15,10 @@ from tkinter import *
 from copy import *
 
 class cl_world:
-    def __init__(self, mesh, objects=[],canvases=[],polygons=[],borders=[],edges=[]):
+    def __init__(self, mesh, objects=[],canvases=[],lines=[],borders=[],edges=[]):
         self.objects=objects
         self.canvases=canvases
-        self.polygons=polygons
+        self.lines=lines
         self.borders=borders
         self.edges=edges
         self.mesh=mesh
@@ -30,7 +30,7 @@ class cl_world:
         canvas.world=self
     
     def create_graphic_objects(self,canvas,mesh):
-        self.polygons=[]                                # Array storing Triangles and Quads
+        self.lines=[]                                # Array storing Triangles and Quads
         self.borders=[]                                 # Array storing Viewport Box
         self.edges=[]
         
@@ -51,7 +51,7 @@ class cl_world:
         ## DRAW all faces
         for f in range(0,len(mesh.faces)):
 
-            v_polygon=[]
+            v_line=[]
             i_indices=[]
 
             ## For each face loop over all indices to build
@@ -63,14 +63,14 @@ class cl_world:
 
                 v_to_add = mesh.screen_coordinates[i_index,:]
                 
-                v_polygon.append(int(v_to_add[0,0]))
-                v_polygon.append(int(v_to_add[0,1]))
+                v_line.append(int(v_to_add[0,0]))
+                v_line.append(int(v_to_add[0,1]))
 
 
             ## DRAW actual faces
-#            self.polygons.append(canvas.create_polygon(list(v_polygon), fill='red', width=1.0, outline='black'))
+#            self.lines.append(canvas.create_polygon(list(v_line), fill='red', width=1.0, outline='black'))
             ## DRAW actual lines
-            self.polygons.append(canvas.create_line(list(v_polygon), width=1.0, fill='black'))
+            self.lines.append(canvas.create_line(list(v_line), width=1.0, fill='black'))
 
 
     def redisplay(self,canvas,event):
@@ -81,7 +81,7 @@ class cl_world:
             return
         
         # If there are drawn objects
-        if(self.borders or self.polygons):
+        if(self.borders or self.lines):
             # RE-Establish proper coordinates based on window size
             mesh.establish_screen_coordinates(canvas.cget("width"),canvas.cget("height"))
             
@@ -94,10 +94,10 @@ class cl_world:
                     int(mesh.box[i+1,0]), int(mesh.box[i+1,1])\
                 )
 
-        if self.polygons:
+        if self.lines:
             ## REPOSITION all faces
             for f in range(0,len(mesh.faces)):
-                v_polygon=[]
+                v_line=[]
                 i_indices=[]
 
                 ## For each face loop over all indices to build
@@ -107,11 +107,11 @@ class cl_world:
                     i_indices.append(i_index)
                     v_to_add = mesh.screen_coordinates[i_index,:]
 
-                    v_polygon.append(v_to_add[0,0])
-                    v_polygon.append(v_to_add[0,1])
+                    v_line.append(v_to_add[0,0])
+                    v_line.append(v_to_add[0,1])
 
                 ## REPOSITION actual faces
-                canvas.coords(self.polygons[f], v_polygon)
+                canvas.coords(self.lines[f], v_line)
             canvas.update()
 
     def clear(self,canvas,event=None):
@@ -127,15 +127,15 @@ class cl_world:
                 self.borders[i]
                 canvas.delete(self.borders[i])
 
-        if self.polygons:
+        if self.lines:
 
-            ## DELETE all polygons
-            for i in range(0,len(self.polygons)):
-                j=self.polygons[i]
-                k=canvas.delete(self.polygons[i])
+            ## DELETE all lines
+            for i in range(0,len(self.lines)):
+                j=self.lines[i]
+                k=canvas.delete(self.lines[i])
 
         self.borders=[]
-        self.polygons=[]
+        self.lines=[]
         #canvas.update()
 
 
