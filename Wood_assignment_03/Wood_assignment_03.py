@@ -15,6 +15,7 @@ from wood_graphics_03 import *
 
 
 def close_window_callback(root):
+
     if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
         root.destroy()
 

@@ -144,8 +144,8 @@ class cl_pannel_03:
         
         self.filename = StringVar()
         self.file_location_label = Label(file_frame, text="File Name:").pack(side=LEFT,padx=10,pady=10)
-#        self.file_location_string = Entry(file_frame, text="File Name:", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
-        self.file_location_string = Label(file_frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
+        self.file_location_string = Entry(file_frame, text="File Name:", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
+#        self.file_location_string = Label(file_frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
         
         self.file_dialog_button = Button(file_frame, text="Browse", fg="blue", command=self.browse_file)
         self.file_dialog_button.pack(side=LEFT)        
@@ -351,11 +351,10 @@ class cl_pannel_03:
         
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
-        filename = self.var_filename.get()
+        filename = self.var_filename.get()        
 
         # Save filename to 'mesh' object
         self.mesh.filename=filename
-        
         self.filename.set(filename)        
         
         print(" Loading file '" + str(filename) + "'")
@@ -397,6 +396,13 @@ class cl_pannel_03:
 #            print(' self.mesh.vertices = ',self.mesh.vertices)
 #            print(' self.mesh.transformed_vertices = ',self.mesh.transformed_vertices)
 
+            self.sVRPAx = StringVar(value=str(round(self.mesh.vrp[0],2)))
+            self.sVRPAy = StringVar(value=str(round(self.mesh.vrp[1],2)))
+            self.sVRPAz = StringVar(value=str(round(self.mesh.vrp[2],2)))
+
+            print(' self.sVRPAx = ' + self.sVRPAx.get())
+            print(' self.sVRPAy = ' + self.sVRPAy.get())
+            print(' self.sVRPAz = ' + self.sVRPAz.get())
 
             # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
             if(len(self.world.polygons)>0):

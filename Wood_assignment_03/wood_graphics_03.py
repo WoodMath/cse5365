@@ -47,7 +47,7 @@ class cl_world:
             self.borders.append(canvas.create_line(int(mesh.box[i,0]), int(mesh.box[i,1]), \
                                                    int(mesh.box[i+1,0]), int(mesh.box[i+1,1]), \
                                                    fill="black", width=1.0))
-
+        
         ## DRAW all faces
         for f in range(0,len(mesh.faces)):
 
@@ -58,14 +58,19 @@ class cl_world:
             ## [[x0,y0],[x1,y1],[x2,y2],..[xn,yn]] array
             for i in range(0,len(mesh.faces[f])):
                 i_index= mesh.faces[f][i]
+
                 i_indices.append(i_index)
+
                 v_to_add = mesh.screen_coordinates[i_index,:]
                 
                 v_polygon.append(int(v_to_add[0,0]))
                 v_polygon.append(int(v_to_add[0,1]))
 
+
             ## DRAW actual faces
-            self.polygons.append(canvas.create_polygon(list(v_polygon), fill='red', width=1.0, outline='black'))
+#            self.polygons.append(canvas.create_polygon(list(v_polygon), fill='red', width=1.0, outline='black'))
+            ## DRAW actual lines
+            self.polygons.append(canvas.create_line(list(v_polygon), width=1.0, fill='black'))
 
 
     def redisplay(self,canvas,event):

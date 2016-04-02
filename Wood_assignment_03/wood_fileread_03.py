@@ -360,7 +360,12 @@ class mesh:
     def add_vertex(self,vertex):
         self.vertices.append(vertex)
     def add_face(self,face):
-        self.faces.append(face)
+        if(len(face)>2):
+            raise ValueError(' Length of Passed face does not equal 2')
+        if(face[0]<face[1]):
+            self.faces.append([face[0],face[1]])
+        else:
+            self.faces.append([face[1],face[0]])
     def add_window(self,window):
         self.wu=[window[0],window[1]]
         self.wv=[window[2],window[3]]
@@ -396,11 +401,18 @@ class mesh:
                     line_parsed.pop(0)
                     if(line_type=='v'):
                         line_parsed.append('1.0')
-                        line_parsed=vect_float(line_parsed)
+                        line_parsed=vect_float(line_parsed[:])
                         self.add_vertex(line_parsed)
                     if(line_type=='f'):
-                        line_parsed=vect_int_less_one(line_parsed[:])
-                        self.add_face(line_parsed)
+                        line_parsed = vect_int_less_one(line_parsed[:])
+                        for k in range(len(line_parsed)-1):
+                            line_passed = [line_parsed[k],line_parsed[k+1]]
+                            self.add_face(line_passed)
+                        ## Add line back to beginning
+                        if(len(line_parsed)>2):
+                            line_passed = [line_parsed[0], line_parsed[len(line_parsed)-1]]
+                            self.add_face(line_passed)
+                        #self.add_face(line_parsed)
                     if(line_type=='w'):
                         line_parsed=vect_float(line_parsed[:])
                         self.add_window(line_parsed)
@@ -419,6 +431,8 @@ class mesh:
                     if(line_type=='p'):
                         line_parsed=vect_int(line_parsed[:])
                         self.add_prp(line_parsed)
+
+        print(' self.faces = ' + str(self.faces))
 
         self.sx = (self.vx[1]-self.vx[0])/(self.wu[1]-self.wu[0])
         self.sy = (self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0])
@@ -449,6 +463,10 @@ class mesh:
         print(' Establishing view matrix ')
 
         tObj = viewTransform()
+
+        print(' ** File Parameters ** ')
+
+
 
         ##################################
 
