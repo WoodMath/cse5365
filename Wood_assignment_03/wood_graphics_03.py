@@ -52,25 +52,33 @@ class cl_world:
         for f in range(0,len(mesh.faces)):
 
             v_line=[]
-            i_indices=[]
+            i_one = mesh.faces[f][0]
+            i_two = mesh.faces[f][1]
+            v_to_add_one = mesh.screen_coordinates[i_one,:]
+            v_to_add_two = mesh.screen_coordinates[i_two,:]
+#            v_line.append(int(v_to_add_one[0,0]))
+#            v_line.append(int(v_to_add_one[0,1]))
+#            v_line.append(int(v_to_add_two[0,0]))
+#            v_line.append(int(v_to_add_two[0,1]))
+            v_line = [v_to_add_one[0,0],v_to_add_one[0,1],v_to_add_two[0,0],v_to_add_two[0,1]]
 
             ## For each face loop over all indices to build
             ## [[x0,y0],[x1,y1],[x2,y2],..[xn,yn]] array
-            for i in range(0,len(mesh.faces[f])):
-                i_index= mesh.faces[f][i]
+#            for i in range(0,len(mesh.faces[f])):
+#                i_index= mesh.faces[f][i]
 
-                i_indices.append(i_index)
+#                i_indices.append(i_index)
 
-                v_to_add = mesh.screen_coordinates[i_index,:]
+#                v_to_add = mesh.screen_coordinates[i_index,:]
                 
-                v_line.append(int(v_to_add[0,0]))
-                v_line.append(int(v_to_add[0,1]))
+#                v_line.append(int(v_to_add[0,0]))
+#                v_line.append(int(v_to_add[0,1]))
 
 
             ## DRAW actual faces
 #            self.lines.append(canvas.create_polygon(list(v_line), fill='red', width=1.0, outline='black'))
             ## DRAW actual lines
-            self.lines.append(canvas.create_line(list(v_line), width=1.0, fill='black'))
+            self.lines.append(canvas.create_line(v_line, width=1.0, fill='black'))
 
 
     def redisplay(self,canvas,event):
@@ -100,18 +108,25 @@ class cl_world:
                 v_line=[]
                 i_indices=[]
 
-                ## For each face loop over all indices to build
-                ## [[x0,y0],[x1,y1],[x2,y2],..[xn,yn]] array
-                for i in range(0,len(mesh.faces[f])):
-                    i_index= mesh.faces[f][i]
-                    i_indices.append(i_index)
-                    v_to_add = mesh.screen_coordinates[i_index,:]
-
-                    v_line.append(v_to_add[0,0])
-                    v_line.append(v_to_add[0,1])
-
-                ## REPOSITION actual faces
+                i_one = mesh.faces[f][0]
+                i_two = mesh.faces[f][1]
+                v_to_add_one = mesh.screen_coordinates[i_one,:]
+                v_to_add_two = mesh.screen_coordinates[i_two,:]
+                v_line = [v_to_add_one[0,0],v_to_add_one[0,1],v_to_add_two[0,0],v_to_add_two[0,1]]
                 canvas.coords(self.lines[f], v_line)
+
+#                ## For each face loop over all indices to build
+#                ## [[x0,y0],[x1,y1],[x2,y2],..[xn,yn]] array
+#                for i in range(0,len(mesh.faces[f])):
+#                    i_index= mesh.faces[f][i]
+#                    i_indices.append(i_index)
+#                    v_to_add = mesh.screen_coordinates[i_index,:]
+#
+#                    v_line.append(v_to_add[0,0])
+#                    v_line.append(v_to_add[0,1])
+#
+#                ## REPOSITION actual faces
+#                canvas.coords(self.lines[f], v_line)
             canvas.update()
 
     def clear(self,canvas,event=None):

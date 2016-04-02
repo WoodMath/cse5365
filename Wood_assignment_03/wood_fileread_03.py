@@ -432,7 +432,6 @@ class mesh:
                         line_parsed=vect_int(line_parsed[:])
                         self.add_prp(line_parsed)
 
-        print(' self.faces = ' + str(self.faces))
 
         self.sx = (self.vx[1]-self.vx[0])/(self.wu[1]-self.wu[0])
         self.sy = (self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0])
