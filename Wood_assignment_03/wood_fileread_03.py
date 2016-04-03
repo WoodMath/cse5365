@@ -61,6 +61,12 @@ vect_int=np.vectorize(int)
 vect_int_less_one=np.vectorize(single_int_less_one)
 vect_float=np.vectorize(float)
 
+
+
+
+
+
+
 class viewTransform:
     def __init__(self):
         self.parent = self
@@ -352,7 +358,89 @@ class mesh:
         self.scaleMatrix=None
         self.rotationMatrix=None
         self.translationMatrix=None
+        self.start_index=[]
+        self.group_count=[]
+
+
+    def add_optimal_line(self,v_to_add):
+        ## Performs a prefix sort / radix sort
+        ## Cycles through an array of 2 element arrays such to insert an array [x,y] such that
+        ##      All elements x are no less than the elements x before it.
+        ##      For any given x, all elements y are no less than the elements y before it
+        ##      Think [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]]
+
+        i_current_vert_group = v_to_add[0]
+        i_current_vert_group_count = len(self.start_index)
         
+        if(i_current_vert_group < i_current_vert_group_count):
+            if(self.start_index[i_current_vert_group] == -1):
+                ## First edge in group (with v_to_add[0])
+                i_found = -1
+                i_previous_group = -1
+                for i_inc in range(0,i_current_vert_group):
+                    if(self.start_index[i_inc] > -1):
+                        i_previous_group = i_inc;
+                        i_found = i_inc;
+
+                if(i_found == -1):                                      ## No previous start found
+                    i_start = 0                                         ## Just use 0
+                else:                                                   ## Otherwise
+                    i_start = \
+                            self.start_index[i_previous_group] + self.group_count[i_previous_group]
+                    ## Use start of Previous group start Plus previous group size
+
+                self.start_index[i_current_vert_group] = i_start        ## Set group start for first time
+
+                ## Inser occurs at group start
+                i_ins = self.start_index[i_current_vert_group]
+                
+            else:
+                ## Get elements to cycle throug
+                i_index_start = self.start_index[i_current_vert_group]
+                i_index_stop = i_index_start + self.group_count[i_current_vert_group]
+
+                i_found = -1
+                i_inc = i_index_start
+                for i_inc in range(i_index_start, i_index_stop):
+                    v_test = self.faces[i_inc]
+                    if(v_test[0] != i_current_vert_group):  ## Something happended causing to go outside the current group
+                        ValueError(' Something bad happened: v_test[0] = ' + str(v_test[0]) + \
+                                   ' Not the same as i_current_vert_group = ' + str(i_current_vert_group))
+                    if(v_test[1] == v_to_add[1]):           ## Dubplicate is being inserted
+                        i_ins = -1                          ## Do not insert
+                        i_found = i_inc                     ## Place found
+                        break
+                    if(v_test[1] > v_to_add[1]):
+                        i_ins = i_inc                       ## Insert occurs at place it fails
+                        i_found = i_inc                     ## Place found
+                        break
+                    
+                if(i_found == -1):                          ## No insert place found    
+                    i_ins = i_inc + 1                       ## Choose next spot
+                    i_found = i_ins
+            
+        else:
+            ## Keep adding dummy elemends
+            for i_inc in range(i_current_vert_group_count,i_current_vert_group):
+                self.start_index.append(-1)                 ## To start indice array
+                self.group_count.append(0)                  ## And group size array
+            i_ins = len(self.faces)                         ## Set insert position as end of vertice list
+            self.start_index.append(i_ins)                  ## Set the start to this position
+            self.group_count.append(0)                      ## Still keeping group size as 0 because element hasn't been appendied to vertice list yet
+
+        ## Found position to insert
+        i_current_vert_group_count = len(self.start_index)  ## Restablish group count
+
+        ## Now do insert
+        if(i_ins > -1):
+            self.faces.insert(i_ins,v_to_add)               ## Insert actual vertex
+            (self.group_count[i_current_vert_group]) += 1   ## Increase the group size by 1
+
+            for i_inc in range(i_current_vert_group+1, i_current_vert_group_count):
+                (self.start_index[i_inc]) += 1              ## Increment starting index of remaining group
+
+
+            
     def set_file(self,filename):
         self.filename=filename
 
@@ -363,9 +451,12 @@ class mesh:
         if(len(face)>2):
             raise ValueError(' Length of Passed face does not equal 2')
         if(face[0]<face[1]):
-            self.faces.append([face[0],face[1]])
+            line_to_append  = [face[0],face[1]]
         else:
-            self.faces.append([face[1],face[0]])
+            line_to_append  = [face[1],face[0]]
+
+        self.add_optimal_line(line_to_append)
+
     def add_window(self,window):
         self.wu=[window[0],window[1]]
         self.wv=[window[2],window[3]]

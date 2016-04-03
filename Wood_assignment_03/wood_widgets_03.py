@@ -361,8 +361,6 @@ class cl_pannel_03:
         if(len(self.mesh.filename)):
             self.mesh.set_file(self.mesh.filename)
             
-            
-
     def load_file(self):
         ## Reset Mesh info
         self.mesh.init()
