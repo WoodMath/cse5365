@@ -16,7 +16,7 @@ from wood_fileread_03 import *
 
 import time
 
-fDelay = 0.05
+fDelay = 0.01
 class cl_widgets:
     def __init__(self,ob_root_window,ob_world=[],ob_mesh=mesh()):
         self.ob_root_window=ob_root_window
@@ -460,7 +460,7 @@ class cl_pannel_03:
         # Iterative for animation and redisplay
         self.mesh.establish_rotation_matrix(self.rotation_steps, self.v_a, self.v_b, self.rotation_degrees) 
         
-        print(" self.mesh.translationMatrix = ")
+        print(" self.mesh.rotationMatrix = ")
         print(self.mesh.rotationMatrix)
         
         for i_inc in range(self.rotation_steps):
