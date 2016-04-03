@@ -104,30 +104,63 @@ def test_function(v_vert_group):
         
     
 
-test_function([0,0])
+#test_function([0,0])
 
-test_function([5,0])
+#test_function([5,0])
 
-test_function([3,0])
+#test_function([3,0])
 
-test_function([7,0])
+#test_function([7,0])
 
-test_function([7,5])
+#test_function([7,5])
 
-test_function([3,5])
+#test_function([3,5])
 
-test_function([3,7])
+#test_function([3,7])
 
-test_function([3,3])
+#test_function([3,3])
 
-test_function([3,5])
+#test_function([3,5])
 
 
-print(' v_indice_start = ')
-print(v_indice_start)
+#print(' v_indice_start = ')
+#print(v_indice_start)
 
-print(' v_group_size = ')
-print(v_group_size)
+#print(' v_group_size = ')
+#print(v_group_size)
 
-print(' arr_vert_list = ')
-print(arr_vert_list)
+#print(' arr_vert_list = ')
+#print(arr_vert_list)
+
+
+v_test_vert = [[0,0,0,1],\
+               [0,1,0,1],\
+               [1,1,0,1],\
+               [1,0,0,1]]\
+               
+v_test_ind = [[0,1],\
+              [1,2],\
+              [2,3],\
+              [3,0]]
+
+def seperate_points(v_vertices, v_indices ):
+    v_out_vertices=[]
+    v_out_indices=[]
+    i_index = 0
+    for i_inc in range(0,len(v_indices)):
+        i_index_one = v_indices[i_inc][0]
+        i_index_two = v_indices[i_inc][1]
+        v_vertex_one = v_vertices[i_index_one]
+        v_vertex_two = v_vertices[i_index_two]
+        
+        v_out_vertices.append(v_vertex_one)
+        v_out_vertices.append(v_vertex_two)
+
+        v_out_indices.append([i_index,i_index+1])
+        i_index += 2
+    
+    return (v_out_vertices,v_out_indices)
+
+
+test = seperate_points(v_test_vert, v_test_ind)
+        

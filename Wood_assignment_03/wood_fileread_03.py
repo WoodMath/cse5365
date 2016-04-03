@@ -440,7 +440,30 @@ class mesh:
                 (self.start_index[i_inc]) += 1              ## Increment starting index of remaining group
 
 
+
+    def seperate_points(self):
+        v_vertices = copy.copy(self.vertices)
+        v_indices = copy.copy(self.faces)
+        v_out_vertices=[]
+        v_out_indices=[]
+        i_index = 0
+        for i_inc in range(0,len(v_indices)):
+            i_index_one = v_indices[i_inc][0]
+            i_index_two = v_indices[i_inc][1]
+            v_vertex_one = v_vertices[i_index_one]
+            v_vertex_two = v_vertices[i_index_two]
             
+            v_out_vertices.append(v_vertex_one)
+            v_out_vertices.append(v_vertex_two)
+
+            v_out_indices.append([i_index,i_index+1])
+            i_index += 2
+
+        self.vertices = v_out_vertices
+        self.faces = v_out_indices
+        
+#        return (v_out_vertices,v_out_indices)
+
     def set_file(self,filename):
         self.filename=filename
 
@@ -501,8 +524,9 @@ class mesh:
                             self.add_face(line_passed)
                         ## Add line back to beginning
                         if(len(line_parsed)>2):
-                            line_passed = [line_parsed[0], line_parsed[len(line_parsed)-1]]
-                            self.add_face(line_passed)
+                            if(line_parsed[0] != line_parsed[len(line_parsed)-1]):      ## Some formats repeat 1st vertex
+                                line_passed = [line_parsed[0], line_parsed[len(line_parsed)-1]]
+                                self.add_face(line_passed)
                         #self.add_face(line_parsed)
                     if(line_type=='w'):
                         line_parsed=vect_float(line_parsed[:])
@@ -526,6 +550,7 @@ class mesh:
 
         self.sx = (self.vx[1]-self.vx[0])/(self.wu[1]-self.wu[0])
         self.sy = (self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0])
+        self.seperate_points()
         self.object_coordinates = np.matrix(self.vertices)
 
     def establish_screen_coordinates(self,iWidth,iHeight):
