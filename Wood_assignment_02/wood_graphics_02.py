@@ -34,11 +34,11 @@ class cl_world:
         self.edges=[]
 
         canvas.delete('all')                            # Clear screen of all objects
-        if(not len(mesh.transformed_vertices)):         # If no objects do not attempt to draw.
+        if(not mesh.something2draw):         # If no objects do not attempt to draw.
             return
 
         # Establish proper coordinates based on window size
-        mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
+        mesh.establish_screen_coordinates(canvas.cget("width"),canvas.cget("height"))
 
 
         # DRAW viewport box
@@ -71,14 +71,20 @@ class cl_world:
         mesh=self.mesh
         print(' Redisplay called ')
 
-        if(not len(mesh.transformed_vertices)):         # If no objects do not attempt to draw.
+        
+#        # If there are drawn objects
+#        if(self.borders or self.polygons):
+#            # RE-Establish proper coordinates based on window size
+#            mesh.establish_screen_coordinates(canvas.cget("width"),canvas.cget("height"))
+
+        # If there are drawn objects
+        if(not(self.borders or self.polygons)):
+            # RE-Establish proper coordinates based on window size
+            return
+
+        if(not mesh.something2draw):         # If no objects do not attempt to draw.
             return
         
-        # If there are drawn objects
-        if(self.borders or self.polygons):
-            # RE-Establish proper coordinates based on window size
-            mesh.establish_coordinates(canvas.cget("width"),canvas.cget("height"))
-            
         # REPOSITION viewport box object
         if self.borders:
             for i in range(0,len(mesh.box)-1):

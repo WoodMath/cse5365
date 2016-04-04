@@ -267,3 +267,23 @@ print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
 print(' c.point1new = ' + str(c.point1new.getPointV3()))
 print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
 
+c.setPoint0(-1.5,-1.5,-1.5)
+c.setPoint1(1.5,1.5,1.5)
+
+c.calcLine()
+
+print(' **** ')
+
+print(' c.point0old = ' + str(c.point0old.getPointV3()))
+print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
+print(' c.point1old = ' + str(c.point1old.getPointV3()))
+print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
+
+print(' **** ')
+
+print(' c.point0new = ' + str(c.point0new.getPointV3()))
+print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
+print(' c.point1new = ' + str(c.point1new.getPointV3()))
+print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
+
+

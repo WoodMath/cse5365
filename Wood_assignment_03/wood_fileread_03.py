@@ -321,6 +321,7 @@ class mesh:
         self.world_coordinates=[]           ## Coordinates after applying transformations to object
         self.view_coordinates=[]            ## Coordinates after 7-step process
         self.screen_coordinates=[]          ## Coordinates after Window Resize
+        self.ndc_coordinates=[]
         self.transformed_vertices=[]
         self.stack=np.matrix([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,0.0],[0.0,0.0,0.0,1.0]])
         self.faces=[]
@@ -333,7 +334,9 @@ class mesh:
         self.sy=[]
         self.viewMatrix=[]
         self.originMatrix=[]
+        self.object2worldMatrix=[]
         self.world2NDCMatrix=[]
+        self.object2NDCMatrix=[]
         self.NDC2viewportMatrix=[]
         self.world2viewportMatrix=[]
         self.viewport2screenMatrix=[]
@@ -343,6 +346,11 @@ class mesh:
              [0,0,1,0],\
              [0,0,0,1]])
         self.stackMatrix=np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        self.eyeMatrix=np.matrix(\
             [[1,0,0,0],\
              [0,1,0,0],\
              [0,0,1,0],\
@@ -360,6 +368,7 @@ class mesh:
         self.translationMatrix=None
         self.start_index=[]
         self.group_count=[]
+        self.something2draw=False
 
 
     def add_optimal_line(self,v_to_add):
@@ -552,7 +561,21 @@ class mesh:
         self.sy = (self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0])
         self.seperate_points()
         self.object_coordinates = np.matrix(self.vertices)
+        self.object2worldMatix = copy.copy(self.eyeMatrix)
 
+#    def establish_world_matrix(self):
+#        self.world_coordinates =  self.stackMatrix * np.transpose(np.matrix(self.object_coordinates))
+#        self.world_coordinates = np.transpose(world_coordinates)
+
+    def establish_NDC_coordinates(self):
+
+        self.ndc_coordinates = self.world2NDCMatrix * self.stackMatrix * np.transpose(np.matrix(self.object_coordinates))
+        self.ndc_coordinates = np.transpose(self.ndc_coordinates)
+
+        ##################################
+        ##      Clipping Occurs Here    ##
+        ##################################
+        
     def establish_screen_coordinates(self,iWidth,iHeight):
 
         self.viewport2screenMatrix = np.matrix(\
@@ -563,25 +586,53 @@ class mesh:
 
         print(' Establishing Screen coordinates ')
         # Transform vertices into coordinates
+#        self.screen_coordinates = self.viewport2screenMatrix *\
+#                                  self.NDC2viewportMatrix * self.world2NDCMatrix * \
+#                                  self.stackMatrix * \
+#                                  np.transpose(np.matrix(self.object_coordinates))
+
         self.screen_coordinates = self.viewport2screenMatrix *\
-                                  self.world2viewportMatrix * \
-                                  self.stackMatrix * \
-                                  np.transpose(np.matrix(self.object_coordinates))
+                                  self.NDC2viewportMatrix * \
+                                  np.transpose(np.matrix(self.ndc_coordinates))
+
         
         self.screen_coordinates = np.transpose(self.screen_coordinates)
 
         # Transform viewport box
         self.box = self.viewport2screenMatrix * np.transpose(np.matrix(self.bounding))
         self.box = np.transpose(self.box)
-        
+
+    def establish_view_matrix(self):
+        self.establish_parallel_view_matrix()
+        self.establish_NDC_coordinates()
+        self.establish_viewport_matrix()
+
+    def establish_viewport_matrix(self):
+        wMat=np.matrix(\
+            [[1,0,0,-self.wu[0]],\
+             [0,-1,0,self.wv[1]],\
+             [0,0,1,-self.wn[0]],\
+             [0,0,0,1]])
+        sMat=np.matrix(\
+            [[self.sx,0,0,0],\
+             [0,self.sy,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        vMat=np.matrix(\
+            [[1,0,0,self.vx[0]],\
+             [0,1,0,self.vy[0]],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+
+        self.NDC2viewportMatrix = vMat * sMat * wMat;
+        self.world2viewportMatrix = self.NDC2viewportMatrix * self.world2NDCMatrix
+    
     def establish_parallel_view_matrix(self):
         print(' Establishing view matrix ')
 
         tObj = viewTransform()
 
         print(' ** File Parameters ** ')
-
-
 
         ##################################
 
@@ -674,40 +725,6 @@ class mesh:
         self.viewMatrix = self.step6Matrix * self.step5Matrix * self.step4Matrix * self.step3Matrix * self.step2Matrix
 
         self.world2NDCMatrix = self.viewMatrix * self.originMatrix
-
-        ##################################
-        ##      Clipping Occurs Here    ##
-        ##################################       
-        
-        wMat=np.matrix(\
-            [[1,0,0,-self.wu[0]],\
-             [0,-1,0,self.wv[1]],\
-             [0,0,1,-self.wn[0]],\
-             [0,0,0,1]])
-        sMat=np.matrix(\
-            [[self.sx,0,0,0],\
-             [0,self.sy,0,0],\
-             [0,0,1,0],\
-             [0,0,0,1]])
-        vMat=np.matrix(\
-            [[1,0,0,self.vx[0]],\
-             [0,1,0,self.vy[0]],\
-             [0,0,1,0],\
-             [0,0,0,1]])
-
-        self.NDC2viewportMatrix = vMat * sMat * wMat;
-        self.world2viewportMatrix = self.NDC2viewportMatrix * self.world2NDCMatrix
-
-
-        #self.world2viewMatrix = self.viewvolume2viewportMatrix
-
-
-#        self.vertices=np.matrix(self.vertices)
-
-        ## Do not transfer from 'object space' into 'world space' until
-        ## 'establish_parallel_view_matrix' called from 'load_file' in 'wood_widgets_03.py'
-
-#        self.transformed_vertices = copy.copy(self.vertices)
         
     def establish_rotation_matrix(self, i_steps, v_a, v_b, i_degree):
         # Establish the rotation matrix

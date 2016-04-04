@@ -24,7 +24,7 @@ class cl_widgets:
         self.ob_world=ob_world
         self.mesh=ob_mesh
         self.pannel_03 = cl_pannel_03(self,ob_root_window,ob_world,ob_mesh)
-        self.ob_canvas_frame=cl_canvas_frame(self)
+        self.ob_canvas_frame=cl_canvas_frame(self,ob_mesh)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
         self.ob_canvas_frame.canvas.delete("all")
 
@@ -36,10 +36,11 @@ class cl_widgets:
 
 
 class cl_canvas_frame:
-    def __init__(self, master):
+    def __init__(self, master,ob_mesh):
         self.master=master
         self.canvas = Canvas(master.ob_root_window,width=640, height=640, bg="yellow", highlightthickness=0)
         self.canvas.pack(expand=YES, fill=BOTH)
+        self.mesh = ob_mesh
 
 
                                             
@@ -126,6 +127,8 @@ class cl_canvas_frame:
 
         # Call redisplay() method in 'wood_graphics_03.py'
         self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
+        if(self.mesh.something2draw):
+            self.mesh.establish_screen_coordinates(self.canvas.cget("width"), self.canvas.cget("height"))
 
 class cl_pannel_03:
     def __init__(self, master, ob_root_window, ob_world, ob_mesh):
@@ -375,7 +378,7 @@ class cl_pannel_03:
         else:
             
             # Calculate non-canvas size matrix transformations
-            self.mesh.establish_parallel_view_matrix()
+            self.mesh.establish_view_matrix()
             print('window:')
             print(' wumin = ' + str(self.mesh.wu[0]))
             print(' wumax = ' + str(self.mesh.wu[1]))        
@@ -394,9 +397,12 @@ class cl_pannel_03:
 #            print(' self.mesh.vertices = ',self.mesh.vertices)
 #            print(' self.mesh.transformed_vertices = ',self.mesh.transformed_vertices)
 
-            self.sVRPAx = StringVar(value=str(round(self.mesh.vrp[0],2)))
-            self.sVRPAy = StringVar(value=str(round(self.mesh.vrp[1],2)))
-            self.sVRPAz = StringVar(value=str(round(self.mesh.vrp[2],2)))
+#            self.sVRPAx = StringVar(value=str(round(self.mesh.vrp[0],2)))
+#            self.sVRPAy = StringVar(value=str(round(self.mesh.vrp[1],2)))
+#            self.sVRPAz = StringVar(value=str(round(self.mesh.vrp[2],2)))
+            self.sVRPAx.set('%.1f' % self.mesh.vrp[0] )
+            self.sVRPAy.set('%.1f' % self.mesh.vrp[1] )
+            self.sVRPAz.set('%.1f' % self.mesh.vrp[2] )
 
             print(' self.sVRPAx = ' + self.sVRPAx.get())
             print(' self.sVRPAy = ' + self.sVRPAy.get())
@@ -412,7 +418,7 @@ class cl_pannel_03:
             print ( "called the draw callback!")
             
     def rotate(self):
-        print(' rotate button pushed ')
+        print(' Rotate button pushed ')
 
         if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
@@ -465,6 +471,8 @@ class cl_pannel_03:
         
         for i_inc in range(self.rotation_steps):
             self.mesh.stackMatrix = self.mesh.rotationMatrix * self.mesh.stackMatrix
+            self.mesh.establish_NDC_coordinates()
+            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
@@ -472,7 +480,7 @@ class cl_pannel_03:
                 time.sleep(fDelay)
 
     def scale(self):
-        print(' scale button clicked ')
+        print(' Scale button clicked ')
 
         if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
@@ -517,6 +525,8 @@ class cl_pannel_03:
         
         for i_inc in range(self.scale_steps):
             self.mesh.stackMatrix = self.mesh.scaleMatrix * self.mesh.stackMatrix
+            self.mesh.establish_NDC_coordinates()
+            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
@@ -524,7 +534,7 @@ class cl_pannel_03:
                 time.sleep(fDelay)
 
     def translate(self):
-        print(' translate button clicked ')
+        print(' Translate button clicked ')
 
         if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
@@ -550,6 +560,8 @@ class cl_pannel_03:
         
         for i_inc in range(self.translation_steps):
             self.mesh.stackMatrix = self.mesh.translationMatrix * self.mesh.stackMatrix
+            self.mesh.establish_NDC_coordinates()
+            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
@@ -559,7 +571,7 @@ class cl_pannel_03:
     def fly(self):
         print(' Fly button clicked ')
 
-        if(not len(self.mesh.transformed_vertices)):  # If no objects do not attempt to transform.
+        if(not len(self.mesh.something2draw)):  # If no objects do not attempt to transform.
             return
 
         self.fVRPAx = float(self.sVRPAx.get())
@@ -570,28 +582,21 @@ class cl_pannel_03:
         self.fVRPBy = float(self.sVRPBy.get())
         self.fVRPBz = float(self.sVRPBz.get())
 
-        self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
-        self.scale_size = [1.0,1.0,1.0]
+        # Iterative for animation and redisplay
+        self.mesh.establish_translation_matrix(self.translation_steps, self.translation_units) 
+        
+        print(" self.mesh.translationMatrix = ")
+        print(self.mesh.translationMatrix)
+        
+        for i_inc in range(self.translation_steps):
+            self.mesh.stackMatrix = self.mesh.translationMatrix * self.mesh.stackMatrix
+            self.mesh.establish_NDC_coordinates()
+            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
-        # If uniform scale selected assign same scale to all array elements
-        if(self.scale_option==1):
-            self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
-        # Else assign differing scale to array based on dimension
-        else:
-            self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
-
-        self.scale_steps = int(self.sScaleSteps.get())
-        if(self.scale_steps<1):
-            self.scale_steps=1
-            
-        print(' self.scale_option = ' + str(self.scale_option))
-        print(' self.scale_uniform_size = ' + str(self.scale_uniform_size))
-        print(' self.scale_size = ' + str(self.scale_size))
-        print(' self.scale_center = ' + str(self.scale_center))
-        print(' self.scale_steps = ' + str(self.scale_steps))
-
-        # Iterative callback used for animation and redisplay
-        self.master.ob_root_window.after(0, self.scale_callback(self.scale_steps))
+            # Call redisplay() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            if(self.translation_steps>1):
+                time.sleep(fDelay)
 
 class MyDialog(simpledialog.Dialog):
     def body(self, master):
