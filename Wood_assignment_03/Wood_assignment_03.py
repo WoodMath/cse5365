@@ -9,7 +9,7 @@ from tkinter import simpledialog
 from tkinter import filedialog
 
 import string
-#from wood_clipping_03 import *
+from wood_clipping_03 import *
 from wood_fileread_03 import *
 from wood_widgets_03 import *
 from wood_graphics_03 import *

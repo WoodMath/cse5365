@@ -142,4 +142,23 @@ Demo solution for Assignment 03
    Assignment 03 (Due date Apr. 04, 2015)
 
 
-
+Assignment 03 Grading Guidelines
+Assignment 03 will be graded according to the following guideline:
+Step
+% of grade
+Assignment 03: Load file and display parallel projection
+30
+Assignment 03: Show the boundaries of viewports
+10
+Assignment 03: 3D Clipping in parallel projection
+20
+Assignment 03: Rotate incrementally
+5
+Assignment 03: Translate incrementally
+10
+Assignment 03: Scale incrementally
+5
+Assignment 03: Fly incrementally
+15
+Resize the canvas and redisplay it correctly
+5
