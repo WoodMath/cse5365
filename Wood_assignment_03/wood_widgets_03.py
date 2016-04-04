@@ -582,14 +582,18 @@ class cl_pannel_03:
         self.fVRPBy = float(self.sVRPBy.get())
         self.fVRPBz = float(self.sVRPBz.get())
 
+        self.fly_steps = self.sFlySteps.get()
+        self.fly_point_A = [self.fVRPAx, self.fVRPAy, self.fVRPAz]
+        self.fly_point_B = [self.fVRPBx, self.fVRPBy, self.fVRPBz]
+
         # Iterative for animation and redisplay
-        self.mesh.establish_translation_matrix(self.translation_steps, self.translation_units) 
+        self.mesh.establish_fly_matrix(self.translation_steps, self.fly_point_A, self.fly_point_B) 
         
-        print(" self.mesh.translationMatrix = ")
-        print(self.mesh.translationMatrix)
+        print(" self.mesh.flyMatrix = ")
+        print(self.mesh.flyMatrix)
         
-        for i_inc in range(self.translation_steps):
-            self.mesh.stackMatrix = self.mesh.translationMatrix * self.mesh.stackMatrix
+        for i_inc in range(self.fly_steps):
+#            self.mesh.stackMatrix = self.mesh.translationMatrix * self.mesh.stackMatrix
             self.mesh.establish_NDC_coordinates()
             self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
