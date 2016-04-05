@@ -146,8 +146,10 @@ class cl_pannel_03:
         #############
         
         self.filename = StringVar()
-        self.file_location_label = Label(file_frame, text="File Name:").pack(side=LEFT,padx=10,pady=10)
-        self.file_location_string = Entry(file_frame, text="File Name:", textvariable=self.filename, width=50).pack(side=LEFT,padx=0, pady=0)
+        self.file_location_label = Label(file_frame, text="File Name:")
+        self.file_location_label.pack(side=LEFT,padx=10,pady=10)
+        self.file_location_string = Entry(file_frame, text="File Name:", textvariable=self.filename, width=50)
+        self.file_location_string.pack(side=LEFT,padx=0, pady=0)
 #        self.file_location_string = Label(file_frame, textvariable=self.filename, width=50).pack(side=LEFT,padx=0,pady=0)
         
         self.file_dialog_button = Button(file_frame, text="Browse", fg="blue", command=self.browse_file)
@@ -320,9 +322,12 @@ class cl_pannel_03:
         self.sVRPAz = StringVar(value=str(round(self.fVRPAz,2)))
         
         self.vrp_a_label = Label(vrp_frame, text="VRP A([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
-        self.vrp_ax = Entry(vrp_frame, textvariable=self.sVRPAx, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_ay = Entry(vrp_frame, textvariable=self.sVRPAy, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_az = Entry(vrp_frame, textvariable=self.sVRPAx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_ax = Entry(vrp_frame, textvariable=self.sVRPAx, width=3)
+        self.vrp_ax.pack(side=LEFT,padx=0, pady=0)
+        self.vrp_ay = Entry(vrp_frame, textvariable=self.sVRPAy, width=3)
+        self.vrp_ay.pack(side=LEFT,padx=0, pady=0)
+        self.vrp_az = Entry(vrp_frame, textvariable=self.sVRPAz, width=3)
+        self.vrp_az.pack(side=LEFT,padx=0, pady=0)
 
         self.fVRPBx = self.fDefaultOne
         self.sVRPBx = StringVar(value=str(round(self.fVRPBx,2)))
@@ -332,9 +337,12 @@ class cl_pannel_03:
         self.sVRPBz = StringVar(value=str(round(self.fVRPBz,2)))
         
         self.vrp_b_label = Label(vrp_frame, text="VRP B([x,y,z]):").pack(side=LEFT,padx=0,pady=0)
-        self.vrp_bx = Entry(vrp_frame, textvariable=self.sVRPBx, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_by = Entry(vrp_frame, textvariable=self.sVRPBy, width=3).pack(side=LEFT,padx=0, pady=0)
-        self.vrp_bz = Entry(vrp_frame, textvariable=self.sVRPBx, width=3).pack(side=LEFT,padx=0, pady=0)
+        self.vrp_bx = Entry(vrp_frame, textvariable=self.sVRPBx, width=3)
+        self.vrp_bx.pack(side=LEFT,padx=0, pady=0)
+        self.vrp_by = Entry(vrp_frame, textvariable=self.sVRPBy, width=3)
+        self.vrp_by.pack(side=LEFT,padx=0, pady=0)
+        self.vrp_bz = Entry(vrp_frame, textvariable=self.sVRPBz, width=3)
+        self.vrp_bz.pack(side=LEFT,padx=0, pady=0)
         
         self.sFlySteps = StringVar(value='1')
         self.fly_steps_label = Label(vrp_frame, text="Steps:").pack(side=LEFT,padx=0,pady=0)
@@ -360,9 +368,15 @@ class cl_pannel_03:
         self.mesh.filename=filename
         self.filename.set(filename)        
         
+        
         print(" Loading file '" + str(filename) + "'")
         if(len(self.mesh.filename)):
             self.mesh.set_file(self.mesh.filename)
+
+        self.file_location_string.delete(0,"end");
+        self.file_location_string.insert(0, self.var_filename.get())
+        self.master.ob_canvas_frame.canvas.update()
+        self.master.ob_canvas_frame.canvas.update_idletasks()
             
     def load_file(self):
         ## Reset Mesh info
@@ -400,6 +414,7 @@ class cl_pannel_03:
 #            self.sVRPAx = StringVar(value=str(round(self.mesh.vrp[0],2)))
 #            self.sVRPAy = StringVar(value=str(round(self.mesh.vrp[1],2)))
 #            self.sVRPAz = StringVar(value=str(round(self.mesh.vrp[2],2)))
+
             self.sVRPAx.set('%.1f' % self.mesh.vrp[0] )
             self.sVRPAy.set('%.1f' % self.mesh.vrp[1] )
             self.sVRPAz.set('%.1f' % self.mesh.vrp[2] )
@@ -408,6 +423,16 @@ class cl_pannel_03:
             print(' self.sVRPAy = ' + self.sVRPAy.get())
             print(' self.sVRPAz = ' + self.sVRPAz.get())
 
+
+            self.vrp_ax.delete(0,"end")
+            self.vrp_ax.insert(0,'%.1f' % self.mesh.vrp[0])
+            self.vrp_ay.delete(0,"end")
+            self.vrp_ay.insert(0,'%.1f' % self.mesh.vrp[1])
+            self.vrp_az.delete(0,"end")
+            self.vrp_az.insert(0,'%.1f' % self.mesh.vrp[2])
+            
+            self.master.ob_canvas_frame.canvas.update()
+            self.master.ob_canvas_frame.canvas.update_idletasks()
             # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
             if(len(self.world.lines)>0):
                 self.mesh.resetStack()
@@ -415,7 +440,7 @@ class cl_pannel_03:
             else:
                 self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
 
-            print ( "called the draw callback!")
+            print (" called the draw callback!")
             
     def rotate(self):
         print(' Rotate button pushed ')
@@ -571,7 +596,7 @@ class cl_pannel_03:
     def fly(self):
         print(' Fly button clicked ')
 
-        if(not len(self.mesh.something2draw)):  # If no objects do not attempt to transform.
+        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
 
         self.fVRPAx = float(self.sVRPAx.get())
@@ -582,24 +607,42 @@ class cl_pannel_03:
         self.fVRPBy = float(self.sVRPBy.get())
         self.fVRPBz = float(self.sVRPBz.get())
 
-        self.fly_steps = self.sFlySteps.get()
         self.fly_point_A = [self.fVRPAx, self.fVRPAy, self.fVRPAz]
         self.fly_point_B = [self.fVRPBx, self.fVRPBy, self.fVRPBz]
 
+        self.fly_steps = int(self.sFlySteps.get())
+        if(self.fly_steps<1):
+            self.fly_steps=1
+
+        print(' self.fly_point_A = ' + str(self.fly_point_A))
+        print(' self.fly_point_B = ' + str(self.fly_point_B))
+        print(' self.fly_steps = ' + str(self.fly_steps))
+        
         # Iterative for animation and redisplay
-        self.mesh.establish_fly_matrix(self.translation_steps, self.fly_point_A, self.fly_point_B) 
+        self.mesh.establish_fly_matrix(self.fly_steps, self.fly_point_A, self.fly_point_B) 
         
         print(" self.mesh.flyMatrix = ")
         print(self.mesh.flyMatrix)
+
+       
         
         for i_inc in range(self.fly_steps):
-#            self.mesh.stackMatrix = self.mesh.translationMatrix * self.mesh.stackMatrix
+            ## Re-establish VRP Coordinates
+            mTempVRP = np.transpose(np.matrix([self.mesh.vrp[0],self.mesh.vrp[1],self.mesh.vrp[2],1]))
+            print(' mTempVRP = ')
+            print(mTempVRP)
+            vTempVRP = np.array(np.transpose(self.mesh.flyMatrix * mTempVRP))[0]
+            self.mesh.vrp = [vTempVRP[0],vTempVRP[1],vTempVRP[2]]
+            
+            print(' vTempVRP = ' )
+            print(vTempVRP)
+            self.mesh.establish_origin_matrix()
             self.mesh.establish_NDC_coordinates()
             self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
             # Call redisplay() method in 'wood_graphics_02.py'
             self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
-            if(self.translation_steps>1):
+            if(self.fly_steps>1):
                 time.sleep(fDelay)
 
 class MyDialog(simpledialog.Dialog):
