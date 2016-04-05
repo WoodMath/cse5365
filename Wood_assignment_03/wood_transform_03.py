@@ -277,9 +277,9 @@ class viewTransform:
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
         vDim_N = np.array(v_Dim_N)
-        print(' vDim_U.tolist() = ' + str(vDim_U.tolist()))
-        print(' vDim_V.tolist() = ' + str(vDim_V.tolist()))
-        print(' vDim_N.tolist() = ' + str(vDim_N.tolist()))
+#        print(' vDim_U.tolist() = ' + str(vDim_U.tolist()))
+#        print(' vDim_V.tolist() = ' + str(vDim_V.tolist()))
+#        print(' vDim_N.tolist() = ' + str(vDim_N.tolist()))
         
         fScale_U = self.fNDCx/(vDim_U[1]-vDim_U[0])
         fScale_V = self.fNDCy/(vDim_V[1]-vDim_V[0])

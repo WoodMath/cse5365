@@ -54,12 +54,15 @@ class cl_world:
             v_line=[]
             i_one = mesh.faces[f][0]
             i_two = mesh.faces[f][1]
+            b_draw = mesh.faces[f][2]
             v_to_add_one = mesh.screen_coordinates[i_one,:]
             v_to_add_two = mesh.screen_coordinates[i_two,:]
+            
 #            v_line.append(int(v_to_add_one[0,0]))
 #            v_line.append(int(v_to_add_one[0,1]))
 #            v_line.append(int(v_to_add_two[0,0]))
 #            v_line.append(int(v_to_add_two[0,1]))
+            
             v_line = [v_to_add_one[0,0],v_to_add_one[0,1],v_to_add_two[0,0],v_to_add_two[0,1]]
 
             ## For each face loop over all indices to build
@@ -77,11 +80,15 @@ class cl_world:
 
             ## DRAW actual faces
 #            self.lines.append(canvas.create_polygon(list(v_line), fill='red', width=1.0, outline='black'))
+
             ## DRAW actual lines
-            self.lines.append(canvas.create_line(v_line, width=1.0, fill='black'))
+            if(b_draw):
+                self.lines.append(canvas.create_line(v_line, width=1.0, fill='black'))
+            else:
+                self.lines.append(None)
 
 
-    def redisplay(self,canvas,event):
+    def redisplay_graphic_objects(self,canvas,event):
         mesh=self.mesh
         print(' Redisplay called ')
 
@@ -110,11 +117,28 @@ class cl_world:
 
                 i_one = mesh.faces[f][0]
                 i_two = mesh.faces[f][1]
+                b_draw = mesh.faces[f][2]
                 v_to_add_one = mesh.screen_coordinates[i_one,:]
                 v_to_add_two = mesh.screen_coordinates[i_two,:]
                 v_line = [v_to_add_one[0,0],v_to_add_one[0,1],v_to_add_two[0,0],v_to_add_two[0,1]]
-                canvas.coords(self.lines[f], v_line)
 
+                ## If line should be drawn
+                if(b_draw):
+                    ## If already drawn
+                    if(self.lines[f] != None):
+                        ## Simply change the coordinaes
+                        canvas.coords(self.lines[f], v_line)
+                    else:
+                        ## Otherwise store line at current buffer
+                        self.lines[f] = canvas.create_line(v_line, width=1.0, fill='black')
+                else: ## Otherwise
+                    ## If previously in buffer
+                    if(self.lines[f] != None):
+                        ## Delete object
+                        canvas.delete(self.lines[f])
+                        ## And its place in the buffer
+                        self.lines[f]=None
+                        
 #                ## For each face loop over all indices to build
 #                ## [[x0,y0],[x1,y1],[x2,y2],..[xn,yn]] array
 #                for i in range(0,len(mesh.faces[f])):

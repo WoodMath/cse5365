@@ -236,54 +236,54 @@ class Clipping:
         
         return self.accept
 
+def clipping_test():
+    c=Clipping()
+    p0=Point(0.25,0.25,0.25)
+    p1=Point(0.75,0.75,0.75)
 
-c=Clipping()
-p0=Point(0.25,0.25,0.25)
-p1=Point(0.75,0.75,0.75)
+    print(' **** ')
 
-print(' **** ')
+    print(' p0 = ' + str(p0.getPointV3()))
+    print(' c.getOutCode(p0) = ' + str(c.getOutCode(p0).all))
+    print(' p1 = ' + str(p1.getPointV3()))
+    print(' c.getOutCode(p1) = ' + str(c.getOutCode(p1).all))
 
-print(' p0 = ' + str(p0.getPointV3()))
-print(' c.getOutCode(p0) = ' + str(c.getOutCode(p0).all))
-print(' p1 = ' + str(p1.getPointV3()))
-print(' c.getOutCode(p1) = ' + str(c.getOutCode(p1).all))
+    c.setPoint0(0.5,-1.5,0.5)
+    c.setPoint1(0.5,-2.5,0.5)
 
-c.setPoint0(0.5,-1.5,0.5)
-c.setPoint1(0.5,-2.5,0.5)
+    c.calcLine()
 
-c.calcLine()
+    print(' **** ')
 
-print(' **** ')
+    print(' c.point0old = ' + str(c.point0old.getPointV3()))
+    print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
+    print(' c.point1old = ' + str(c.point1old.getPointV3()))
+    print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
 
-print(' c.point0old = ' + str(c.point0old.getPointV3()))
-print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
-print(' c.point1old = ' + str(c.point1old.getPointV3()))
-print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
+    print(' **** ')
 
-print(' **** ')
+    print(' c.point0new = ' + str(c.point0new.getPointV3()))
+    print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
+    print(' c.point1new = ' + str(c.point1new.getPointV3()))
+    print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
 
-print(' c.point0new = ' + str(c.point0new.getPointV3()))
-print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
-print(' c.point1new = ' + str(c.point1new.getPointV3()))
-print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
+    c.setPoint0(-1.5,-1.5,-1.5)
+    c.setPoint1(1.5,1.5,1.5)
 
-c.setPoint0(-1.5,-1.5,-1.5)
-c.setPoint1(1.5,1.5,1.5)
+    c.calcLine()
 
-c.calcLine()
+    print(' **** ')
 
-print(' **** ')
+    print(' c.point0old = ' + str(c.point0old.getPointV3()))
+    print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
+    print(' c.point1old = ' + str(c.point1old.getPointV3()))
+    print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
 
-print(' c.point0old = ' + str(c.point0old.getPointV3()))
-print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
-print(' c.point1old = ' + str(c.point1old.getPointV3()))
-print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
+    print(' **** ')
 
-print(' **** ')
-
-print(' c.point0new = ' + str(c.point0new.getPointV3()))
-print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
-print(' c.point1new = ' + str(c.point1new.getPointV3()))
-print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
+    print(' c.point0new = ' + str(c.point0new.getPointV3()))
+    print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
+    print(' c.point1new = ' + str(c.point1new.getPointV3()))
+    print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
 
 

@@ -327,27 +327,29 @@ class mesh:
     def establish_NDC_coordinates(self):
         self.establish_origin_matrix()
         self.world2NDCMatrix = self.viewMatrix * self.originMatrix
-        print(' self.world2NDCMatrix = ')
-        print(self.world2NDCMatrix)
-        print(' self.viewMatrix = ')
-        print(self.viewMatrix)
-        print(' self.originMatrix = ')
-        print(self.originMatrix)
+
+#        print(' self.world2NDCMatrix = ')
+#        print(self.world2NDCMatrix)
+#        print(' self.viewMatrix = ')
+#        print(self.viewMatrix)
+#        print(' self.originMatrix = ')
+#        print(self.originMatrix)
+
         self.ndc_coordinates = self.world2NDCMatrix * self.stackMatrix * np.transpose(np.matrix(self.object_coordinates))
         self.ndc_coordinates = np.transpose(self.ndc_coordinates)
         temp_NDC_coordinates = self.ndc_coordinates.tolist()
         self.visiChange = False
-        for i in range(0,len(self.faces)):
-            print(' self.faces[' + str(i) + '] = ' + str(self.faces[i]))
-            face = self.faces[i]
-            index0 = face[0]
-            index1 = face[1]
-            b_draw_old = face[2]
-            point0 = temp_NDC_coordinates[index0]
-            point1 = temp_NDC_coordinates[index1]
-            
-            print(' temp_NDC_coordinates[' + str(index0) + '] = ' + str(temp_NDC_coordinates[index0]))
-            print(' temp_NDC_coordinates[' + str(index1) + '] = ' + str(temp_NDC_coordinates[index1]))
+#        for i in range(0,len(self.faces)):
+#            print(' self.faces[' + str(i) + '] = ' + str(self.faces[i]))
+#            face = self.faces[i]
+#            index0 = face[0]
+#            index1 = face[1]
+#            b_draw_old = face[2]
+#            point0 = temp_NDC_coordinates[index0]
+#            point1 = temp_NDC_coordinates[index1]
+#            
+#            print(' temp_NDC_coordinates[' + str(index0) + '] = ' + str(temp_NDC_coordinates[index0]))
+#            print(' temp_NDC_coordinates[' + str(index1) + '] = ' + str(temp_NDC_coordinates[index1]))
                 
         print('##################################')
         print('##      Clipping Occurs Here    ##')
@@ -361,7 +363,7 @@ class mesh:
             index1 = self.faces[i][1]
 
             # Get Previous draw state of line
-            b_draw_old = face[2]
+            b_draw_old = self.faces[i][2]
             point0 = temp_NDC_coordinates[index0]
             point1 = temp_NDC_coordinates[index1]
 
@@ -370,7 +372,7 @@ class mesh:
 
             ## Store info about whether line should be drawn
             b_draw_new = (1 if clipp.calcLine() else 0)
-            print(' i = ' + str(i) + ' ; ' + str(b_draw_new))
+#            print(' i = ' + str(i) + ' ; ' + str(b_draw_new))
             self.faces[i][2] = b_draw_new
 
             if(b_draw_new):
@@ -421,8 +423,8 @@ class mesh:
         self.establish_origin_matrix()
         self.establish_after_origin_matrix()
         
-        self.establish_NDC_coordinates()
-        self.establish_viewport_matrix()
+#        self.establish_NDC_coordinates()
+#        self.establish_viewport_matrix()
 
     def establish_viewport_matrix(self):
         print(' Establishing viewport matrix ')
@@ -457,8 +459,8 @@ class mesh:
              [0,0,0,1]])
 
         self.NDC2viewportMatrix = vMat * sMat * wMat;
-        print(' self.NDC2viewportMatrix = ')
-        print(self.NDC2viewportMatrix)
+#        print(' self.NDC2viewportMatrix = ')
+#        print(self.NDC2viewportMatrix)
 #        self.world2viewportMatrix = self.NDC2viewportMatrix * self.world2NDCMatrix
 
     def establish_origin_matrix(self):
@@ -564,23 +566,23 @@ class mesh:
 
 
 
-        print(' self.viewMatrix = ')
-        print(self.viewMatrix)
+#        print(' self.viewMatrix = ')
+#        print(self.viewMatrix)
 
-        print(' self.step2Matrix = ')
-        print(self.step2Matrix)
+#        print(' self.step2Matrix = ')
+#        print(self.step2Matrix)
 
-        print(' self.step3Matrix = ')
-        print(self.step3Matrix)
+#        print(' self.step3Matrix = ')
+#        print(self.step3Matrix)
 
-        print(' self.step4Matrix = ')
-        print(self.step4Matrix)
+#        print(' self.step4Matrix = ')
+#        print(self.step4Matrix)
 
-        print(' self.step5Matrix = ')
-        print(self.step5Matrix)
+#        print(' self.step5Matrix = ')
+#        print(self.step5Matrix)
 
-        print(' self.step6Matrix = ')
-        print(self.step6Matrix)
+#        print(' self.step6Matrix = ')
+#        print(self.step6Matrix)
 
         ## Combine matrices
 #        self.originMatrix = self.step1Matrix
@@ -902,9 +904,9 @@ class mesh:
 
         ## Establish matrix for translating all points
         m_Fly = np.matrix(\
-            [[1,0,0,-v_inc_fly[0]],\
-             [0,1,0,-v_inc_fly[1]],\
-             [0,0,1,-v_inc_fly[2]],\
+            [[1,0,0,v_inc_fly[0]],\
+             [0,1,0,v_inc_fly[1]],\
+             [0,0,1,v_inc_fly[2]],\
              [0,0,0,1]])
 
         ## Rename translation matrix for consistancy

@@ -29,10 +29,10 @@ class cl_widgets:
         self.ob_canvas_frame.canvas.delete("all")
 
 
-#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
-#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
+#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay_graphic_objects(self.ob_canvas_frame.canvas,event=None))
+#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay_graphic_objects(self.ob_canvas_frame.canvas,event=None))
         
-#        callback = self.ob_canvas_frame.canvas.after(4, self.ob_world.redisplay(self.ob_canvas_frame.canvas,event=None))
+#        callback = self.ob_canvas_frame.canvas.after(4, self.ob_world.redisplay_graphic_objects(self.ob_canvas_frame.canvas,event=None))
 
 
 class cl_canvas_frame:
@@ -125,10 +125,10 @@ class cl_canvas_frame:
         print ('canvas width', self.canvas.cget("width"))
         print ('canvas height', self.canvas.cget("height"))
 
-        # Call redisplay() method in 'wood_graphics_03.py'
+        # Call redisplay_graphic_objects() method in 'wood_graphics_03.py'
         if(self.mesh.something2draw):
             self.mesh.establish_screen_coordinates(self.canvas.cget("width"), self.canvas.cget("height"))
-            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
+            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event)
 
 class cl_pannel_03:
     def __init__(self, master, ob_root_window, ob_world, ob_mesh):
@@ -371,8 +371,9 @@ class cl_pannel_03:
         self.filename.set(filename)        
         
         
-        print(" Loading file '" + str(filename) + "'")
+        
         if(len(self.mesh.filename)):
+            print(" Loading file '" + str(filename) + "'")
             self.mesh.set_file(self.mesh.filename)
 
         self.file_location_string.delete(0,"end");
@@ -381,11 +382,13 @@ class cl_pannel_03:
         self.master.ob_canvas_frame.canvas.update_idletasks()
             
     def load_file(self):
+        if(not len(self.mesh.filename)):
+            return
+        
         ## Reset Mesh info
         self.mesh.init()
         ## Clear drawed objects
         self.world.clear(self.master.ob_canvas_frame.canvas, event=None)
-
 
         ## Reload file
         self.mesh.load()
@@ -437,20 +440,21 @@ class cl_pannel_03:
             self.master.ob_canvas_frame.canvas.update_idletasks()
 
             self.mesh.establish_NDC_coordinates()
+            self.mesh.establish_viewport_matrix()
             self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
 
             self.mesh.resetStack()
-#            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas, event=None)
+#            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas, event=None)
             self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
 
             # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
             if(len(self.world.lines)>0):
                 print(' len(self.world.lines) = ' + str(len(self.world.lines)))
                 self.mesh.resetStack()
-                self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas, event=None)
+                self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas, event=None)
             else:
-#                self.mesh.resetStack()
+                self.mesh.resetStack()
                 self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
 
             print (" called the draw callback!")
@@ -512,8 +516,8 @@ class cl_pannel_03:
             self.mesh.establish_NDC_coordinates()
             self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
-            # Call redisplay() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
             if(self.rotation_steps>1):
                 time.sleep(fDelay)
 
@@ -566,8 +570,8 @@ class cl_pannel_03:
             self.mesh.establish_NDC_coordinates()
             self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
-            # Call redisplay() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
             if(self.scale_steps>1):
                 time.sleep(fDelay)
 
@@ -601,8 +605,8 @@ class cl_pannel_03:
             self.mesh.establish_NDC_coordinates()
             self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
-            # Call redisplay() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
             if(self.translation_steps>1):
                 time.sleep(fDelay)
 
@@ -653,8 +657,8 @@ class cl_pannel_03:
             self.mesh.establish_NDC_coordinates()
             self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
 
-            # Call redisplay() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event=None)
+            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
+            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
             if(self.fly_steps>1):
                 time.sleep(fDelay)
 
