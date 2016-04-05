@@ -132,7 +132,7 @@ class mesh:
         ##      All elements x are no less than the elements x before it.
         ##      For any given x, all elements y are no less than the elements y before it
         ##      Think [[0,0,1],[0,1,1],[0,2,1],[1,0,1],[1,1,1],[1,2,1],[2,0,1],[2,1,1],[2,2,1]]
-        print('v_to_add = ' + str(v_to_add))
+#        print('v_to_add = ' + str(v_to_add))
         i_current_vert_group = v_to_add[0]
         i_current_vert_group_count = len(self.start_index)
         
