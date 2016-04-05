@@ -58,7 +58,10 @@ class viewTransform:
         self.fNDCx = self.vNDCx[1]-self.vNDCx[0]
         self.fNDCy = self.vNDCy[1]-self.vNDCy[0]
         self.fNDCz = self.vNDCz[1]-self.vNDCz[0]
-        
+    def array2list(self,v_Array):
+        return v_Array.tolist()
+    def matrix2list(self,m_Matrix):
+        return m_Matrix.tolist()
     def array2matrix(self,v_Array):
         vArray = np.array(v_Array)
         mReturn = np.transpose(np.matrix(vArray))
@@ -205,7 +208,7 @@ class viewTransform:
 
         return mReturn
 
-    def getUfromVPNandVUP(this,v_VPN,v_VUP):
+    def getUfromVPNandVUP(self,v_VPN,v_VUP):
         vVPN = np.array(v_VPN)
         vVUP = np.array(v_VUP)
         vU_nn = np.cross(vVUP,vVPN)
@@ -213,7 +216,7 @@ class viewTransform:
         vU = vU_nn/vU_len
         return vU
     
-    def getVfromVPNandU(this,v_VPN,v_U):
+    def getVfromVPNandU(self,v_VPN,v_U):
         vVPN = np.array(v_VPN)
         vU = np.array(v_U)
         vV_nn = np.cross(vVPN,vU)
@@ -221,7 +224,7 @@ class viewTransform:
         vV = vV_nn/vV_len
         return vV
 
-    def getUVfromVPNandVUP(this,v_VPN,v_VUP):
+    def getUVfromVPNandVUP(self,v_VPN,v_VUP):
         vVPN = np.array(v_VPN)
         vVUP = np.array(v_VUP)
         vU_nn = np.cross(vVUP,vVPN)
@@ -232,7 +235,7 @@ class viewTransform:
         vV = vV_nn/vV_len
         return (vU,vV)
 
-    def transformVRCshear(this,v_PRP,v_Dim_U,v_Dim_V):
+    def transformVRCshear(self,v_PRP,v_Dim_U,v_Dim_V):
         vPRP = np.array(v_PRP)
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
@@ -253,7 +256,7 @@ class viewTransform:
 
         return mReturn
 
-    def transformVRCtranslate(this,v_Dim_U,v_Dim_V,v_Dim_N):
+    def transformVRCtranslate(self,v_Dim_U,v_Dim_V,v_Dim_N):
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
         vDim_N = np.array(v_Dim_N)
@@ -270,10 +273,14 @@ class viewTransform:
 
         return mReturn
 
-    def transformVRCscale(this,v_Dim_U,v_Dim_V,v_Dim_N):
+    def transformVRCscale(self,v_Dim_U,v_Dim_V,v_Dim_N):
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
         vDim_N = np.array(v_Dim_N)
+        print(' vDim_U.tolist() = ' + str(vDim_U.tolist()))
+        print(' vDim_V.tolist() = ' + str(vDim_V.tolist()))
+        print(' vDim_N.tolist() = ' + str(vDim_N.tolist()))
+        
         fScale_U = self.fNDCx/(vDim_U[1]-vDim_U[0])
         fScale_V = self.fNDCy/(vDim_V[1]-vDim_V[0])
         fScale_N = self.fNDCz/(vDim_N[1]-vDim_N[0])

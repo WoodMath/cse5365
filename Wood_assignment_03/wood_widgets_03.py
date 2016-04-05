@@ -126,9 +126,9 @@ class cl_canvas_frame:
         print ('canvas height', self.canvas.cget("height"))
 
         # Call redisplay() method in 'wood_graphics_03.py'
-        self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
         if(self.mesh.something2draw):
             self.mesh.establish_screen_coordinates(self.canvas.cget("width"), self.canvas.cget("height"))
+            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
 
 class cl_pannel_03:
     def __init__(self, master, ob_root_window, ob_world, ob_mesh):
@@ -136,6 +136,8 @@ class cl_pannel_03:
         self.canvas = master.ob_root_window
         self.mesh = ob_mesh
         self.world = ob_world
+
+        
 
         file_frame = Frame(master.ob_root_window)
         file_frame.pack()
@@ -390,7 +392,7 @@ class cl_pannel_03:
         if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
             return
         else:
-            
+            self.mesh.visiChange = False
             # Calculate non-canvas size matrix transformations
             self.mesh.establish_view_matrix()
             print('window:')
@@ -433,11 +435,22 @@ class cl_pannel_03:
             
             self.master.ob_canvas_frame.canvas.update()
             self.master.ob_canvas_frame.canvas.update_idletasks()
+
+            self.mesh.establish_NDC_coordinates()
+            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
+
+
+            self.mesh.resetStack()
+#            self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas, event=None)
+            self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
+
             # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
             if(len(self.world.lines)>0):
+                print(' len(self.world.lines) = ' + str(len(self.world.lines)))
                 self.mesh.resetStack()
                 self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas, event=None)
             else:
+#                self.mesh.resetStack()
                 self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
 
             print (" called the draw callback!")

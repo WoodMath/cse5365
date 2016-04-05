@@ -42,6 +42,7 @@ import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
 from wood_transform_03 import *
+from wood_clipping_03 import *
 
 class number_range:
     def __init__(self,vMin,vMax):
@@ -120,7 +121,9 @@ class mesh:
         self.flyMatrix=None
         self.start_index=[]
         self.group_count=[]
-        self.something2draw=False
+        self.something2draw = False
+        self.visiChange = None
+        self.view_transform = viewTransform()
 
 
     def add_optimal_line(self,v_to_add):
@@ -128,8 +131,8 @@ class mesh:
         ## Cycles through an array of 2 element arrays such to insert an array [x,y] such that
         ##      All elements x are no less than the elements x before it.
         ##      For any given x, all elements y are no less than the elements y before it
-        ##      Think [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]]
-
+        ##      Think [[0,0,1],[0,1,1],[0,2,1],[1,0,1],[1,1,1],[1,2,1],[2,0,1],[2,1,1],[2,2,1]]
+        print('v_to_add = ' + str(v_to_add))
         i_current_vert_group = v_to_add[0]
         i_current_vert_group_count = len(self.start_index)
         
@@ -217,7 +220,7 @@ class mesh:
             v_out_vertices.append(v_vertex_one)
             v_out_vertices.append(v_vertex_two)
 
-            v_out_indices.append([i_index,i_index+1])
+            v_out_indices.append([i_index,i_index+1,1])
             i_index += 2
 
         self.vertices = v_out_vertices
@@ -236,9 +239,9 @@ class mesh:
         if(len(face)>2):
             raise ValueError(' Length of Passed face does not equal 2')
         if(face[0]<face[1]):
-            line_to_append  = [face[0],face[1],1]
+            line_to_append  = [face[0],face[1]]
         else:
-            line_to_append  = [face[1],face[0],1]
+            line_to_append  = [face[1],face[0]]
 
         self.add_optimal_line(line_to_append)
 
@@ -316,6 +319,7 @@ class mesh:
         self.object_coordinates = np.matrix(self.vertices)
         self.object2worldMatix = copy.copy(self.eyeMatrix)
 
+        self.something2draw = True
 #    def establish_world_matrix(self):
 #        self.world_coordinates =  self.stackMatrix * np.transpose(np.matrix(self.object_coordinates))
 #        self.world_coordinates = np.transpose(world_coordinates)
@@ -323,13 +327,67 @@ class mesh:
     def establish_NDC_coordinates(self):
         self.establish_origin_matrix()
         self.world2NDCMatrix = self.viewMatrix * self.originMatrix
+        print(' self.world2NDCMatrix = ')
+        print(self.world2NDCMatrix)
+        print(' self.viewMatrix = ')
+        print(self.viewMatrix)
+        print(' self.originMatrix = ')
+        print(self.originMatrix)
         self.ndc_coordinates = self.world2NDCMatrix * self.stackMatrix * np.transpose(np.matrix(self.object_coordinates))
         self.ndc_coordinates = np.transpose(self.ndc_coordinates)
+        temp_NDC_coordinates = self.ndc_coordinates.tolist()
+        self.visiChange = False
+        for i in range(0,len(self.faces)):
+            print(' self.faces[' + str(i) + '] = ' + str(self.faces[i]))
+            face = self.faces[i]
+            index0 = face[0]
+            index1 = face[1]
+            b_draw_old = face[2]
+            point0 = temp_NDC_coordinates[index0]
+            point1 = temp_NDC_coordinates[index1]
+            
+            print(' temp_NDC_coordinates[' + str(index0) + '] = ' + str(temp_NDC_coordinates[index0]))
+            print(' temp_NDC_coordinates[' + str(index1) + '] = ' + str(temp_NDC_coordinates[index1]))
+                
+        print('##################################')
+        print('##      Clipping Occurs Here    ##')
+        print('##################################')
 
-        ##################################
-        ##      Clipping Occurs Here    ##
-        ##################################
+        clipp = Clipping()
 
+        for i in range(0,len(self.faces)):
+
+            index0 = self.faces[i][0]
+            index1 = self.faces[i][1]
+
+            # Get Previous draw state of line
+            b_draw_old = face[2]
+            point0 = temp_NDC_coordinates[index0]
+            point1 = temp_NDC_coordinates[index1]
+
+            clipp.setPoint0(point0[0],point0[1],point0[2])
+            clipp.setPoint1(point1[0],point1[1],point1[2])
+
+            ## Store info about whether line should be drawn
+            b_draw_new = (1 if clipp.calcLine() else 0)
+            print(' i = ' + str(i) + ' ; ' + str(b_draw_new))
+            self.faces[i][2] = b_draw_new
+
+            if(b_draw_new):
+                point0 = clipp.getPoint0().getPointV4()
+                point1 = clipp.getPoint1().getPointV4()
+
+                temp_NDC_coordinates[index0] = point0
+                temp_NDC_coordinates[index1] = point1
+                
+
+            ## Will determine if 'create_graphic_objects' or 'redisplay' will be called
+            if(not (b_draw_new == b_draw_old) ):
+                self.visiChange = True
+
+            
+        self.ndc_coordinates = np.matrix(temp_NDC_coordinates)
+            
         
         
     def establish_screen_coordinates(self,iWidth,iHeight):
@@ -359,16 +417,34 @@ class mesh:
         self.box = np.transpose(self.box)
 
     def establish_view_matrix(self):
-        self.establish_parallel_view_matrix()
+#        self.establish_parallel_view_matrix()
+        self.establish_origin_matrix()
+        self.establish_after_origin_matrix()
+        
         self.establish_NDC_coordinates()
         self.establish_viewport_matrix()
 
     def establish_viewport_matrix(self):
+        print(' Establishing viewport matrix ')
+
+        tObj = self.view_transform
+#        self.sx = (self.vx[1]-self.vx[0])/(self.wu[1]-self.wu[0])
+#        self.sy = (self.vy[1]-self.vy[0])/(self.wv[1]-self.wv[0])
+        self.sx = (self.vx[1]-self.vx[0])/(tObj.vNDCx[1]-tObj.vNDCx[0])
+        self.sy = (self.vy[1]-self.vy[0])/(tObj.vNDCy[1]-tObj.vNDCy[0])
+
         wMat=np.matrix(\
             [[1,0,0,-self.wu[0]],\
              [0,-1,0,self.wv[1]],\
              [0,0,1,-self.wn[0]],\
              [0,0,0,1]])
+
+        wMat=np.matrix(\
+            [[1,0,0,-tObj.vNDCx[0]],\
+             [0,-1,0,tObj.vNDCy[1]],\
+             [0,0,1,-tObj.vNDCz[0]],\
+             [0,0,0,1]])
+        
         sMat=np.matrix(\
             [[self.sx,0,0,0],\
              [0,self.sy,0,0],\
@@ -381,12 +457,14 @@ class mesh:
              [0,0,0,1]])
 
         self.NDC2viewportMatrix = vMat * sMat * wMat;
-        self.world2viewportMatrix = self.NDC2viewportMatrix * self.world2NDCMatrix
+        print(' self.NDC2viewportMatrix = ')
+        print(self.NDC2viewportMatrix)
+#        self.world2viewportMatrix = self.NDC2viewportMatrix * self.world2NDCMatrix
 
     def establish_origin_matrix(self):
-        print(' Establishing origin matrix ')
+        print(' Establishing origin matrix')
 
-        tObj = viewTransform()
+        tObj = self.view_transform
 
         ##################################
 
@@ -407,6 +485,9 @@ class mesh:
 #        self.world2NDCMatrix = self.viewMatrix * self.originMatrix
 
     def establish_after_origin_matrix(self):
+        print(' Establishing after origin matrix ')
+
+        tObj = self.view_transform
         ##################################
 
         ## Rotate VPN vector 2 Z-Axis (Step 2)
@@ -477,9 +558,29 @@ class mesh:
         ##################################
 
         ## Scale viewing volume to NDC (Step 6)
-        self.step6Matrix = tObj.transformVRCtranslate(v_Dim_U,v_Dim_V,v_Dim_N)
+        self.step6Matrix = tObj.transformVRCscale(v_Dim_U,v_Dim_V,v_Dim_N)
 
         ##################################
+
+
+
+        print(' self.viewMatrix = ')
+        print(self.viewMatrix)
+
+        print(' self.step2Matrix = ')
+        print(self.step2Matrix)
+
+        print(' self.step3Matrix = ')
+        print(self.step3Matrix)
+
+        print(' self.step4Matrix = ')
+        print(self.step4Matrix)
+
+        print(' self.step5Matrix = ')
+        print(self.step5Matrix)
+
+        print(' self.step6Matrix = ')
+        print(self.step6Matrix)
 
         ## Combine matrices
 #        self.originMatrix = self.step1Matrix
@@ -487,10 +588,10 @@ class mesh:
 
         self.world2NDCMatrix = self.viewMatrix * self.originMatrix
 
-    def establish_parallel_view_matrix(self):
+    def old_establish_parallel_view_matrix(self):
         print(' Establishing view matrix ')
 
-        tObj = viewTransform()
+        tObj = self.view_transform
 
         print(' ** File Parameters ** ')
 
@@ -576,7 +677,7 @@ class mesh:
         ##################################
 
         ## Scale viewing volume to NDC (Step 6)
-        self.step6Matrix = tObj.transformVRCtranslate(v_Dim_U,v_Dim_V,v_Dim_N)
+        self.step6Matrix = tObj.transformVRCscale(v_Dim_U,v_Dim_V,v_Dim_N)
 
         ##################################
 
