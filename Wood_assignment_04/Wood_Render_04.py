@@ -23,6 +23,7 @@ from Wood_Camera_04 import *
 class Renderer():
     def __init__(self):
         self.cameras = []
+        self.scenes = []
 
         return
 
@@ -32,37 +33,52 @@ class Renderer():
     def clearCameras(self):
         self.cameras = []
 
-    def loadFile(self,sFileName):
+    def addScene(self, scn):
+        self.scenes.append(scn)
+        
+    def clearScenes(self):
+        self.scenes = []
+        
+    def loadFile(self, sFileName):
         self.cameraFileName = sFileName
-
+        self.clearCameras()
+        
         cObj = None
         with open(sFileName) as openCameraFile:
             print(' sFileName = ' + str(sFileName))
-            for l in openObjectFile:
+
+            for l in openCameraFile:
                 l_parsed = l.split()
                 l_type = l_parsed[0]
                 l_parsed.pop(0)
+
                 if(l_type == 'c'):                  # Adds new camera
-                    return
+                    if(cObj != None):               # If there is already a camera
+                        self.addCamera(cObj)        # Add it before you -- 
+                    cObj = Camera()                 # Create a new camera
                 elif(l_type == 'i'):                # Adds info
-                    return
+                    cObj.addInfo(l_parsed)
                 elif(l_type == 't'):                # Adds type
-                    return
+                    cObj.addType(l_parsed)
                 elif(l_type == 'w'):                # Adds window
-                    return
+                    cObj.addWindow(l_parsed)
                 elif(l_type == 's'):                # Adds viewport
-                    return
+                    cObj.addViewport(l_parsed)
                 elif(l_type == 'r'):                # Adds VRP
-                    return
+                    cObj.addVRP(l_parsed)
                 elif(l_type == 'n'):                # Adds VPN
-                    return
+                    cObj.addVPN(l_parsed)
                 elif(l_type == 'u'):                # Adds VUP
-                    return
+                    cObj.addVUP(l_parsed)
                 elif(l_type == 'p'):                # Adds PRP
-                    return
-                else
-                    raise ValueError(' "' + str(l_type) + '" Not valid ')
+                    cObj.addPRP(l_parsed)
+#                else:
+#                    raise ValueError(' "' + str(l_type) + '" Not valid ')
+            self.addCamera(cObj)                    # Add last camera
                     
 
 
 r = Renderer()
+r.loadFile('C:/Users/Jeff/Dropbox/cse5365/assignments/Wood_assignment_04/cameras_04.txt')
+for i in range(0,len(r.cameras)):
+    print(r.cameras[i].get()['VUP'])

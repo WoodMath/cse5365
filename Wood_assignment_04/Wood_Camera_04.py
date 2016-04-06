@@ -24,45 +24,74 @@ class Camera:
         self.cameraFileName = []
 
         ## tags from 'camera' file
-        self.info
-        self.type
-        self.vrp
-        self.vpn
-        self.vup
-        self.prp
-        self.window
-        self.viewport
+        self.info = None
+        self.type = None
+        self.vrp = None
+        self.vpn = None
+        self.vup = None
+        self.prp = None
+        self.window = None
+        self.viewport = None
 
         ## tags below derived from 'self.window' and 'self.viewport' defined above
-        self.wu
-        self.wv
-        self.wn
-        selv.vy
-        self.vy
+        self.wu = None
+        self.wv = None
+        self.wn = None
+        self.vx = None
+        self.vy = None
 
         return
+
+    def get(self):
+        return {'scenes':self.scenes, \
+                'cameraFileName':self.cameraFileName, \
+                'info':self.info, \
+                'type':self.type, \
+                'VRP':self.vrp, \
+                'VPN':self.vpn, \
+                'VUP':self.vup, \
+                'PRP':self.prp, \
+                'window':self.window, \
+                'viewport':self.viewport, \
+                'wU':self.wu, \
+                'wV':self.wv, \
+                'wN':self.wn, \
+                'vX':self.vx, \
+                'vY':self.vy}
 
     def addScene(self, scn):
         self.scenes.append(scn)
         
     def clearScenes(self):
         self.scenes = []
-
-    def add_info(self):         # Lines beginning with 'i'
+    def addInfo(self, sInfo):                  # Lines beginning with 'i'
+        self.info = sInfo
         return
-    def add_type(self):         # Lines beginning with 't'
+    def addType(self, sType):                   # Lines beginning with 't'
+        self.type = sType
         return
-    def add_window(self):       # Lines beginning with 'w'
+    def addWindow(self, lWindow):               # Lines beginning with 'w'
+        self.window = lWindow
+        self.wu = [lWindow[0], lWindow[1]]
+        self.wv = [lWindow[2], lWindow[3]]
+        self.wn = [lWindow[4], lWindow[5]]
         return
-    def add_viewport(self):     # Lines beginning wtih 's'
+    def addViewport(self, lViewport):           # Lines beginning wtih 's'
+        self.viewport = lViewport
+        self.vx = [lViewport[0], lViewport[1]]
+        self.vy = [lViewport[2], lViewport[3]]
         return
-    def add_vrp(self):          # Lines beginning with 'r'
+    def addVRP(self, vVRP):                     # Lines beginning with 'r'
+        self.vrp = vVRP
         return
-    def add_vpn(self):          # Lines beginning with 'n'
+    def addVPN(self, vVPN):                     # Lines beginning with 'n'
+        self.vpn = vVPN
         return
-    def add_vup(self):          # Lines beginning with 'u'
+    def addVUP(self, vVUP):                     # Lines beginning with 'u'
+        self.vup = vVUP
         return
-    def add_prp(self):          # Lines beginning with 'p'
+    def addPRP(self, vPRP):                     # Lines beginning with 'p'
+        self.prp = vPRP
         return
        
 

@@ -42,7 +42,7 @@ def vect_int_less_one(passed_arr):
 def vect_float(passed_arr):
     v_rtrn = []
     for i in range(len(passed_arr)):
-        v_rtrn.append(float(passed_arr[i])-1)
+        v_rtrn.append(float(passed_arr[i]))
     return v_rtrn
 
 
@@ -59,6 +59,42 @@ class Object:
         self.group_count = []                   # Array keeping track of each group size in lineIndecies
         
         return
+    def get(self):
+        return {'objectFileName': self.objectFileName, \
+                'faceIndices': self.faceIndices, \
+                'lineIndices': self.lineIndices, \
+                'facePoints': self.facePoints, \
+                'linePoints': self.linePoints}
+
+    def addPoint(self, l_parsed):
+        self.facePoints.append(l_parsed)        ## Append to faces
+        self.linePoints.append(l_parsed)        ## Append to lines
+    def addIndice(self, l_parsed):
+        print(l_parsed)
+        ## Faces can have any number of indices
+        self.faceIndices.append(v_to_add)       
+
+        ## Lines should only have two indices
+        for k in range(len(l_parsed)-1):
+            l_passed = [l_parsed[k],l_parsed[k+1]]
+
+            if(l_passed[0] < l_passed[1]):
+                self.position( [l_passed[0], l_passed[1]], self.lineIndices)
+                                
+            if(l_passed[1] < l_passed[0]):
+                self.position( [l_passed[1], l_passed[0]], self.lineIndices)
+                            
+        ## Add line back to beginning, since some formats do not repeat first vertex for closed shape
+        if(len(l_parsed)>2):
+            if(l_parsed[0] != l_parsed[len(l_parsed)-1]):      
+                l_passed = [l_parsed[0], l_parsed[len(l_parsed)-1]]
+
+                if(l_passed[0] < l_passed[1]):
+                    self.position( [l_passed[0], l_passed[1]], self.lineIndices)
+                                
+                if(l_passed[1] < l_passed[0]):
+                    self.position( [l_passed[1], l_passed[0]], self.lineIndices)
+
 
     def position(self, v_to_add, arr_add_to):
         ## Performs a prefix sort / radix sort
@@ -150,43 +186,20 @@ class Object:
                 if(len(l_parsed)>0):
                     if(l_type == 'v'):
                         l_parsed.append('1.0')
-                        l_parsed = vect_float(l_parsed[:])
+                        l_parsed = vect_float(l_parsed)
                         print(l_parsed)
-                        self.facePoints.append(l_parsed)        ## Append to faces
-                        self.linePoints.append(l_parsed)        ## Append to lines
-                        
+                        self.addPoint(l_parsed)                        
                     elif(l_type == 'f'):
-                        l_parsed = vect_int_less_one(l_parsed[:])
-                        print(l_parsed)
-                        ## Faces can have any number of indices
-                        self.faceIndices.append(l_parsed)       
-
-                        ## Lines should only have two indices
-                        for k in range(len(l_parsed)-1):
-                            l_passed = [l_parsed[k],l_parsed[k+1]]
-
-                            if(l_passed[0] < l_passed[1]):
-                                self.position( [l_passed[0], l_passed[1]], self.lineIndices)
-                                
-                            if(l_passed[1] < l_passed[0]):
-                                self.position( [l_passed[1], l_passed[0]], self.lineIndices)
-                            
-                        ## Add line back to beginning, since some formats do not repeat first vertex for closed shape
-                        if(len(l_parsed)>2):
-                            if(l_parsed[0] != l_parsed[len(l_parsed)-1]):      
-                                l_passed = [l_parsed[0], l_parsed[len(l_parsed)-1]]
-
-                                if(l_passed[0] < l_passed[1]):
-                                    self.position( [l_passed[0], l_passed[1]], self.lineIndices)
-                                
-                                if(l_passed[1] < l_passed[0]):
-                                    self.position( [l_passed[1], l_passed[0]], self.lineIndices)
-                        
-                        else:
-                            raise ValueError(' ' + str(l_type) + ' Not valid ')
+                        l_parsed.append('1.0')
+                        l_parsed = vect_int_less_one(l_parsed)
+                        self.addIndice(l_parsed)                        
+                    else:
+                        raise ValueError(' "' + str(l_type) + '" Not valid ')
         self.seperatePoints()   ## Make sure each point is only referenced by 1 line
 
     def seperatePoints(self):
+        ## Makes sure each point is only referrred to 1 (at most line)
+        ## i.e. multiple indices do not reference the same point.
         v_points = copy.copy(self.linePoints)
         v_indices = copy.copy(self.lineIndices)
         v_out_points=[]
