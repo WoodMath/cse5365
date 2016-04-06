@@ -21,6 +21,7 @@ from Wood_Scene_04 import *
 class Camera:
     def __init__(self):
         self.scenes = []
+        self.cameraFileName = []
 
         return
 

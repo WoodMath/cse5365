@@ -31,9 +31,16 @@ class Renderer():
         
     def clearCameras(self):
         self.cameras = []
-        
 
+    def loadFile(self,sFileName):
+        self.cameraFileName = sFileName
 
+        with open(sFileName) as openCameraFile:
+            print(' sFileName = ' + str(sFileName))
+            for l in openObjectFile:
+                l_parsed = l.split()
+                l_type = l_parsed[0]
+                l_parsed.pop(0) 
 
 
 r = Renderer()
