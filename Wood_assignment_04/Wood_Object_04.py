@@ -183,7 +183,7 @@ class Object:
                                     self.position( [l_passed[1], l_passed[0]], self.lineIndices)
                         
                         else:
-                            ValueError(' ' + str(l_type) + ' Not valid ')
+                            raise ValueError(' ' + str(l_type) + ' Not valid ')
         self.seperatePoints()   ## Make sure each point is only referenced by 1 line
 
     def seperatePoints(self):

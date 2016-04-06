@@ -23,6 +23,23 @@ class Camera:
         self.scenes = []
         self.cameraFileName = []
 
+        ## tags from 'camera' file
+        self.info
+        self.type
+        self.vrp
+        self.vpn
+        self.vup
+        self.prp
+        self.window
+        self.viewport
+
+        ## tags below derived from 'self.window' and 'self.viewport' defined above
+        self.wu
+        self.wv
+        self.wn
+        selv.vy
+        self.vy
+
         return
 
     def addScene(self, scn):
@@ -31,7 +48,10 @@ class Camera:
     def clearScenes(self):
         self.scenes = []
 
-
+    def add_info(self):         # Lines beginning with 'i'
+        return
+    def add_type(self):         # Lines beginning with 't'
+        return
     def add_window(self):       # Lines beginning with 'w'
         return
     def add_viewport(self):     # Lines beginning wtih 's'
@@ -44,14 +64,6 @@ class Camera:
         return
     def add_prp(self):          # Lines beginning with 'p'
         return
-    def loadFile(self,sFileName):
-        self.cameraFileName = sFileName
-
-        with open(sFileName) as openCameraFile:
-            print(' sFileName = ' + str(sFileName))
-            for l in openObjectFile:
-                l_parsed = l.split()
-                l_type = l_parsed[0]
-                l_parsed.pop(0)        
+       
 
 

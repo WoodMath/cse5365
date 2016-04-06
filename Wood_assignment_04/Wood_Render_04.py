@@ -35,12 +35,34 @@ class Renderer():
     def loadFile(self,sFileName):
         self.cameraFileName = sFileName
 
+        cObj = None
         with open(sFileName) as openCameraFile:
             print(' sFileName = ' + str(sFileName))
             for l in openObjectFile:
                 l_parsed = l.split()
                 l_type = l_parsed[0]
-                l_parsed.pop(0) 
+                l_parsed.pop(0)
+                if(l_type == 'c'):                  # Adds new camera
+                    return
+                elif(l_type == 'i'):                # Adds info
+                    return
+                elif(l_type == 't'):                # Adds type
+                    return
+                elif(l_type == 'w'):                # Adds window
+                    return
+                elif(l_type == 's'):                # Adds viewport
+                    return
+                elif(l_type == 'r'):                # Adds VRP
+                    return
+                elif(l_type == 'n'):                # Adds VPN
+                    return
+                elif(l_type == 'u'):                # Adds VUP
+                    return
+                elif(l_type == 'p'):                # Adds PRP
+                    return
+                else
+                    raise ValueError(' "' + str(l_type) + '" Not valid ')
+                    
 
 
 r = Renderer()
