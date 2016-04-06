@@ -42,7 +42,7 @@ class Camera:
     def add_vup(self):          # Lines beginning with 'u'
         return
     def add_prp(self):          # Lines beginning with 'p'
-        
+        return
     def loadFile(self,sFileName):
         self.cameraFileName = sFileName
 
