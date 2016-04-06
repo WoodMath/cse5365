@@ -627,6 +627,9 @@ class cl_pannel_03:
         self.fly_point_A = [self.fVRPAx, self.fVRPAy, self.fVRPAz]
         self.fly_point_B = [self.fVRPBx, self.fVRPBy, self.fVRPBz]
 
+        ## Reset VRP for Second Pass
+        self.mesh.vrp = copy.copy(self.fly_point_A)
+
         self.fly_steps = int(self.sFlySteps.get())
         if(self.fly_steps<1):
             self.fly_steps=1
