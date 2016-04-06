@@ -15,8 +15,6 @@ import numpy as np
 import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
-from wood_transform_03 import *
-from wood_clipping_03 import *
 
 from Wood_Object_04 import *
 
@@ -27,6 +25,9 @@ class Scene():
 
         return
 
+    def get(self):
+        return {'objects':[o.get() for o in self.objects ]}
+
     def addObject(self, obj):
         self.objects.append(obj)
         
@@ -36,5 +37,3 @@ class Scene():
 
 
 
-
-s = Scene()

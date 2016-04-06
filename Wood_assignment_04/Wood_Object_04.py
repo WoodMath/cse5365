@@ -70,9 +70,8 @@ class Object:
         self.facePoints.append(l_parsed)        ## Append to faces
         self.linePoints.append(l_parsed)        ## Append to lines
     def addIndice(self, l_parsed):
-        print(l_parsed)
         ## Faces can have any number of indices
-        self.faceIndices.append(v_to_add)       
+        self.faceIndices.append(l_parsed)       
 
         ## Lines should only have two indices
         for k in range(len(l_parsed)-1):
@@ -187,10 +186,9 @@ class Object:
                     if(l_type == 'v'):
                         l_parsed.append('1.0')
                         l_parsed = vect_float(l_parsed)
-                        print(l_parsed)
                         self.addPoint(l_parsed)                        
                     elif(l_type == 'f'):
-                        l_parsed.append('1.0')
+                        l_parsed.append('1')
                         l_parsed = vect_int_less_one(l_parsed)
                         self.addIndice(l_parsed)                        
                     else:

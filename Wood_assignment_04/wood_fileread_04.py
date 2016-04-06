@@ -1,7 +1,7 @@
 # Wood, Jeff
 # 100-103-5461
-# 2016-04-08
-# Assignment_03
+# 2016-04-19
+# Assignment_04
 
 #!/~/anaconda3/bin/python3.5
 
@@ -41,8 +41,8 @@ import numpy as np
 import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
-from wood_transform_03 import *
-from wood_clipping_03 import *
+from wood_transform_04 import *
+from wood_clipping_04 import *
 
 class number_range:
     def __init__(self,vMin,vMax):
