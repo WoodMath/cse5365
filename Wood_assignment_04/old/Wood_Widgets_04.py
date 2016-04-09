@@ -3,29 +3,45 @@
 # 2016-04-19
 # Assignment_04
 
+#   From:
+#       http://pythoncentral.io/pythons-time-sleep-pause-wait-sleep-stop-your-code/
+
 from tkinter import *
 from math import *
 from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import filedialog
 
-from Wood_Fileread_04 import *
+import time
 
+fDelay = 0.01
 class cl_widgets:
-    def __init__(self,ob_root_window,ob_world=[]):
+    def __init__(self,ob_root_window,ob_world=[],ob_mesh=mesh()):
         self.ob_root_window=ob_root_window
-        self.ob_world = ob_world
-        self.ob_mesh = mesh()
-        self.panel = cl_panel(self)
-        self.ob_canvas_frame=cl_canvas_frame(self)
+        ob_root_window.title("Wood_Assignment_04")
+        self.ob_world=ob_world
+        self.mesh=ob_mesh
+        self.panel = cl_panel(self,ob_root_window,ob_world,ob_mesh)
+        self.ob_canvas_frame=cl_canvas_frame(self,ob_mesh)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
+        self.ob_canvas_frame.canvas.delete("all")
+
+
+#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay_graphic_objects(self.ob_canvas_frame.canvas,event=None))
+#        callback = self.ob_canvas_frame.canvas.after(5, self.ob_world.redisplay_graphic_objects(self.ob_canvas_frame.canvas,event=None))
+        
+#        callback = self.ob_canvas_frame.canvas.after(4, self.ob_world.redisplay_graphic_objects(self.ob_canvas_frame.canvas,event=None))
+
 
 class cl_canvas_frame:
-    def __init__(self, master):
+    def __init__(self, master,ob_mesh):
         self.master=master
         self.canvas = Canvas(master.ob_root_window,width=640, height=640, bg="yellow", highlightthickness=0)
         self.canvas.pack(expand=YES, fill=BOTH)
-        
+        self.mesh = ob_mesh
+
+
+                                            
         self.canvas.bind('<Configure>', self.canvas_resized_callback) 
         self.canvas.bind("<ButtonPress-1>", self.left_mouse_click_callback)
         #self.canvas.bind("<ButtonRelease-1>", self.left_mouse_release_callback)
@@ -102,21 +118,22 @@ class cl_canvas_frame:
         pass
     def canvas_resized_callback(self,event):
         self.canvas.config(width=event.width,height=event.height)
-        #self.canvas.config(width=event.width-4,height=event.height-4)
-        #print 'canvas width height', self.canvas.cget("width"), self.canvas.cget("height")
-        #print 'event width height',event.width, event.height
         
         self.canvas.pack()
         print ('canvas width', self.canvas.cget("width"))
         print ('canvas height', self.canvas.cget("height"))
-        self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
 
-class cl_panel:
-    def __init__(self, master):
+        # Call redisplay_graphic_objects() method in 'wood_graphics_03.py'
+        if(self.mesh.something2draw):
+            self.mesh.establish_screen_coordinates(self.canvas.cget("width"), self.canvas.cget("height"))
+            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event)
+
+class cl_panel_03:
+    def __init__(self, master, ob_root_window, ob_world, ob_mesh):
         self.master = master
         self.canvas = master.ob_root_window
-        self.mesh = master.ob_mesh
-        self.world = master.ob_world
+        self.mesh = ob_mesh
+        self.world = ob_world
 
         
 
@@ -342,6 +359,7 @@ class cl_panel:
         self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load' to reset transformation stack.")
         self.disc_label_thr.pack(side=LEFT,padx=0,pady=0)
 
+        
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()        
@@ -679,19 +697,36 @@ class MyDialog(simpledialog.Dialog):
                 "Illegal values, please try again"
             )
 
+class cl_statusBar_frame:
+    def __init__(self, master):
+        self.master=master
+        status = StatusBar(master.ob_root_window)
+        status.pack(side=BOTTOM, fill=X)
+        status.set('%s','This is the status bar')
 
-#class StatusBar:
+    def set(self, format, *args):
+        self.label.config(text=format % args)
+        self.label.update_idletasks()
 
-    #def __init__(self, master):
-        #self.master=master
-        #self.label = Label(self, bd=1, relief=SUNKEN, anchor=W)
-        #self.label.pack(fill=X)
+    def clear(self):
+        self.label.config(text="")
+        self.label.update_idletasks()
+        
+class cl_toolbar:
+    def __init__(self, master):
+        self.master=master
+        self.toolbar = Frame(master.ob_root_window)
+        self.button = Button(self.toolbar, text="Draw", width=16, command=self.toolbar_draw_callback)
+        self.button.pack(side=LEFT, padx=2, pady=2)
 
-    #def set(self, format, *args):
-        #self.label.config(text=format % args)
-        #self.label.update_idletasks()
+        self.button = Button(self.toolbar, text="Toolbar Button 2", width=16, command=self.toolbar_callback)
+        self.button.pack(side=RIGHT, padx=2, pady=2)
 
-    #def clear(self):
-        #self.label.config(text="")
-        #self.label.update_idletasks()       
+        self.toolbar.pack(side=TOP, fill=X)
+    def toolbar_draw_callback(self):
+        self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas)
+        print ( "called the draw callback!")
+    
+    def toolbar_callback(self):
+        print ( "called the toolbar callback!")
 

@@ -16,8 +16,19 @@ import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
 
+from Wood_Renderer_04 import *
 from Wood_Scene_04 import *
 
 class Controller:
-    def __init__(self, render = Renderer()):
+    def __init__(self):
+        self.renderer = None
+        self.view = None
+        return
+    def addRenderer(self, renderer):
+        self.renderer = renderer
+        renderer.master = self
+    def addView(self, view):
+        self.view = view
+        view.master = self
+    def updateView():
         return

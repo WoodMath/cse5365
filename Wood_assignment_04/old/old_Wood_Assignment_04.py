@@ -12,21 +12,14 @@ import string
 from Wood_Widgets_04 import *
 from Wood_Graphics_04 import *
 
-from Wood_Controller_04 import *
-from Wood_Renderer_04 import *
-
 def close_window_callback(root):
     if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
         root.destroy()
 
 
-ob_renderer = Renderer()        ## Will be the Model in the MVC model
 ob_root_window = Tk()
 ob_root_window.protocol("WM_DELETE_WINDOW", lambda root_window=ob_root_window: close_window_callback(root_window))
-ob_world=cl_world()                 ## Drawing widget (not render engine)
-ob_view=cl_widgets(ob_root_window,ob_world)
-
-ob_controller = Controller()
-ob_controller.addRenderer(ob_renderer)
-ob_controller.addView(ob_view)
+ob_world=cl_world()
+cl_widgets(ob_root_window,ob_world)
 ob_root_window.mainloop()    
+    
