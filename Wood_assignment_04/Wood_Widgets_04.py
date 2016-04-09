@@ -13,7 +13,6 @@ class cl_widgets:
     def __init__(self,ob_root_window,ob_world=[]):
         self.ob_root_window=ob_root_window
         self.ob_world=ob_world
-        self.menu=cl_menu(self)
         self.toolbar=cl_toolbar(self)
         self.pannel_01 = cl_pannel_01(self)
         self.pannel_02 = cl_pannel_02(self)
@@ -231,37 +230,6 @@ class cl_statusBar_frame:
     def clear(self):
         self.label.config(text="")
         self.label.update_idletasks()
-class cl_menu:
-    def __init__(self, master):
-        
-        self.master=master
-        self.menu = Menu(master.ob_root_window)
-        master.ob_root_window.config(menu=self.menu)
-        self.filemenu = Menu(self.menu)
-        self.menu.add_cascade(label="File", menu=self.filemenu)
-        self.filemenu.add_command(label="New", command=self.menu_callback)
-        self.filemenu.add_command(label="Open...", command=self.menu_callback)
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=self.menu_callback)
-        self.dummymenu = Menu(self.menu)
-        self.menu.add_cascade(label="Dummy", menu=self.dummymenu)
-        self.dummymenu.add_command(label="Item1", command=self.menu_item1_callback)
-        self.dummymenu.add_command(label="Item2", command=self.menu_item2_callback)
-        
-        self.helpmenu = Menu(self.menu)
-        self.menu.add_cascade(label="Help", menu=self.helpmenu)
-        self.helpmenu.add_command(label="About...", command=self.menu_help_callback)        
-
-    def menu_callback(self):
-        print ("called the menu callback!")
-                        
-    def menu_help_callback(self):
-        print ("called the help menu callback!") 
-    def menu_item1_callback(self):
-        print ("called item1 callback!")    
-
-    def menu_item2_callback(self):
-        print ("called item2 callback!")    
 class cl_toolbar:
     def __init__(self, master):
         
