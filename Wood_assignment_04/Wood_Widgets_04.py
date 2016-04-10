@@ -8,22 +8,28 @@ from math import *
 from tkinter import messagebox
 from tkinter import simpledialog
 from tkinter import filedialog
+from tkinter import ttk
 
 from Wood_Fileread_04 import *
 
 class cl_widgets:
-    def __init__(self,ob_root_window,ob_world=[]):
+    def __init__(self,ob_root_window, ob_world,ob_controller):
         self.ob_root_window=ob_root_window
         self.ob_world = ob_world
-        self.ob_mesh = mesh()
+        self.controller = ob_controller                     ## Set by controller 'addView' method
+
         self.panel = cl_panel(self)
-        self.ob_canvas_frame=cl_canvas_frame(self)
+        self.ob_canvas_frame = cl_canvas_frame(self)
         self.ob_world.add_canvas(self.ob_canvas_frame.canvas)
 
+
 class cl_canvas_frame:
-    def __init__(self, master):
-        self.master=master
-        self.canvas = Canvas(master.ob_root_window,width=640, height=640, bg="yellow", highlightthickness=0)
+    def __init__(self, master):        
+        self.master = master
+        self.controller =  master.controller                ## Set by controller 'addView' method
+        
+
+        self.canvas = Canvas(master.ob_root_window, width=640, height=640, bg="yellow", highlightthickness=0)
         self.canvas.pack(expand=YES, fill=BOTH)
         
         self.canvas.bind('<Configure>', self.canvas_resized_callback) 
@@ -107,19 +113,24 @@ class cl_canvas_frame:
         #print 'event width height',event.width, event.height
         
         self.canvas.pack()
-        print ('canvas width', self.canvas.cget("width"))
-        print ('canvas height', self.canvas.cget("height"))
-        self.master.ob_world.redisplay(self.master.ob_canvas_frame.canvas,event)
+#        print ('canvas width', self.canvas.cget("width"))
+#        print ('canvas height', self.canvas.cget("height"))
+
+        self.controller.setSize()
+        
+        self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas)
 
 class cl_panel:
     def __init__(self, master):
         self.master = master
         self.canvas = master.ob_root_window
-        self.mesh = master.ob_mesh
         self.world = master.ob_world
-
+        self.controller =  master.controller                ## Set by controller 'addView' method
         
-
+        self.drawGUIwidgets()
+        
+    def drawGUIwidgets(self):
+        master = self.master
         file_frame = Frame(master.ob_root_window)
         file_frame.pack()
 
@@ -291,12 +302,22 @@ class cl_panel:
         self.trans_button.pack(side=LEFT)                         
 
         #############
-        ## 4th Row ##
+        ## 5th Row ##
         #############
 
         vrp_frame = Frame(master.ob_root_window)
         vrp_frame.pack()
 
+        self.camera_label = Label(vrp_frame, text="Camera:").pack(side=LEFT,padx=0,pady=0)
+        self.sCamera = StringVar()
+        self.lCameras = ('x','y','z')
+        self.camera = ttk.Combobox(vrp_frame, text="Camera", values=self.lCameras, width=5)
+        self.camera.bind("<<ComboboxSelected>>", self.camera_selected)
+        self.camera.pack(side=LEFT,padx=0, pady=0)
+        self.camera.current(0)
+        self.camera.pack()
+
+       
         self.fVRPAx = self.fDefaultZero
         self.sVRPAx = StringVar(value=str(round(self.fVRPAx,2)))
         self.fVRPAy = self.fDefaultZero
@@ -342,24 +363,22 @@ class cl_panel:
         self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load' to reset transformation stack.")
         self.disc_label_thr.pack(side=LEFT,padx=0,pady=0)
 
+    def camera_selected(self,event):
+
+        self.controller.saveFormValues() 
+
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()        
 
-        # Save filename to 'mesh' object
-        self.mesh.filename=filename
         self.filename.set(filename)        
         
-        
-        
-        if(len(self.mesh.filename)):
-            print(" Loading file '" + str(filename) + "'")
-            self.mesh.set_file(self.mesh.filename)
+        if(len(filename)):
+            self.controller.renderer.addObjectFile(filename)        
 
+ 
         self.file_location_string.delete(0,"end");
         self.file_location_string.insert(0, self.var_filename.get())
-        self.master.ob_canvas_frame.canvas.update()
-        self.master.ob_canvas_frame.canvas.update_idletasks()
             
     def load_file(self):
         if(not len(self.mesh.filename)):

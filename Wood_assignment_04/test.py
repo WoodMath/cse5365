@@ -21,16 +21,14 @@ s.addObject(o1)
 
 r = Renderer()
 #r.loadFile('C:/Users/Jeff/Dropbox/cse5365/assignments/Wood_assignment_04/cameras_04.txt')
-r.loadFile('cameras_04.txt')
-r.addScene(s)
+#r.addCamera('cameras_04.txt')
+#r.addScene(s)
 #print(' r.get() = ' + str(r.get()))
 #print([k.vpn for k in r.cameras])
 
-print(s.get()['points'])
+#print(s.get()['points'])
 
-print(s.get()['indices'])
+#print(s.get()['indices'])
 
-s.applyMatrix(s.eye)
-
-s.applyMatrix([[3,0,0,0],[0,3,0,0],[0,0,3,0],[0,0,0,1]])
-
+r.addObjectFile('cube_04.txt')
+print(r.scene.objects[0].get())

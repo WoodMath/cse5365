@@ -194,6 +194,11 @@ class Object:
                     else:
                         raise ValueError(' "' + str(l_type) + '" Not valid ')
         self.seperatePoints()   ## Make sure each point is only referenced by 1 line
+        print(' self.objectFileName = ' + self.objectFileName)
+        print(' self.faceIndices count = ' + str(len(self.faceIndices)))
+        print(' self.lineIndices count = ' + str(len(self.lineIndices)))
+        print(' self.facePoints count = ' + str(len(self.facePoints)))
+        print(' self.linePoints count = ' + str(len(self.linePoints)))
 
     def seperatePoints(self):
         ## Makes sure each point is only referrred to 1 (at most line)

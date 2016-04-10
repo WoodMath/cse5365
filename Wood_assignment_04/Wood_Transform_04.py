@@ -44,7 +44,7 @@ from numpy import linalg as LA
 
 
 
-class viewTransform:
+class Transform:
     def __init__(self):
         self.parent = self
         self.vU = []

@@ -16,13 +16,13 @@ import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
 
-from Wood_Scene_04 import *
+from Wood_Transform_04 import *
     
 class Camera:
     def __init__(self):
-        self.scenes = []
         self.cameraFileName = []
 
+        self.view_transform = Transform()
         ## tags from 'camera' file
         self.info = None
         self.type = None
@@ -43,6 +43,9 @@ class Camera:
         self.vrpA = None
         self.vrpB = None
 
+        self.rectangle = None
+        self.text = None
+
         self.flyMatrix = np.matrix(\
             [[1,0,0,0],\
              [0,1,0,0],\
@@ -52,8 +55,7 @@ class Camera:
         return
 
     def get(self):
-        return {'scenes':self.scenes, \
-                'cameraFileName':self.cameraFileName, \
+        return {'cameraFileName':self.cameraFileName, \
                 'info':self.info, \
                 'type':self.type, \
                 'VRP':self.vrp, \
@@ -68,11 +70,6 @@ class Camera:
                 'vX':self.vx, \
                 'vY':self.vy}
 
-    def addScene(self, scn):
-        self.scenes.append(scn)
-        
-    def clearScenes(self):
-        self.scenes = []
     def addInfo(self, sInfo):                  # Lines beginning with 'i'
         self.info = sInfo
         return
@@ -87,8 +84,8 @@ class Camera:
         return
     def addViewport(self, lViewport):           # Lines beginning wtih 's'
         self.viewport = lViewport
-        self.vx = [lViewport[0], lViewport[1]]
-        self.vy = [lViewport[2], lViewport[3]]
+        self.vx = [lViewport[0], lViewport[2]]
+        self.vy = [lViewport[1], lViewport[3]]
         return
     def addVRP(self, vVRP):                     # Lines beginning with 'r'
         self.vrp = vVRP

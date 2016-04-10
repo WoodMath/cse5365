@@ -20,13 +20,13 @@ def close_window_callback(root):
         root.destroy()
 
 
-ob_renderer = Renderer()        ## Will be the Model in the MVC model
+ob_controller = Controller()
+
+
 ob_root_window = Tk()
 ob_root_window.protocol("WM_DELETE_WINDOW", lambda root_window=ob_root_window: close_window_callback(root_window))
-ob_world=cl_world()                 ## Drawing widget (not render engine)
-ob_view=cl_widgets(ob_root_window,ob_world)
+ob_world = cl_world()                 ## Drawing widget (not render engine)
+ob_view = cl_widgets(ob_root_window, ob_world, ob_controller)
 
-ob_controller = Controller()
-ob_controller.addRenderer(ob_renderer)
 ob_controller.addView(ob_view)
 ob_root_window.mainloop()    
