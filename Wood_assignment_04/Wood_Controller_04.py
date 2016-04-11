@@ -21,11 +21,11 @@ from Wood_Scene_04 import *
 
 class Controller:
     def __init__(self):
-        self.addRenderer()
         self.view = None
         self.world = None
         self.canvas = None
         self.panel = None
+        self.addRenderer()
 
         self.fileName = None
         self.rotationAxisOptions = {'X':1,'Y':2,'Z':3,'LineAB':4}
@@ -55,12 +55,17 @@ class Controller:
     def addRenderer(self, renderer = Renderer()):
         self.renderer = renderer
         renderer.controller = self
+        print(' self.canvas = ' + str(self.canvas))
+        if(self.canvas != None):
+            self.renderer.canvas = self.canvas
         renderer.addCameraFile('cameras_04.txt')
     def addView(self, view):
         self.view = view
         self.world = view.ob_world
         self.panel = view.panel
         self.canvas = view.ob_canvas_frame.canvas
+        if(self.renderer != None):
+            self.renderer.canvas = self.canvas
         view.controller = self
         view.ob_world.controller = self
 
@@ -80,7 +85,7 @@ class Controller:
         
     def updateResize(self):
         self.setSize()
-        self.renderer.refreshViewports()
+        self.renderer.updateViewports()
         
     def saveFormValues(self):
         

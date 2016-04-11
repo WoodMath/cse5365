@@ -82,14 +82,15 @@ class Renderer():
 
             if(not zeroSet):
                 zeroSet = True
-                c.rectangle = self.controller.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info, width=2)
+                c.rectangle = self.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info, width=2)
             else:
-                c.rectangle = self.controller.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info, width=1)
+                c.rectangle = self.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info, width=1)
 
-            c.text = self.controller.canvas.create_text(x0,y0, text=c.info, anchor=NW)
-            self.controller.canvas.update()
+            c.text = self.canvas.create_text(x0,y0, text=c.info, anchor=NW)
 
-    def refreshViewports(self):
+        self.canvas.update()
+
+    def updateViewports(self):
 
         if(len(self.cameras)==0):
             return
@@ -106,8 +107,8 @@ class Renderer():
                 print(' c.rectangle = ' + str(c.rectangle))
                 print(' c.text = ' + str(c.text))
             
-                self.controller.canvas.coords(c.rectangle,x0,y0,x1,y1)
-                self.controller.canvas.coords(c.text,x0,y0)
+                self.canvas.coords(c.rectangle,x0,y0,x1,y1)
+                self.canvas.coords(c.text,x0,y0)
     
         
     def setSize(self,iWidth,iHeight):

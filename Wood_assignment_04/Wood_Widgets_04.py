@@ -15,6 +15,7 @@ from Wood_Fileread_04 import *
 class cl_widgets:
     def __init__(self,ob_root_window, ob_world,ob_controller):
         self.ob_root_window=ob_root_window
+        ob_root_window.title("Wood_Assignment_04")
         self.ob_world = ob_world
         self.controller = ob_controller                     ## Set by controller 'addView' method
 
