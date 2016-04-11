@@ -143,7 +143,7 @@ class Renderer():
 
         if(self.cameras):
             for c in self.cameras:
-                c.addScene(self.scene)
+                c.createCamera()
     
     def addCameraFile(self, sFileName):
         self.cameraFileName = sFileName
