@@ -113,12 +113,8 @@ class cl_canvas_frame:
         #print 'event width height',event.width, event.height
         
         self.canvas.pack()
-#        print ('canvas width', self.canvas.cget("width"))
-#        print ('canvas height', self.canvas.cget("height"))
-
-        self.controller.setSize()
         
-        self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas)
+        self.master.ob_world.redisplay_graphic_objects()
 
 class cl_panel:
     def __init__(self, master):
@@ -310,8 +306,9 @@ class cl_panel:
 
         self.camera_label = Label(vrp_frame, text="Camera:").pack(side=LEFT,padx=0,pady=0)
         self.sCamera = StringVar()
-        self.lCameras = ('x','y','z')
-        self.camera = ttk.Combobox(vrp_frame, text="Camera", values=self.lCameras, width=5)
+        self.lCameras = [c.info for c in self.controller.renderer.cameras]
+        self.tCameras = tuple(self.lCameras)
+        self.camera = ttk.Combobox(vrp_frame, text="Camera", values=self.tCameras, width=10)
         self.camera.bind("<<ComboboxSelected>>", self.camera_selected)
         self.camera.pack(side=LEFT,padx=0, pady=0)
         self.camera.current(0)
@@ -363,306 +360,77 @@ class cl_panel:
         self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load' to reset transformation stack.")
         self.disc_label_thr.pack(side=LEFT,padx=0,pady=0)
 
+        self.updateVRPs()
+
     def camera_selected(self,event):
 
-        self.controller.saveFormValues() 
+        self.controller.saveFormValues()
+        self.updateVRPs()
 
+
+    def updateVRPs(self):
+        v_vrpA = self.controller.getCameraVRP_A()
+        v_vrpB = self.controller.getCameraVRP_B()
+
+        self.vrp_ax.delete(0,"end")
+        self.vrp_ax.insert(0,'%.1f' % v_vrpA[0])
+        self.vrp_ay.delete(0,"end")
+        self.vrp_ay.insert(0,'%.1f' % v_vrpA[1])
+        self.vrp_az.delete(0,"end")
+        self.vrp_az.insert(0,'%.1f' % v_vrpA[2])
+
+        self.vrp_bx.delete(0,"end")
+        self.vrp_bx.insert(0,'%.1f' % v_vrpB[0])
+        self.vrp_by.delete(0,"end")
+        self.vrp_by.insert(0,'%.1f' % v_vrpB[1])
+        self.vrp_bz.delete(0,"end")
+        self.vrp_bz.insert(0,'%.1f' % v_vrpB[2])
+        
     def browse_file(self):
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()        
 
         self.filename.set(filename)        
-        
-        if(len(filename)):
-            self.controller.renderer.addObjectFile(filename)        
-
  
         self.file_location_string.delete(0,"end");
         self.file_location_string.insert(0, self.var_filename.get())
-            
+
+        self.controller.saveFormValues()
+
     def load_file(self):
-        if(not len(self.mesh.filename)):
+        ## Make sure everythin displayed in forms is saved
+        self.controller.saveFormValues()
+        
+        if(not len(self.controller.fileName)):
             return
         
-        ## Reset Mesh info
-        self.mesh.init()
-        ## Clear drawed objects
-        self.world.clear(self.master.ob_canvas_frame.canvas, event=None)
+        self.controller.loadObject()
+        
 
-        ## Reload file
-        self.mesh.load()
-        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
-            return
-        else:
-            self.mesh.visiChange = False
-            # Calculate non-canvas size matrix transformations
-            self.mesh.establish_view_matrix()
-            print('window:')
-            print(' wumin = ' + str(self.mesh.wu[0]))
-            print(' wumax = ' + str(self.mesh.wu[1]))        
-            print(' wvmin = ' + str(self.mesh.wv[0]))
-            print(' wvmax = ' + str(self.mesh.wv[1]))        
-            print(' wnmin = ' + str(self.mesh.wn[0]))
-            print(' wnmax = ' + str(self.mesh.wn[1]))        
-            print(' ')
-            print('viewport:')
-            print(' vxmin = ' + str(self.mesh.vx[0]))
-            print(' vxmax = ' + str(self.mesh.vx[1]))        
-            print(' vymin = ' + str(self.mesh.vy[0]))
-            print(' vymax = ' + str(self.mesh.vy[1])) 
-            print(' ')
-
-#            print(' self.mesh.vertices = ',self.mesh.vertices)
-#            print(' self.mesh.transformed_vertices = ',self.mesh.transformed_vertices)
-
-#            self.sVRPAx = StringVar(value=str(round(self.mesh.vrp[0],2)))
-#            self.sVRPAy = StringVar(value=str(round(self.mesh.vrp[1],2)))
-#            self.sVRPAz = StringVar(value=str(round(self.mesh.vrp[2],2)))
-
-            self.sVRPAx.set('%.1f' % self.mesh.vrp[0] )
-            self.sVRPAy.set('%.1f' % self.mesh.vrp[1] )
-            self.sVRPAz.set('%.1f' % self.mesh.vrp[2] )
-
-            print(' self.sVRPAx = ' + self.sVRPAx.get())
-            print(' self.sVRPAy = ' + self.sVRPAy.get())
-            print(' self.sVRPAz = ' + self.sVRPAz.get())
-
-
-            self.vrp_ax.delete(0,"end")
-            self.vrp_ax.insert(0,'%.1f' % self.mesh.vrp[0])
-            self.vrp_ay.delete(0,"end")
-            self.vrp_ay.insert(0,'%.1f' % self.mesh.vrp[1])
-            self.vrp_az.delete(0,"end")
-            self.vrp_az.insert(0,'%.1f' % self.mesh.vrp[2])
-            
-            self.master.ob_canvas_frame.canvas.update()
-            self.master.ob_canvas_frame.canvas.update_idletasks()
-
-            self.mesh.establish_NDC_coordinates()
-            self.mesh.establish_viewport_matrix()
-            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
-
-
-            self.mesh.resetStack()
-#            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas, event=None)
-            self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
-
-            # Call no polygons call create_graphic_objects() method in 'wood_graphics_03.py'
-            if(len(self.world.lines)>0):
-                print(' len(self.world.lines) = ' + str(len(self.world.lines)))
-                self.mesh.resetStack()
-                self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas, event=None)
-            else:
-                self.mesh.resetStack()
-                self.master.ob_world.create_graphic_objects(self.master.ob_canvas_frame.canvas, self.mesh)
-
-            print (" called the draw callback!")
             
     def rotate(self):
+        ## Make sure everythin displayed in forms is saved
+        self.controller.saveFormValues()
+
         print(' Rotate button pushed ')
 
-        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
-            return
-
-        self.v_a = [0.0,0.0,0.0]
-
-        self.rotation_option = self.i_rotate_option.get()
-
-        # If X-axis selected
-        if(self.rotation_option==1):
-            self.v_b = [1.0,0.0,0.0]
-        # If Y-axis selected
-        elif(self.rotation_option==2):
-            self.v_b = [0.0,1.0,0.0]
-        # If Z-axis selected
-        elif(self.rotation_option==3):
-            self.v_b = [0.0,0.0,1.0]
-        # Else assign axis based on vector 'ab'
-        else:
-            self.fRotateAx = float(self.sRotateAx.get())
-            self.fRotateAy = float(self.sRotateAy.get())
-            self.fRotateAz = float(self.sRotateAz.get())
-
-            self.fRotateBx = float(self.sRotateBx.get())
-            self.fRotateBy = float(self.sRotateBy.get())
-            self.fRotateBz = float(self.sRotateBz.get())
-
-            self.v_a = [self.fRotateAx, self.fRotateAy, self.fRotateAz]
-            self.v_b = [self.fRotateBx, self.fRotateBy, self.fRotateBz]
-            
-
-        self.rotation_degrees = int(self.sRotateDegrees.get())
-        self.rotation_steps = int(self.sRotateSteps.get())
-
-        if(self.rotation_steps<1):
-            self.rotation_steps=1
-
-        
-        print(' self.rotation_option = ' + str(self.rotation_option))
-        print(' self.v_a = ' + str(self.v_a))
-        print(' self.v_b = ' + str(self.v_b))
-        print(' self.rotation_degrees = ' + str(self.rotation_degrees))
-        print(' self.rotation_steps = ' + str(self.rotation_steps))
-
-        # Iterative for animation and redisplay
-        self.mesh.establish_rotation_matrix(self.rotation_steps, self.v_a, self.v_b, self.rotation_degrees) 
-        
-        print(" self.mesh.rotationMatrix = ")
-        print(self.mesh.rotationMatrix)
-        
-        for i_inc in range(self.rotation_steps):
-            self.mesh.stackMatrix = self.mesh.rotationMatrix * self.mesh.stackMatrix
-            self.mesh.establish_NDC_coordinates()
-            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
-
-            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
-            if(self.rotation_steps>1):
-                time.sleep(fDelay)
-
     def scale(self):
+        ## Make sure everythin displayed in forms is saved
+        self.controller.saveFormValues()
+
         print(' Scale button clicked ')
 
-        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
-            return
-        
-        self.scale_option = self.i_scale_option.get()
-
-        self.scale_uniform_size = float(self.sScaleSize.get())
-
-        self.fScaleSx = float(self.sScaleSx.get())
-        self.fScaleSy = float(self.sScaleSy.get())
-        self.fScaleSz = float(self.sScaleSz.get())
-
-        self.fScaleAx = float(self.sScaleAx.get())
-        self.fScaleAy = float(self.sScaleAy.get())
-        self.fScaleAz = float(self.sScaleAz.get())
-
-        self.scale_center = [self.fScaleAx, self.fScaleAy, self.fScaleAz]
-        self.scale_size = [1.0,1.0,1.0]
-        
-        # If uniform scale selected assign same scale to all array elements
-        if(self.scale_option==1):
-            self.scale_size = [self.scale_uniform_size, self.scale_uniform_size, self.scale_uniform_size]
-        # Else assign differing scale to array based on dimension
-        else:
-            self.scale_size = [self.fScaleSx, self.fScaleSy, self.fScaleSz]
-
-        self.scale_steps = int(self.sScaleSteps.get())
-        if(self.scale_steps<1):
-            self.scale_steps=1
-            
-        print(' self.scale_option = ' + str(self.scale_option))
-        print(' self.scale_uniform_size = ' + str(self.scale_uniform_size))
-        print(' self.scale_size = ' + str(self.scale_size))
-        print(' self.scale_center = ' + str(self.scale_center))
-        print(' self.scale_steps = ' + str(self.scale_steps))
-
-        # Iterative for animation and redisplay
-        self.mesh.establish_scale_matrix(self.scale_steps, self.scale_size, self.scale_center)
-        
-        print(" self.mesh.scaleMatrix = ")
-        print(self.mesh.scaleMatrix)
-        
-        for i_inc in range(self.scale_steps):
-            self.mesh.stackMatrix = self.mesh.scaleMatrix * self.mesh.stackMatrix
-            self.mesh.establish_NDC_coordinates()
-            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
-
-            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
-            if(self.scale_steps>1):
-                time.sleep(fDelay)
-
     def translate(self):
+        ## Make sure everythin displayed in forms is saved
+        self.controller.saveFormValues()
+
         print(' Translate button clicked ')
 
-        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
-            return
-        
-        self.fTransTx = float(self.sTransTx.get())
-        self.fTransTy = float(self.sTransTy.get())
-        self.fTransTz = float(self.sTransTz.get())
-
-        self.translation_units = [self.fTransTx, self.fTransTy, self.fTransTz]
-
-        self.translation_steps = int(self.sTransSteps.get())
-        if(self.translation_steps<1):
-            self.translation_steps=1
-            
-        print(' self.translation_units = ' + str(self.translation_units))
-        print(' self.translation_steps = ' + str(self.translation_steps))
-
-        # Iterative for animation and redisplay
-        self.mesh.establish_translation_matrix(self.translation_steps, self.translation_units) 
-        
-        print(" self.mesh.translationMatrix = ")
-        print(self.mesh.translationMatrix)
-        
-        for i_inc in range(self.translation_steps):
-            self.mesh.stackMatrix = self.mesh.translationMatrix * self.mesh.stackMatrix
-            self.mesh.establish_NDC_coordinates()
-            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
-
-            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
-            if(self.translation_steps>1):
-                time.sleep(fDelay)
-
     def fly(self):
+        ## Make sure everythin displayed in forms is saved
+        self.controller.saveFormValues()
+
         print(' Fly button clicked ')
-
-        if(not len(self.mesh.vertices)):  # If no objects do not attempt to transform.
-            return
-
-        self.fVRPAx = float(self.sVRPAx.get())
-        self.fVRPAy = float(self.sVRPAy.get())
-        self.fVRPAz = float(self.sVRPAz.get())
-
-        self.fVRPBx = float(self.sVRPBx.get())
-        self.fVRPBy = float(self.sVRPBy.get())
-        self.fVRPBz = float(self.sVRPBz.get())
-
-        self.fly_point_A = [self.fVRPAx, self.fVRPAy, self.fVRPAz]
-        self.fly_point_B = [self.fVRPBx, self.fVRPBy, self.fVRPBz]
-
-        ## Reset VRP for Second Pass
-        self.mesh.vrp = copy.copy(self.fly_point_A)
-
-        self.fly_steps = int(self.sFlySteps.get())
-        if(self.fly_steps<1):
-            self.fly_steps=1
-
-        print(' self.fly_point_A = ' + str(self.fly_point_A))
-        print(' self.fly_point_B = ' + str(self.fly_point_B))
-        print(' self.fly_steps = ' + str(self.fly_steps))
-        
-        # Iterative for animation and redisplay
-        self.mesh.establish_fly_matrix(self.fly_steps, self.fly_point_A, self.fly_point_B) 
-        
-        print(" self.mesh.flyMatrix = ")
-        print(self.mesh.flyMatrix)
-
-       
-        
-        for i_inc in range(self.fly_steps):
-            ## Re-establish VRP Coordinates
-            mTempVRP = np.transpose(np.matrix([self.mesh.vrp[0],self.mesh.vrp[1],self.mesh.vrp[2],1]))
-            print(' mTempVRP = ')
-            print(mTempVRP)
-            vTempVRP = np.array(np.transpose(self.mesh.flyMatrix * mTempVRP))[0]
-            self.mesh.vrp = [vTempVRP[0],vTempVRP[1],vTempVRP[2]]
-            
-            print(' vTempVRP = ' )
-            print(vTempVRP)
-            self.mesh.establish_origin_matrix()
-            self.mesh.establish_NDC_coordinates()
-            self.mesh.establish_screen_coordinates(self.master.ob_canvas_frame.canvas.cget("width"), self.master.ob_canvas_frame.canvas.cget("height"))
-
-            # Call redisplay_graphic_objects() method in 'wood_graphics_02.py'
-            self.master.ob_world.redisplay_graphic_objects(self.master.ob_canvas_frame.canvas,event=None)
-            if(self.fly_steps>1):
-                time.sleep(fDelay)
 
 class MyDialog(simpledialog.Dialog):
     def body(self, master):

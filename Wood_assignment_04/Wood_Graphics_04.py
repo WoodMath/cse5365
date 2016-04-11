@@ -18,9 +18,10 @@ class cl_world:
         self.canvases.append(canvas)
         canvas.world=self
 
-    def create_graphic_objects(self,canvas):
+    def create_graphic_objects(self):
         return
-    def redisplay_graphic_objects(self,canvas):
+    def redisplay_graphic_objects(self):
+        self.controller.updateResize()
         return
     def old_create_graphic_objects(self,canvas):
         self.objects.append(canvas.create_line(0,0,canvas.cget("width"),canvas.cget("height")))

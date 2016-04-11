@@ -37,6 +37,7 @@ class Renderer():
     def __init__(self):
         self.cameraFileName = None
         self.cameras = []
+        self.canvas = None
         self.controller = None
         self.scene = None
         self.canvasWidth = None
@@ -48,7 +49,18 @@ class Renderer():
 
     def get(self):
         return {'cameraFileName':self.cameraFileName, 'cameras':[c.get() for c in self.cameras ], 'scene':self.scene}
-
+    def createRender(self):
+        
+        return
+    def updateRender(self,iCamera=None):
+        self.scene.updateScene()
+        if(iCamera==None):
+            ## Update all
+            for c in self.cameras:
+                c.updateCamera()
+        else:
+            c = self.cameras[iCamera]
+            c.updateCamera()
     def createViewports(self):
         self.controller.setSize()
         if(self.canvasWidth == None or self.canvasHeight == None):
@@ -58,6 +70,7 @@ class Renderer():
         print(' self.canvasWidth = ' + str(self.canvasWidth))
               
         print(' self.cameras count = ' + str(len(self.cameras)))
+        zeroSet = False
         for c in self.cameras:
             x0 = c.vx[0]*self.canvasWidth
             y0 = c.vy[0]*self.canvasHeight
@@ -67,9 +80,34 @@ class Renderer():
             print(' c.vy = ' + str(c.vy))
             print(' [x0,y0] = ' + str([x0,y0]) + ' ; [x1,y1] = ' + str([x1,y1]))
 
-            c.rectangle = self.controller.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info )
+            if(not zeroSet):
+                zeroSet = True
+                c.rectangle = self.controller.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info, width=2)
+            else:
+                c.rectangle = self.controller.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info, width=1)
+
             c.text = self.controller.canvas.create_text(x0,y0, text=c.info, anchor=NW)
             self.controller.canvas.update()
+
+    def refreshViewports(self):
+
+        if(len(self.cameras)==0):
+            return
+
+        for c in self.cameras:
+            x0 = c.vx[0]*self.canvasWidth
+            y0 = c.vy[0]*self.canvasHeight
+            x1 = c.vx[1]*self.canvasWidth
+            y1 = c.vy[1]*self.canvasHeight
+            if(c.rectangle and c.text):
+                print(' c.vx = ' + str(c.vx))
+                print(' c.vy = ' + str(c.vy))
+                print(' [x0,y0] = ' + str([x0,y0]) + ' ; [x1,y1] = ' + str([x1,y1]))
+                print(' c.rectangle = ' + str(c.rectangle))
+                print(' c.text = ' + str(c.text))
+            
+                self.controller.canvas.coords(c.rectangle,x0,y0,x1,y1)
+                self.controller.canvas.coords(c.text,x0,y0)
     
         
     def setSize(self,iWidth,iHeight):
@@ -102,6 +140,10 @@ class Renderer():
         oObject.loadFile(sFileName)
         self.scene = Scene()
         self.scene.addObject(oObject)
+
+        if(self.cameras):
+            for c in self.cameras:
+                c.addScene(self.scene)
     
     def addCameraFile(self, sFileName):
         self.cameraFileName = sFileName
@@ -118,7 +160,7 @@ class Renderer():
                 if(l_type == 'c'):                  # Adds new camera
                     if(cObj != None):               # If there is already a camera
                         self.addCamera(cObj)        # Add it before you -- 
-                    cObj = Camera()                 # Create a new camera
+                    cObj = Camera(self)             # Create a new camera
                 elif(l_type == 'i'):                # Adds info
                     cObj.addInfo(l_parsed)
                 elif(l_type == 't'):                # Adds type

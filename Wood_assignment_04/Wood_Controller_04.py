@@ -38,7 +38,19 @@ class Controller:
         self.scaleSteps = None
         self.translationVector = None
         self.cameraSelectedName = None
-        self.cameraSelectedNumber = None
+        self.cameraSelectedNumber = 0
+        return
+    def getCameraVRP_AB(self):
+        c = self.renderer.cameras[self.cameraSelectedNumber]
+        return {'vrpA':c.vrpA,'vrpB':c.vrpB}
+    def getCameraVRP_A(self):
+        k = self.getCameraVRP_AB()
+        return k['vrpA']
+    def getCameraVRP_B(self):
+        k = self.getCameraVRP_AB()
+        return k['vrpB']    
+    def loadObject(self):
+        self.renderer.addObjectFile(self.fileName)
         return
     def addRenderer(self, renderer = Renderer()):
         self.renderer = renderer
@@ -60,9 +72,16 @@ class Controller:
         iHeight = int(self.canvas.cget("height"))
 
         self.renderer.setSize(iWidth, iHeight)
-        
-    def updateView(self):
+
+    def createScene(self):
         return
+    def updateScene(self):
+        self.renderer.updateScene()
+        
+    def updateResize(self):
+        self.setSize()
+        self.renderer.refreshViewports()
+        
     def saveFormValues(self):
         
         self.fileName = self.panel.filename.get()
@@ -80,10 +99,20 @@ class Controller:
         self.translationVector = [float(self.panel.sTransTx.get()),float(self.panel.sTransTy.get()),float(self.panel.sTransTz.get())]
         self.translationSteps = int(self.panel.sTransSteps.get())
 
+        print(' self.cameraSelectedNumber = ' + str(self.cameraSelectedNumber))
+        ## Switch old viewport to normal
+        c = self.renderer.cameras[self.cameraSelectedNumber]
+        self.canvas.itemconfig(c.rectangle,width=1)
+                
         self.cameraSelectedName = self.panel.camera.get()
         self.cameraSelectedNumber = self.panel.camera.current()
 
-        
+        print(' self.cameraSelectedNumber = ' + str(self.cameraSelectedNumber))
+        ## Switch new viewport to 2x
+        c = self.renderer.cameras[self.cameraSelectedNumber]
+        self.canvas.itemconfig(c.rectangle,width=2)
+
+        self.canvas.update()
         
         return
 
