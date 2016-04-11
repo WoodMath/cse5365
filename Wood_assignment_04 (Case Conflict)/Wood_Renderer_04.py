@@ -15,17 +15,19 @@ import numpy as np
 import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
-from wood_transform_03 import *
-from wood_clipping_03 import *
 
 from Wood_Camera_04 import *
 
 class Renderer():
     def __init__(self):
+        self.cameraFileName = None
         self.cameras = []
         self.scenes = []
 
         return
+
+    def get(self):
+        return {'cameraFileName':self.cameraFileName, 'cameras':[c.get() for c in self.cameras ], 'scenes':[s.get() for s in self.cameras]}
 
     def addCamera(self, cam):
         self.cameras.append(cam)
@@ -72,13 +74,10 @@ class Renderer():
                     cObj.addVUP(l_parsed)
                 elif(l_type == 'p'):                # Adds PRP
                     cObj.addPRP(l_parsed)
-#                else:
-#                    raise ValueError(' "' + str(l_type) + '" Not valid ')
+                else:
+                    raise ValueError(' "' + str(l_type) + '" Not valid ')
             self.addCamera(cObj)                    # Add last camera
                     
 
 
-r = Renderer()
-r.loadFile('C:/Users/Jeff/Dropbox/cse5365/assignments/Wood_assignment_04/cameras_04.txt')
-for i in range(0,len(r.cameras)):
-    print(r.cameras[i].get()['VUP'])
+
