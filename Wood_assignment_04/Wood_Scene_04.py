@@ -24,28 +24,7 @@ class Scene():
         self.clearObjects()
 
         return
-
-    def get(self):
-        return {'objects':[o.get() for o in self.objects ],'points':self.points,'indices':self.indices}
-
-    def addObject(self, obj):
-        ## Append objects
-        self.objects.append(obj)
-
-        ## Establish current point index
-        i_point_index = len(self.points)
-
-        ## Append object points and indices
-        for i in range(len(obj.lineIndices)):
-            i_ind0 = obj.lineIndices[i][0]
-            i_ind1 = obj.lineIndices[i][1]
-            p0 = obj.linePoints[i_ind0]
-            p1 = obj.linePoints[i_ind1]
-
-            self.points.append(p0)
-            self.points.append(p1)
-            self.indices.append([i_ind0 + i_point_index, i_ind1 + i_point_index, 1])
-        
+    
     def clearObjects(self):
         self.objects = []
         self.points = []
@@ -75,6 +54,31 @@ class Scene():
              [0,1,0,0],\
              [0,0,1,0],\
              [0,0,0,1]])
+        
+    def updateScene(self):
+        print(' Updating scene ...')
+        self.world = np.transpose(self.stack * np.transpose(np.matrix(self.points))).tolist()
+        return
+    def get(self):
+        return {'objects':[o.get() for o in self.objects ],'points':self.points,'indices':self.indices}
+
+    def addObject(self, obj):
+        ## Append objects
+        self.objects.append(obj)
+
+        ## Establish current point index
+        i_point_index = len(self.points)
+
+        ## Append object points and indices
+        for i in range(len(obj.lineIndices)):
+            i_ind0 = obj.lineIndices[i][0]
+            i_ind1 = obj.lineIndices[i][1]
+            p0 = obj.linePoints[i_ind0]
+            p1 = obj.linePoints[i_ind1]
+
+            self.points.append(p0)
+            self.points.append(p1)
+            self.indices.append([i_ind0 + i_point_index, i_ind1 + i_point_index, 1])
 
     def applyMatrix(self, mMatrix):
         

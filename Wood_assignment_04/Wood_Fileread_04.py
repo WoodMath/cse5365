@@ -41,8 +41,8 @@ import numpy as np
 import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
-from wood_transform_04 import *
-from wood_clipping_04 import *
+from Wood_Transform_04 import *
+from Wood_Clipping_04 import *
 
 class number_range:
     def __init__(self,vMin,vMax):

@@ -44,7 +44,7 @@ from numpy import linalg as LA
 
 
 
-class viewTransform:
+class Transform:
     def __init__(self):
         self.parent = self
         self.vU = []
@@ -53,7 +53,104 @@ class viewTransform:
         self.vNDCx = [-1,1]
         self.vNDCy = [-1,1]
         self.vNDCz = [0,1]
+        self.vVRP = []
+        self.vVPN = []
+        self.vVUP = []
+        self.vPRP = []
         self.updateNDC()
+
+    ##########################
+
+    def setU(self, vU = None):
+        if(vU != None):
+            self.vU = vU
+    def setV(self, vV = None):
+        if(vV != None):
+            self.vV = vV
+    def setN(self, vN = None):
+        if(vN != None):
+            self.vN = vN
+        
+    def setNDCx(self, vNDCx = None):
+        if(vNDCx != None):
+            self.vNDCx = vNDCx
+    def setNDCy(self, vNDCy = None):
+        if(vNDCy != None):
+            self.vNDCy = vNDCy
+    def setNDCz(self, vNDCz = None):
+        if(vNDCz != None):
+            self.vNDCz = vNDCz
+            
+    def setVRP(self, vVRP = None):
+        if(vVRP != None):
+            self.vVRP = vVRP
+    def setVPN(self, vVPN = None):
+        if(vVPN != None):
+            self.vVPN = vVPN
+    def setVUP(self, vVUP = None):
+        if(vVUP != None):
+            self.vVUP = vVUP
+    def setPRP(self, vPRP = None):
+        if(vPRP != None):
+            self.vPRP = vPRP
+
+    ##########################
+
+    def getU(self):
+        if(self.vU):
+            return self.vU
+        else:
+            return None
+    def getV(self):
+        if(self.vV):
+            return self.vU
+        else:
+            return None
+    def getN(self):
+        if(self.vN):
+            return self.vN
+        else:
+            return None
+        
+    def getNDCx(self):
+        if(self.vNDCx):
+            return self.vNDCx
+        else:
+            return None
+    def getNDCy(self):
+        if(self.vNDCy):
+            return self.vNDCy
+        else:
+            return None
+    def getNDCz(self):
+        if(self.vNDCz):
+            return self.vNDCz
+        else:
+            return None
+
+    def getVRP(self):
+        if(self.vVRP):
+            return self.vVRP
+        else:
+            return None
+    def getVPN(self):
+        if(self.vVPN):
+            return self.vVPN
+        else:
+            return None
+    def getVUP(self):
+        if(self.vVUP):
+            return self.vVUP
+        else:
+            return None
+    def getPRP(self):
+        if(self.vPRP):
+            return self.vPRP
+        else:
+            return None
+
+    ##########################
+
     def updateNDC(self):
         self.fNDCx = self.vNDCx[1]-self.vNDCx[0]
         self.fNDCy = self.vNDCy[1]-self.vNDCy[0]
@@ -82,7 +179,12 @@ class viewTransform:
             vReturn = vArray
         return vReturn
     
-    def transformVRP2Origin(self,v_VRP):
+    def transformVRP2Origin(self, v_VRP = None):
+        if(v_VRP != None):
+            self.setVRP(v_VRP)
+        else:
+            v_VRP = self.getVRP()
+            
         vVRP = np.array(v_VRP)
 
         f_x = vVRP[0]
@@ -99,7 +201,12 @@ class viewTransform:
 
         return mReturn
         
-    def transformVPN2Z(self,v_VPN):
+    def transformVPN2Z(self, v_VPN = None):
+        if(v_VPN != None):
+            self.setVPN(v_VPN)
+        else:
+            v_VPN = self.getVPN()
+            
         vVPN = np.array(v_VPN)
         
         f_x = vVPN[0]
@@ -167,7 +274,12 @@ class viewTransform:
 
         return mReturn
     
-    def transformVUP2YZ(self,v_VUP):
+    def transformVUP2YZ(self, v_VUP = None):
+        if(v_VUP != None):
+            self.setVUP(v_VUP)
+        else:
+            v_VUP = self.getVUP()
+            
         vVUP = np.array(v_VUP)
         
         f_x = vVUP[0]
@@ -208,23 +320,43 @@ class viewTransform:
 
         return mReturn
 
-    def getUfromVPNandVUP(self,v_VPN,v_VUP):
+    def getUfromVPNandVUP(self, v_VPN = None, v_VUP = None):
+        if(v_VPN == None):
+            v_VPN = self.getVPN()
+
+        if(v_VUP == None):
+            v_VUP = self.getVUP()
+            
         vVPN = np.array(v_VPN)
         vVUP = np.array(v_VUP)
         vU_nn = np.cross(vVUP,vVPN)
         vU_len = LA.norm(vU_nn)
         vU = vU_nn/vU_len
+        
         return vU
     
-    def getVfromVPNandU(self,v_VPN,v_U):
+    def getVfromVPNandU(self, v_VPN = None, v_U = None):
+        if(v_VPN == None):
+            v_VPN = self.getVPN()
+
+        if(v_U == None):
+            v_U = self.getUfromVPNandVUP(v_VPN)
+            
         vVPN = np.array(v_VPN)
         vU = np.array(v_U)
         vV_nn = np.cross(vVPN,vU)
         vV_len = LA.norm(vV_nn)
         vV = vV_nn/vV_len
+        
         return vV
 
-    def getUVfromVPNandVUP(self,v_VPN,v_VUP):
+    def getUVfromVPNandVUP(self, v_VPN = None, v_VUP = None):
+        if(v_VPN == None):
+            v_VPN = self.getVPN()
+
+        if(v_VUP == None):
+            v_VUP = self.getVUP()
+            
         vVPN = np.array(v_VPN)
         vVUP = np.array(v_VUP)
         vU_nn = np.cross(vVUP,vVPN)
@@ -233,9 +365,25 @@ class viewTransform:
         vV_nn = np.cross(vVPN,vU)
         vV_len = LA.norm(vV_nn)
         vV = vV_nn/vV_len
+        
         return (vU,vV)
 
-    def transformVRCshear(self,v_PRP,v_Dim_U,v_Dim_V):
+    def transformVRCshear(self, v_PRP = None, v_Dim_U = None, v_Dim_V = None):
+        if(v_PRP != None):
+            self.setPRP(v_PRP)
+        else:
+            v_PRP = self.getPRP()
+
+        if(v_Dim_U != None):
+            self.setU(v_Dim_U)
+        else:
+            v_Dim_U = self.getU()
+
+        if(v_Dim_V != None):
+            self.setV(v_Dim_V)
+        else:
+            v_Dim_V = self.getV()
+        
         vPRP = np.array(v_PRP)
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
@@ -256,7 +404,22 @@ class viewTransform:
 
         return mReturn
 
-    def transformVRCtranslate(self,v_Dim_U,v_Dim_V,v_Dim_N):
+    def transformVRCtranslate(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
+        if(v_Dim_U != None):
+            self.setU(v_Dim_U)
+        else:
+            v_Dim_U = self.getU()
+
+        if(v_Dim_V != None):
+            self.setV(v_Dim_V)
+        else:
+            v_Dim_V = self.getV()
+
+        if(v_Dim_N != None):
+            self.setN(v_Dim_N)
+        else:
+            v_Dim_N = self.getN()
+            
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
         vDim_N = np.array(v_Dim_N)
@@ -273,7 +436,23 @@ class viewTransform:
 
         return mReturn
 
-    def transformVRCscale(self,v_Dim_U,v_Dim_V,v_Dim_N):
+    def transformVRCscale(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
+
+        if(v_Dim_U != None):
+            self.setU(v_Dim_U)
+        else:
+            v_Dim_U = self.getU()
+
+        if(v_Dim_V != None):
+            self.setV(v_Dim_V)
+        else:
+            v_Dim_V = self.getV()
+
+        if(v_Dim_N != None):
+            self.setN(v_Dim_N)
+        else:
+            v_Dim_N = self.getN()
+            
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
         vDim_N = np.array(v_Dim_N)
