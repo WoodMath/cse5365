@@ -162,8 +162,8 @@ class Object:
                 for i_inc in range(i_index_start, i_index_stop):
                     v_test = arr_add_to[i_inc]
                     if(v_test[0] != i_current_vert_group):  ## Something happended causing to go outside the current group
-                        ValueError(' Something bad happened: v_test[0] = ' + str(v_test[0]) + \
-                                   ' Not the same as i_current_vert_group = ' + str(i_current_vert_group))
+                        raise ValueError(' Something bad happened: v_test[0] = ' + str(v_test[0]) + \
+                                         ' Not the same as i_current_vert_group = ' + str(i_current_vert_group))
                     if(v_test[1] == v_to_add[1]):           ## Dubplicate is being inserted
                         i_ins = None                          ## Do not insert
                         i_found = i_inc                     ## Place found
@@ -223,8 +223,8 @@ class Object:
                         l_parsed = vect_int_less_one(l_parsed)
                         self.addIndice(l_parsed)                        
                     else:
-                        print(' "' + str(l_type) + '" Not valid ')
-                        raise ValueError(' "' + str(l_type) + '" Not valid ')
+                        print(' "' + str(l) + '" Not valid ')
+                        raise ValueError(' "' + str(l) + '" Not valid ')
 
 #        print(' self.lineIndices = ')
 #        for i in range(len(self.lineIndices)):
