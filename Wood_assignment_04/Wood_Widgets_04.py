@@ -410,31 +410,33 @@ class cl_panel:
             return
 
         #self.master.ob_world.create_graphic_objects()
-        self.controller.loadObject()
-        
-
+        self.controller.loadObject()        
             
     def rotate(self):
         ## Make sure everythin displayed in forms is saved
         self.controller.saveFormValues()
+        self.controller.rotate()
 
         print(' Rotate button pushed ')
 
     def scale(self):
         ## Make sure everythin displayed in forms is saved
         self.controller.saveFormValues()
+        self.controller.scale()
 
         print(' Scale button clicked ')
 
     def translate(self):
         ## Make sure everythin displayed in forms is saved
         self.controller.saveFormValues()
+        self.controller.translate()
 
         print(' Translate button clicked ')
 
     def fly(self):
         ## Make sure everythin displayed in forms is saved
         self.controller.saveFormValues()
+        self.controller.fly()
 
         print(' Fly button clicked ')
 
