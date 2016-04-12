@@ -128,7 +128,7 @@ class Camera:
             else:
                 self.canvasItems.append(None)
 
-        self.refreshCanvasItems()                
+#        self.refreshCanvasItems()                
 
 
     def printSpecial(self,str_to_print,i=0):
@@ -238,7 +238,7 @@ class Camera:
 #        self.getSpecial()
 
 
-    def refreshCanvasItems(self):
+    def debug_refreshCanvasItems(self):
         print(' ' + str(self.__class__.__name__) + '.resizeCamera() called')
 
 
@@ -292,7 +292,7 @@ class Camera:
 
             self.printSpecial(' ************************ ', i)
 
-    def orig_refreshCanvasItems(self):
+    def refreshCanvasItems(self):
         print(' ' + str(self.__class__.__name__) + '.resizeCamera() called')
         
         for i in range(len(self.canvasItems)):
