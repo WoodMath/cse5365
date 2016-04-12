@@ -70,6 +70,7 @@ class Camera:
 
     def updateFromScene(self):
         print(' ' + str(self.__class__.__name__) + '.getFromScene() called')
+        self.renderer.updateScene()
         self.scene = self.renderer.scene
         self.lines = copy.copy(self.renderer.scene.lines)
         self.points = copy.copy(self.renderer.scene.world)          # World is buffer of coordinates after scale takes place
@@ -85,9 +86,16 @@ class Camera:
             if(c != None):
                 self.renderer.canvas.delete(c)
         self.canvasItems = []
+        self.lines = None
+        self.points = None
+        self.linesNDC = None
+        self.pointsNDC = None
+        self.linesScreen = None
+        self.pointsScreen = None
         
     def createCamera(self):
         print(' ' + str(self.__class__.__name__) + '.createCamera() called')
+        
         self.updateFromScene()
         self.updateNDC()
 
@@ -95,8 +103,8 @@ class Camera:
 
         self.controller.setSize()
         self.establishScreenMatrix()
-        self.establishScreenCoordinates()
-        
+        self.establishScreenCoordinates()       
+
         for l in self.linesScreen:
             i0 = l[0]
             i1 = l[1]
@@ -108,9 +116,58 @@ class Camera:
                 self.canvasItems.append(self.renderer.canvas.create_line(v_line, width=1.0, fill='black'))
             else:
                 self.canvasItems.append(None)
-        
+
+    def getSpecial(self):
+        if(self.info[0]=='perspective_1'):
+            print(' ************************ ')
+            print(' self.vrp = ' + str(self.vrp))
+
+#            print(' self.transform.originMatrix = ')
+#            print(str(self.transform.originMatrix))
+#            print('\n')
+
+            print(' self.transform.afterOriginMatrix = ')
+            print(str(self.transform.afterOriginMatrix))
+            print('\n')
+
+            print(' self.transform.step2Matrix = ')
+            print(str(self.transform.step2Matrix))
+            print('\n')
+
+            print(' self.transform.step3Matrix = ')
+            print(str(self.transform.step3Matrix))
+            print('\n')
+
+            print(' self.transform.step4Matrix = ')
+            print(str(self.transform.step4Matrix))
+            print('\n')
+
+            print(' self.transform.step5Matrix = ')
+            print(str(self.transform.step5Matrix))
+            print('\n')
+
+            print(' self.transform.step6Matrix = ')
+            print(str(self.transform.step6Matrix))
+            print('\n')
+
+#            print(' self.transform.world2NDCMatrix = ')
+#            print(str(self.transform.world2NDCMatrix))
+#            print('\n')
+            
+            
+#            print(' self.NDC2viewportMatrix = ')
+#            print(str(self.NDC2viewportMatrix))
+#            print('\n')
+
+#            print(' self.viewport2screenMatrix = ')
+#            print(str(self.viewport2screenMatrix))
+#            print('\n')
+            
+            print(' ************************ ')
+
     def updateCamera(self):
         print(' ' + str(self.__class__.__name__) + '.updateCamera() called')
+        
         self.updateFromScene()
         self.updateNDC()
 
@@ -123,6 +180,7 @@ class Camera:
         self.refreshCanvasItems()
 
     def resizeCamera(self):
+        
         self.controller.setSize()
         self.establishScreenMatrix()
         self.establishScreenCoordinates()
@@ -172,6 +230,8 @@ class Camera:
         
     def addInfo(self, sInfo):                   # Lines beginning with 'i'
         self.info = sInfo
+        print(' sInfo = "' + str(sInfo) + '"')
+        print(' sInfo[0] = "' + str(sInfo[0]) + '"')
         return
     def addType(self, sType):                   # Lines beginning with 't'
         self.type = sType
@@ -193,7 +253,7 @@ class Camera:
         return
     def addVRP(self, vVRP):                     # Lines beginning with 'r'
         self.vrp = vVRP
-        self.vrpA = vVRP
+        self.vrpA = copy.copy(vVRP)
         self.vrpB = [1,1,1]
         self.transform.setVRP(self.vrp)
         return

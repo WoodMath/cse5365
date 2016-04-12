@@ -51,7 +51,7 @@ class Renderer():
         return {'cameraFileName':self.cameraFileName, 'cameras':[c.get() for c in self.cameras ], 'scene':self.scene}
 
     def updateScene(self):
-        print(' ' + str(self.__class__.__name__) + '.updateRenderer() called')
+        print(' ' + str(self.__class__.__name__) + '.updateScene() called')
         self.scene.updateScene()
         
     def updateCameras(self,iCamera=None):
@@ -59,6 +59,7 @@ class Renderer():
         if(self.scene == None):         ## Nothing to Draw
             return
         
+        print(' *** Start Cycling Cameras *** ')
         if(iCamera==None):
             ## Update all
             for c in self.cameras:
@@ -66,12 +67,13 @@ class Renderer():
         else:
             c = self.cameras[iCamera]
             c.updateCamera()
+        print(' *** Stop Cycling Cameras *** ')
 
     def resizeCameras(self,iCamera=None):
         print(' ' + str(self.__class__.__name__) + '.resizeCameras() called')
         if(self.scene == None):         ## Nothing to Draw
             return
-        
+        print(' *** Start Cycling Cameras *** ')
         if(iCamera==None):
             ## Resize all
             for c in self.cameras:
@@ -79,6 +81,7 @@ class Renderer():
         else:
             c = self.cameras[iCamera]
             c.resizeCamera()
+        print(' *** Stop Cycling Cameras *** ')
 
         
     def createViewports(self):
@@ -91,6 +94,7 @@ class Renderer():
               
         print(' self.cameras count = ' + str(len(self.cameras)))
         zeroSet = False
+        print(' *** Start Cycling Cameras *** ')
         for c in self.cameras:
             x0 = c.vx[0]*self.canvasWidth
             y0 = c.vy[0]*self.canvasHeight
@@ -107,14 +111,14 @@ class Renderer():
                 c.rectangle = self.canvas.create_rectangle(x0,y0,x1,y1, fill='white', tags=c.info, width=1)
 
             c.text = self.canvas.create_text(x0,y0, text=c.info, anchor=NW)
-
+        print(' *** Stop Cycling Cameras *** ')
         self.canvas.update()
 
     def resizeViewports(self):
 
         if(not self.cameras):
             return
-
+        print(' *** Start Cycling Cameras *** ')
         for c in self.cameras:
             x0 = c.vx[0]*self.canvasWidth
             y0 = c.vy[0]*self.canvasHeight
@@ -129,6 +133,7 @@ class Renderer():
             
                 self.canvas.coords(c.rectangle,x0,y0,x1,y1)
                 self.canvas.coords(c.text,x0,y0)
+        print(' *** Stop Cycling Cameras *** ')
     
         
     def setSize(self,iWidth,iHeight):
@@ -144,6 +149,8 @@ class Renderer():
 
 
     def addCamera(self, cam):
+        if(self.scene):
+            cam.scene = self.scene
         self.cameras.append(cam)
         
     def clearCameras(self):
@@ -151,6 +158,11 @@ class Renderer():
 
     def addScene(self, scn):
         self.scene = scn
+        if(self.cameras):
+            print(' *** Start Cycling Cameras *** ')
+            for c in self.cameras:
+                c.scene = scn
+            print(' *** Stop Cycling Cameras *** ')
         
     def clearScene(self):
         self.scene = None
@@ -164,8 +176,11 @@ class Renderer():
         self.scene.addObject(oObject)
 
         if(self.cameras):
+            print(' *** Start Cycling Cameras *** ')
             for c in self.cameras:
+                c.clearCamera()
                 c.createCamera()
+            print(' *** Stop Cycling Cameras *** ')
     
     def addCameraFile(self, sFileName):
         self.cameraFileName = sFileName

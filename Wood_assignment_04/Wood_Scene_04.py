@@ -87,7 +87,7 @@ class Scene():
     def applyMatrix(self, mMatrix):
         
         self.stack = np.matrix(mMatrix) * self.stack
-        self.world = np.transpose(self.stack * np.transpose(np.matrix(self.points)))
+        self.world = np.transpose(self.stack * np.transpose(np.matrix(self.points))).tolist()
         
     def establish_rotation_matrix(self, i_steps, v_a, v_b, i_degree):
         # Establish the rotation matrix

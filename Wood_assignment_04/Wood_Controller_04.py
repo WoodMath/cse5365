@@ -49,7 +49,7 @@ class Controller:
     def getCameraVRP_B(self):
         k = self.getCameraVRP_AB()
         return k['vrpB']    
-    def loadObject(self):
+    def loadObject(self):        
         print(' ' + str(self.__class__.__name__) + '.loadObject() called')
         
         self.renderer.addObjectFile(self.fileName)
@@ -82,8 +82,6 @@ class Controller:
 
     def update(self):
         self.renderer.updateScene()
-#        self.setSize()
-#        self.renderer.updateViewports()
         self.renderer.updateCameras()
         
     def resize(self):

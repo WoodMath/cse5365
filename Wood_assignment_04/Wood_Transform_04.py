@@ -275,10 +275,10 @@ class Transform:
         return mReturn
     
     def transformVUP2YZ(self, v_VUP = None):
-        if(v_VUP != None):
-            self.setVUP(v_VUP)
-        else:
-            v_VUP = self.getVUP()
+#        if(v_VUP != None):
+#            self.setVUP(v_VUP)
+#        else:
+#            v_VUP = self.getVUP()
             
         vVUP = np.array(v_VUP)
         

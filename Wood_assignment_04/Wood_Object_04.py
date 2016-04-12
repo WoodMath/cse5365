@@ -48,6 +48,8 @@ def vect_float(passed_arr):
 
 class Object:
     def __init__(self):
+        self.clear()
+    def clear(self):
         self.objectFileName = None
         self.faceIndices = []
         self.lineIndices = []
@@ -196,12 +198,9 @@ class Object:
                     else:
                         print(' "' + str(l_type) + '" Not valid ')
                         raise ValueError(' "' + str(l_type) + '" Not valid ')
-        print(' self.faceIndices = ' + str(self.faceIndices))
-        print(' self.lineIndices = ' + str(self.lineIndices))
 
         self.seperatePoints()   ## Make sure each point is only referenced by 1 line
-        print(' self.faceIndices = ' + str(self.faceIndices))
-        print(' self.lineIndices = ' + str(self.lineIndices))
+
     def seperatePoints(self):
         ## Makes sure each point is only referrred to 1 (at most line)
         ## i.e. multiple indices do not reference the same point.
