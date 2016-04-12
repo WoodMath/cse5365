@@ -164,11 +164,15 @@ class ViewTransform(Transform):
         self.world2NDCMatrix = self.afterOriginMatrix * self.originMatrix
 
     def establishNDCMatrix(self):
+        print(' ' + str(self.__class__.__name__) + '.establishNDCMatrix() called')
+
         self.establishOriginMatrix()
         self.establishAfterOriginMatrix()
         self.world2NDCMatrix = self.afterOriginMatrix * self.originMatrix
 
     def establishNDCCoordinates(self):
+        print(' ' + str(self.__class__.__name__) + '.establishNDCCoordinates() called')
+
         self.camera.linesNDC = copy.copy(self.camera.lines)
         self.camera.pointsNDC = copy.copy(self.camera.points)
 

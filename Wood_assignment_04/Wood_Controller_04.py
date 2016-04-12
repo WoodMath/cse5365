@@ -19,8 +19,12 @@ from numpy import linalg as LA
 from Wood_Renderer_04 import *
 from Wood_Scene_04 import *
 
+import time
+fDelay = 0.1
+
 class Controller:
-    def __init__(self):
+    def __init__(self,root):
+        self.root = root
         self.view = None
         self.world = None
         self.canvas = None

@@ -19,11 +19,9 @@ def close_window_callback(root):
     if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
         root.destroy()
 
-
-ob_controller = Controller()
-
-
 ob_root_window = Tk()
+ob_controller = Controller(ob_root_window)
+
 ob_root_window.protocol("WM_DELETE_WINDOW", lambda root_window=ob_root_window: close_window_callback(root_window))
 ob_world = cl_world()                 ## Drawing widget (not render engine)
 ob_view = cl_widgets(ob_root_window, ob_world, ob_controller)

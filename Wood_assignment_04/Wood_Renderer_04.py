@@ -21,6 +21,9 @@ from Wood_Camera_04 import *
 
 from tkinter import *
 
+import time
+fDelay = 0.1
+
 def vect_int(arr):
     rtrn = []
     for k in arr:
@@ -78,9 +81,13 @@ class Renderer():
             ## Resize all
             for c in self.cameras:
                 c.resizeCamera()
+#                self.controller.root.update_idletasks()
+#                time.sleep(fDelay)
         else:
             c = self.cameras[iCamera]
             c.resizeCamera()
+#            self.controller.root.update_idletasks()
+#            time.sleep(fDelay)
         print(' *** Stop Cycling Cameras *** ')
 
         
@@ -108,7 +115,7 @@ class Renderer():
         print(' *** Stop Cycling Cameras *** ')
 
     def resizeViewports(self):
-
+        print(' ' + str(self.__class__.__name__) + '.resizeViewports() called')
         if(not self.cameras):
             return
         print(' *** Start Cycling Cameras *** ')

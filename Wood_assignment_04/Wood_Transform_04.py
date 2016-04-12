@@ -180,10 +180,12 @@ class Transform:
         return vReturn
     
     def transformVRP2Origin(self, v_VRP = None):
+        comment='''
         if(v_VRP != None):
             self.setVRP(v_VRP)
         else:
             v_VRP = self.getVRP()
+        '''
             
         vVRP = np.array(v_VRP)
 
@@ -202,10 +204,12 @@ class Transform:
         return mReturn
         
     def transformVPN2Z(self, v_VPN = None):
+        comment='''
         if(v_VPN != None):
             self.setVPN(v_VPN)
         else:
             v_VPN = self.getVPN()
+        '''
             
         vVPN = np.array(v_VPN)
         
@@ -275,11 +279,12 @@ class Transform:
         return mReturn
     
     def transformVUP2YZ(self, v_VUP = None):
-#        if(v_VUP != None):
-#            self.setVUP(v_VUP)
-#        else:
-#            v_VUP = self.getVUP()
-            
+        comment='''
+        if(v_VUP != None):
+            self.setVUP(v_VUP)
+        else:
+            v_VUP = self.getVUP()
+        '''    
         vVUP = np.array(v_VUP)
         
         f_x = vVUP[0]
@@ -321,12 +326,14 @@ class Transform:
         return mReturn
 
     def getUfromVPNandVUP(self, v_VPN = None, v_VUP = None):
+        comment='''
         if(v_VPN == None):
             v_VPN = self.getVPN()
 
         if(v_VUP == None):
             v_VUP = self.getVUP()
-            
+        '''
+        
         vVPN = np.array(v_VPN)
         vVUP = np.array(v_VUP)
         vU_nn = np.cross(vVUP,vVPN)
@@ -336,11 +343,13 @@ class Transform:
         return vU
     
     def getVfromVPNandU(self, v_VPN = None, v_U = None):
+        comment='''
         if(v_VPN == None):
             v_VPN = self.getVPN()
 
         if(v_U == None):
             v_U = self.getUfromVPNandVUP(v_VPN)
+        '''
             
         vVPN = np.array(v_VPN)
         vU = np.array(v_U)
@@ -351,11 +360,13 @@ class Transform:
         return vV
 
     def getUVfromVPNandVUP(self, v_VPN = None, v_VUP = None):
+        '''
         if(v_VPN == None):
             v_VPN = self.getVPN()
 
         if(v_VUP == None):
             v_VUP = self.getVUP()
+        '''
             
         vVPN = np.array(v_VPN)
         vVUP = np.array(v_VUP)
@@ -369,6 +380,7 @@ class Transform:
         return (vU,vV)
 
     def transformVRCshear(self, v_PRP = None, v_Dim_U = None, v_Dim_V = None):
+        comment='''
         if(v_PRP != None):
             self.setPRP(v_PRP)
         else:
@@ -383,7 +395,8 @@ class Transform:
             self.setV(v_Dim_V)
         else:
             v_Dim_V = self.getV()
-        
+        '''
+
         vPRP = np.array(v_PRP)
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
@@ -405,6 +418,7 @@ class Transform:
         return mReturn
 
     def transformVRCtranslate(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
+        comment='''
         if(v_Dim_U != None):
             self.setU(v_Dim_U)
         else:
@@ -419,6 +433,7 @@ class Transform:
             self.setN(v_Dim_N)
         else:
             v_Dim_N = self.getN()
+        '''
             
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
@@ -438,7 +453,7 @@ class Transform:
         return mReturn
 
     def transformVRCscale(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
-
+        comment='''
         if(v_Dim_U != None):
             self.setU(v_Dim_U)
         else:
@@ -453,6 +468,7 @@ class Transform:
             self.setN(v_Dim_N)
         else:
             v_Dim_N = self.getN()
+        '''
             
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
