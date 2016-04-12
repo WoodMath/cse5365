@@ -28,7 +28,8 @@ class Scene():
     def clearObjects(self):
         self.objects = []
         self.points = []
-        self.indices = []
+        self.lines = []
+        self.world = None
         self.stack = np.matrix(\
             [[1,0,0,0],\
              [0,1,0,0],\
@@ -56,6 +57,7 @@ class Scene():
              [0,0,0,1]])
         
     def updateScene(self):
+        print(' ' + str(self.__class__.__name__) + '.updateScene() called')
         print(' Updating scene ...')
         self.world = np.transpose(self.stack * np.transpose(np.matrix(self.points))).tolist()
         return
@@ -78,7 +80,9 @@ class Scene():
 
             self.points.append(p0)
             self.points.append(p1)
-            self.indices.append([i_ind0 + i_point_index, i_ind1 + i_point_index, 1])
+            self.lines.append([i_ind0 + i_point_index, i_ind1 + i_point_index, 1])
+
+        self.updateScene()
 
     def applyMatrix(self, mMatrix):
         

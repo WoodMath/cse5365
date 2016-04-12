@@ -115,7 +115,8 @@ class cl_canvas_frame:
         
         self.canvas.pack()
         
-        self.master.ob_world.redisplay_graphic_objects()
+        #self.master.ob_world.redisplay_graphic_objects()
+        self.controller.resize()
 
 class cl_panel:
     def __init__(self, master):
@@ -388,6 +389,8 @@ class cl_panel:
         self.vrp_bz.insert(0,'%.1f' % v_vrpB[2])
         
     def browse_file(self):
+        print(' ' + str(self.__class__.__name__) + '.browse_file() called')
+        
         self.var_filename.set(filedialog.askopenfilename(filetypes=[("allfiles","*"),("pythonfiles","*.txt")]))
         filename = self.var_filename.get()        
 
@@ -399,12 +402,16 @@ class cl_panel:
         self.controller.saveFormValues()
 
     def load_file(self):
+        print(' ' + str(self.__class__.__name__) + '.load_file() called')
+        
         ## Make sure everythin displayed in forms is saved
         self.controller.saveFormValues()
-        
+
+        print(' self.controller.fileName = ' + str(self.controller.fileName))
         if(not len(self.controller.fileName)):
             return
-        
+
+        #self.master.ob_world.create_graphic_objects()
         self.controller.loadObject()
         
 

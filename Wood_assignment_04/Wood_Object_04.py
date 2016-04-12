@@ -173,6 +173,8 @@ class Object:
                 (self.start_index[i_inc]) += 1              ## Increment starting index of remaining group
 
     def loadFile(self,sFileName):
+        print(' ' + str(self.__class__.__name__) + '.loadFile() called')
+        
         self.objectFileName = sFileName
 
         with open(sFileName) as openObjectFile:
@@ -188,13 +190,18 @@ class Object:
                         l_parsed = vect_float(l_parsed)
                         self.addPoint(l_parsed)                        
                     elif(l_type == 'f'):
-                        l_parsed.append('1')
+#                        l_parsed.append('1')
                         l_parsed = vect_int_less_one(l_parsed)
                         self.addIndice(l_parsed)                        
                     else:
+                        print(' "' + str(l_type) + '" Not valid ')
                         raise ValueError(' "' + str(l_type) + '" Not valid ')
-        self.seperatePoints()   ## Make sure each point is only referenced by 1 line
+        print(' self.faceIndices = ' + str(self.faceIndices))
+        print(' self.lineIndices = ' + str(self.lineIndices))
 
+        self.seperatePoints()   ## Make sure each point is only referenced by 1 line
+        print(' self.faceIndices = ' + str(self.faceIndices))
+        print(' self.lineIndices = ' + str(self.lineIndices))
     def seperatePoints(self):
         ## Makes sure each point is only referrred to 1 (at most line)
         ## i.e. multiple indices do not reference the same point.

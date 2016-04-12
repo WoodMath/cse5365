@@ -49,11 +49,16 @@ class Renderer():
 
     def get(self):
         return {'cameraFileName':self.cameraFileName, 'cameras':[c.get() for c in self.cameras ], 'scene':self.scene}
-    def createRender(self):
-        
-        return
-    def updateRender(self,iCamera=None):
+
+    def updateScene(self):
+        print(' ' + str(self.__class__.__name__) + '.updateRenderer() called')
         self.scene.updateScene()
+        
+    def updateCameras(self,iCamera=None):
+        print(' ' + str(self.__class__.__name__) + '.updateCameras() called')
+        if(self.scene == None):         ## Nothing to Draw
+            return
+        
         if(iCamera==None):
             ## Update all
             for c in self.cameras:
@@ -61,6 +66,21 @@ class Renderer():
         else:
             c = self.cameras[iCamera]
             c.updateCamera()
+
+    def resizeCameras(self,iCamera=None):
+        print(' ' + str(self.__class__.__name__) + '.resizeCameras() called')
+        if(self.scene == None):         ## Nothing to Draw
+            return
+        
+        if(iCamera==None):
+            ## Resize all
+            for c in self.cameras:
+                c.resizeCamera()
+        else:
+            c = self.cameras[iCamera]
+            c.resizeCamera()
+
+        
     def createViewports(self):
         self.controller.setSize()
         if(self.canvasWidth == None or self.canvasHeight == None):
@@ -90,9 +110,9 @@ class Renderer():
 
         self.canvas.update()
 
-    def updateViewports(self):
+    def resizeViewports(self):
 
-        if(len(self.cameras)==0):
+        if(not self.cameras):
             return
 
         for c in self.cameras:
@@ -136,6 +156,7 @@ class Renderer():
         self.scene = None
 
     def addObjectFile(self, sFileName):
+        print(' ' + str(self.__class__.__name__) + '.addObjectFile() called')
         self.clearScene()
         oObject = Object()
         oObject.loadFile(sFileName)

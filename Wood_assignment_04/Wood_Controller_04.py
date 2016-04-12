@@ -50,6 +50,8 @@ class Controller:
         k = self.getCameraVRP_AB()
         return k['vrpB']    
     def loadObject(self):
+        print(' ' + str(self.__class__.__name__) + '.loadObject() called')
+        
         self.renderer.addObjectFile(self.fileName)
         return
     def addRenderer(self, renderer = Renderer()):
@@ -78,16 +80,19 @@ class Controller:
 
         self.renderer.setSize(iWidth, iHeight)
 
-    def createScene(self):
-        return
-    def updateScene(self):
+    def update(self):
         self.renderer.updateScene()
+#        self.setSize()
+#        self.renderer.updateViewports()
+        self.renderer.updateCameras()
         
-    def updateResize(self):
+    def resize(self):
         self.setSize()
-        self.renderer.updateViewports()
+        self.renderer.resizeViewports()
+        self.renderer.resizeCameras()
         
     def saveFormValues(self):
+        print(' ' + str(self.__class__.__name__) + '.saveFormValues() called')
         
         self.fileName = self.panel.filename.get()
         self.rotationAxisOptions = {'X':1,'Y':2,'Z':3,'LineAB':4}

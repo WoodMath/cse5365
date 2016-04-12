@@ -58,6 +58,9 @@ class Camera:
         self.text = None
 
         self.NDC2viewportMatrix = None
+        self.viewport2screenMatrix = None
+        
+        self.canvasItems = []
 
     def updateTransform(self):
         self.transform.setVRP(self.vrp)
@@ -65,8 +68,8 @@ class Camera:
         self.transform.setVUP(self.vup)
         self.transform.setPRP(self.prp)
 
-    def getFromScene(self):
-        self.renderer.updateScene()
+    def updateFromScene(self):
+        print(' ' + str(self.__class__.__name__) + '.getFromScene() called')
         self.scene = self.renderer.scene
         self.lines = copy.copy(self.renderer.scene.lines)
         self.points = copy.copy(self.renderer.scene.world)          # World is buffer of coordinates after scale takes place
@@ -76,21 +79,76 @@ class Camera:
         self.transform.establishAfterOriginMatrix()
         self.transform.establishNDCMatrix()
         self.transform.establishNDCCoordinates()
+
+    def clearCamera(self):
+        for c in self.canvasItems:
+            if(c != None):
+                self.renderer.canvas.delete(c)
+        self.canvasItems = []
         
-    def updateScreen(self):
+    def createCamera(self):
+        print(' ' + str(self.__class__.__name__) + '.createCamera() called')
+        self.updateFromScene()
+        self.updateNDC()
+
         self.establishViewportMatrix()
+
+        self.controller.setSize()
         self.establishScreenMatrix()
         self.establishScreenCoordinates()
         
-    def createCamera(self):
-        self.getFromScene()
-        self.updateNDC()
-        self.updateScreen()
+        for l in self.linesScreen:
+            i0 = l[0]
+            i1 = l[1]
+            b_Draw = l[2]
+            p0 = self.pointsScreen[i0]
+            p1 = self.pointsScreen[i1]
+            v_line = [p0[0],p0[1],p1[0],p1[1]]
+            if(b_Draw):
+                self.canvasItems.append(self.renderer.canvas.create_line(v_line, width=1.0, fill='black'))
+            else:
+                self.canvasItems.append(None)
         
     def updateCamera(self):
-        self.getFromScene()
+        print(' ' + str(self.__class__.__name__) + '.updateCamera() called')
+        self.updateFromScene()
         self.updateNDC()
-        self.updateScreen()        
+
+        self.establishViewportMatrix()
+
+        self.controller.setSize()
+        self.establishScreenMatrix()
+        self.establishScreenCoordinates()
+                
+        self.refreshCanvasItems()
+
+    def resizeCamera(self):
+        self.controller.setSize()
+        self.establishScreenMatrix()
+        self.establishScreenCoordinates()
+
+        self.refreshCanvasItems()
+
+    def refreshCanvasItems(self):
+        print(' ' + str(self.__class__.__name__) + '.resizeCamera() called')
+        
+        for i in range(len(self.canvasItems)):
+            l = self.linesScreen[i]
+            i0 = l[0]
+            i1 = l[1]
+            b_Draw = l[2]
+            p0 = self.pointsScreen[i0]
+            p1 = self.pointsScreen[i1]
+            v_line = [p0[0],p0[1],p1[0],p1[1]]
+            if(b_Draw):
+                if(self.canvasItems[i] == None):        ## Need to draw but doesnt exist
+                    self.canvasItems[i] = self.renderer.canvas.create_line(v_line, width=1.0, fill='black')
+                else:                                   ## Need to draw already exists
+                    self.renderer.canvas.coords(self.canvasItems[i], v_line)
+            else:
+                if(self.canvasItems[i] != None):        ## Don't draw, something that already exists
+                    self.renderer.canvas.delete(self.canvasItems[i])
+                    self.canvasItems[i] = None
 
     def get(self):
         return {'cameraFileName':self.cameraFileName, \
@@ -125,7 +183,7 @@ class Camera:
         self.wn = [lWindow[4], lWindow[5]]
         self.transform.setU(self.wu)
         self.transform.setV(self.wv)
-        self.transform.setV(self.wn)
+        self.transform.setN(self.wn)
 
         return
     def addViewport(self, lViewport):           # Lines beginning wtih 's'
@@ -184,6 +242,7 @@ class Camera:
         self.NDC2viewportMatrix = vMat * sMat * wMat;
 
     def establishScreenMatrix(self):
+        print(' ' + str(self.__class__.__name__) + '.establishScreenMatrix() called')
         print(' Establishing Screen matrix ')
         iWidth = self.renderer.canvasWidth
         iHeight = self.renderer.canvasHeight
@@ -194,6 +253,7 @@ class Camera:
              [0,0,0,1]])
 
     def establishScreenCoordinates(self):
+        print(' ' + str(self.__class__.__name__) + '.establishScreenCoordinates() called')
         print(' Establishing Screen coordinates ')
         # Transform vertices into coordinates
 

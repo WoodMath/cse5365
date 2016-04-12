@@ -78,7 +78,7 @@ class ViewTransform(Transform):
         ## Test VRP vector [0,0,0]
         mTempVRP = tObj.array2matrix(tObj.arrayAdd1(self.vVRP))
         mTempVRP = self.step1Matrix * mTempVRP
-        vTempVRP = tObj.arrayRemove1(tObj.matrix2array(mTempVRP))
+        vTempVRP = tObj.arrayRemove1(tObj.matrix2array(mTempVRP)).tolist()
         print(' vTempVRP = ',end='')
         print(vTempVRP)
 
@@ -97,7 +97,7 @@ class ViewTransform(Transform):
         ## Test new VPN vector [0,0,a]
         mTempVPN = tObj.array2matrix(tObj.arrayAdd1(self.vVPN))
         mTempVPN = self.step2Matrix * mTempVPN
-        vTempVPN = tObj.arrayRemove1(tObj.matrix2array(mTempVPN))
+        vTempVPN = tObj.arrayRemove1(tObj.matrix2array(mTempVPN)).tolist()
         print(' vTempVPN = ',end='')
         print(vTempVPN)
 
@@ -106,7 +106,7 @@ class ViewTransform(Transform):
         ## Get new VUP vector
         mTempVUP = tObj.array2matrix(tObj.arrayAdd1(self.vVUP))
         mTempVUP = self.step2Matrix * mTempVUP
-        vTempVUP = tObj.arrayRemove1(tObj.matrix2array(mTempVUP))
+        vTempVUP = tObj.arrayRemove1(tObj.matrix2array(mTempVUP)).tolist()
 
         ## Rotate new VUP vector 2 YZ-Plane (Step 3)
         self.step3Matrix = tObj.transformVUP2YZ(vTempVUP)
@@ -114,7 +114,7 @@ class ViewTransform(Transform):
         ## Test new VUP vector [0,b,c]
         mTempVUP = tObj.array2matrix(tObj.arrayAdd1(vTempVUP))
         mTempVUP = self.step3Matrix * mTempVUP
-        vTempVUP = tObj.arrayRemove1(tObj.matrix2array(mTempVUP))
+        vTempVUP = tObj.arrayRemove1(tObj.matrix2array(mTempVUP)).tolist()
 
         print(' vTempVUP = ',end='')
         print(vTempVUP)
@@ -127,7 +127,7 @@ class ViewTransform(Transform):
         ## Test new VUP vector [CW_x,CW_y,PRP_z]
         mTempPRP = tObj.array2matrix(tObj.arrayAdd1(self.vPRP))
         mTempPRP = self.step4Matrix * mTempPRP
-        vTempPRP = tObj.arrayRemove1(tObj.matrix2array(mTempPRP))
+        vTempPRP = tObj.arrayRemove1(tObj.matrix2array(mTempPRP)).tolist()
 
         print(' vTempPRP = ',end='')
         print(vTempPRP)
@@ -146,7 +146,7 @@ class ViewTransform(Transform):
         ## Test new CW vector [0,0,0]
         mTempUVN = tObj.array2matrix(tObj.arrayAdd1([fCW_U,fCW_V,fMin_N]))
         mTempUVN = self.step5Matrix * mTempUVN
-        vTempUVN = tObj.arrayRemove1(tObj.matrix2array(mTempUVN))
+        vTempUVN = tObj.arrayRemove1(tObj.matrix2array(mTempUVN)).tolist()
 
         print(' vTempUVN = ',end='')
         print(vTempUVN)
