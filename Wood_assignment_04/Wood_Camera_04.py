@@ -98,7 +98,6 @@ class Camera:
         
         self.updateFromScene()
         self.updateNDC()
-
         self.establishViewportMatrix()
 
         self.controller.setSize()
@@ -170,7 +169,6 @@ class Camera:
         
         self.updateFromScene()
         self.updateNDC()
-
         self.establishViewportMatrix()
 
         self.controller.setSize()
@@ -208,8 +206,6 @@ class Camera:
                     self.renderer.canvas.delete(self.canvasItems[i])
                     self.canvasItems[i] = None
 
-#        self.controller.canvas.update()
-
     def get(self):
         return {'cameraFileName':self.cameraFileName, \
                 'info':self.info, \
@@ -232,8 +228,6 @@ class Camera:
         
     def addInfo(self, sInfo):                   # Lines beginning with 'i'
         self.info = sInfo
-        print(' sInfo = "' + str(sInfo) + '"')
-        print(' sInfo[0] = "' + str(sInfo[0]) + '"')
         return
     def addType(self, sType):                   # Lines beginning with 't'
         self.type = sType
@@ -320,8 +314,8 @@ class Camera:
         # Transform vertices into coordinates
 
         self.linesScreen = copy.copy(self.linesNDC)
-        self.pointsScreen = self.viewport2screenMatrix *\
-                                  self.NDC2viewportMatrix * \
+        self.pointsScreen = (self.viewport2screenMatrix *\
+                                  self.NDC2viewportMatrix) * \
                                   np.transpose(np.matrix(self.pointsNDC))
 
         

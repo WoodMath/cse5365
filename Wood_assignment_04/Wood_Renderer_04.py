@@ -89,10 +89,7 @@ class Renderer():
         if(self.canvasWidth == None or self.canvasHeight == None):
             raise ValueError('Size has not been set yet')
             return
-        print(' self.canvasHeight = ' + str(self.canvasHeight))
-        print(' self.canvasWidth = ' + str(self.canvasWidth))
-              
-        print(' self.cameras count = ' + str(len(self.cameras)))
+
         zeroSet = False
         print(' *** Start Cycling Cameras *** ')
         for c in self.cameras:
@@ -100,9 +97,6 @@ class Renderer():
             y0 = c.vy[0]*self.canvasHeight
             x1 = c.vx[1]*self.canvasWidth
             y1 = c.vy[1]*self.canvasHeight
-            print(' c.vx = ' + str(c.vx))
-            print(' c.vy = ' + str(c.vy))
-            print(' [x0,y0] = ' + str([x0,y0]) + ' ; [x1,y1] = ' + str([x1,y1]))
 
             if(not zeroSet):
                 zeroSet = True
@@ -124,12 +118,6 @@ class Renderer():
             x1 = c.vx[1]*self.canvasWidth
             y1 = c.vy[1]*self.canvasHeight
             if(c.rectangle and c.text):
-                print(' c.vx = ' + str(c.vx))
-                print(' c.vy = ' + str(c.vy))
-                print(' [x0,y0] = ' + str([x0,y0]) + ' ; [x1,y1] = ' + str([x1,y1]))
-                print(' c.rectangle = ' + str(c.rectangle))
-                print(' c.text = ' + str(c.text))
-            
                 self.canvas.coords(c.rectangle,x0,y0,x1,y1)
                 self.canvas.coords(c.text,x0,y0)
         print(' *** Stop Cycling Cameras *** ')
