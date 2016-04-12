@@ -10,8 +10,6 @@ from tkinter import simpledialog
 from tkinter import filedialog
 from tkinter import ttk
 
-from Wood_Fileread_04 import *
-
 class cl_widgets:
     def __init__(self,ob_root_window, ob_world,ob_controller):
         self.ob_root_window=ob_root_window
