@@ -74,6 +74,8 @@ class Controller:
         ## Now we have a view (widgets object) we can draw boxes
         if(self.renderer != None):
             self.renderer.createViewports()
+            self.canvas.update()
+            
     def setSize(self):
         iWidth = int(self.canvas.cget("width"))
         iHeight = int(self.canvas.cget("height"))
@@ -83,11 +85,13 @@ class Controller:
     def update(self):
         self.renderer.updateScene()
         self.renderer.updateCameras()
+        self.canvas.update()
         
     def resize(self):
         self.setSize()
         self.renderer.resizeViewports()
         self.renderer.resizeCameras()
+        self.canvas.update()
         
     def saveFormValues(self):
         print(' ' + str(self.__class__.__name__) + '.saveFormValues() called')

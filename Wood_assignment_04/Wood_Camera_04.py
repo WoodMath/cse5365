@@ -208,6 +208,8 @@ class Camera:
                     self.renderer.canvas.delete(self.canvasItems[i])
                     self.canvasItems[i] = None
 
+#        self.controller.canvas.update()
+
     def get(self):
         return {'cameraFileName':self.cameraFileName, \
                 'info':self.info, \

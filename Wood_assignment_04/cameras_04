@@ -1,0 +1,9 @@
+c
+i perspective_1
+t perspective
+r 5 5 5
+n -1 -1 -1
+u 0 1 0
+p 0.5 1 4
+w -2 2 -3 3 6 20
+s 0.5 0.5 0.75 0.75

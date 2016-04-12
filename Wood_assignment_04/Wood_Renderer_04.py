@@ -112,7 +112,6 @@ class Renderer():
 
             c.text = self.canvas.create_text(x0,y0, text=c.info, anchor=NW)
         print(' *** Stop Cycling Cameras *** ')
-        self.canvas.update()
 
     def resizeViewports(self):
 
