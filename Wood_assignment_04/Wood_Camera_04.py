@@ -57,6 +57,8 @@ class Camera:
         self.vrpA = None
         self.vrpB = None
 
+        self.vrpFile = None
+
         self.rectangle = None
         self.text = None
 
@@ -68,7 +70,13 @@ class Camera:
         ## Added
         self.x01 = None
         self.y01 = None
-    
+
+        self.flyMatrix = np.matrix(\
+            [[1,0,0,0],\
+             [0,1,0,0],\
+             [0,0,1,0],\
+             [0,0,0,1]])
+        
     def updateTransform(self):
         self.transform.setVRP(self.vrp)
         self.transform.setVPN(self.vpn)
@@ -79,8 +87,8 @@ class Camera:
         print(' ' + str(self.__class__.__name__) + '.updateFromScene() called')
 #        self.renderer.updateScene()
 #        self.scene = self.renderer.scene
-        self.lines = copy.copy(self.renderer.scene.lines)
-        self.points = copy.copy(self.renderer.scene.world)          # World is buffer of coordinates after scale takes place
+        self.lines = copy.deepcopy(self.renderer.scene.lines)
+        self.points = copy.deepcopy(self.renderer.scene.world)          # World is buffer of coordinates after scale takes place
 
     def updateNDC(self):
         self.transform.establishOriginMatrix()
@@ -88,13 +96,17 @@ class Camera:
         self.transform.establishNDCMatrix()
         self.transform.establishNDCCoordinates()
 
-#        self.linesScreen = self.linesNDC
-        self.linesScreen = copy.deepcopy(self.linesNDC)
+        self.linesScreen = self.linesNDC
 
     def clearCamera(self):
         for c in self.canvasItems:
             if(c != None):
                 self.renderer.canvas.delete(c)
+        print(' self.info = ' + self.info + ' ; self.vrp = ' + str(self.vrp))
+
+        ## Reset VRP to one from cameras file
+        self.setVRP(copy.copy(self.vrpFile))
+        
         self.canvasItems = []
         self.lines = None
         self.points = None
@@ -213,10 +225,10 @@ class Camera:
         
         self.updateFromScene()
         self.updateNDC()
-        self.establishViewportMatrix()
+#        self.establishViewportMatrix()
 
-        self.controller.setSize()
-        self.establishScreenMatrix()
+#        self.controller.setSize()
+#        self.establishScreenMatrix()
         self.establishScreenCoordinates()
                 
         self.refreshCanvasItems()
@@ -398,12 +410,13 @@ class Camera:
     def setVRP(self, vVRP):                     # Set VRP after file has been loaded
         self.vrp = vVRP
         self.transform.setVRP(self.vrp)
-        
+    def getVRP(self):
+        return self.vrp
     def addInfo(self, sInfo):                   # Lines beginning with 'i'
-        self.info = sInfo
+        self.info = sInfo[0]
         return
     def addType(self, sType):                   # Lines beginning with 't'
-        self.type = sType
+        self.type = sType[0]
         return
     def addWindow(self, lWindow):               # Lines beginning with 'w'
         self.window = lWindow
@@ -423,6 +436,7 @@ class Camera:
         self.vrp = vVRP
         self.vrpA = copy.copy(vVRP)
         self.vrpB = [1,1,1]
+        self.vrpFile = copy.copy(vVRP)
         self.transform.setVRP(self.vrp)
         return
     def addVPN(self, vVPN):                     # Lines beginning with 'n'
@@ -437,3 +451,39 @@ class Camera:
         self.prp = vPRP
         self.transform.setPRP(self.prp)
         return
+
+
+    def establish_fly_matrix(self, i_steps=None, v_start=None, v_stop=None):
+        ## Establish the fly matrix
+        
+        if(i_steps==None):
+            i_steps = copy.copy(self.controller.flyVRPSteps)
+        if(v_start==None):
+            v_start = copy.copy(self.controller.flyVRPVectorA)
+        if(v_stop==None):
+            v_stop = copy.copy(self.controller.flyVRPVectorB)
+            
+        print(' Establishing translation matrix ')
+
+        f_steps = float(i_steps)
+
+        v_inc_fly = [1.0, 1.0, 1.0]
+
+        v_fly = [v_stop[0]-v_start[0], v_stop[1]-v_start[1], v_stop[2]-v_start[2]]
+        v_inc_fly = [1.0, 1.0, 1.0]
+        v_inc_fly[0] = v_fly[0]/f_steps
+        v_inc_fly[1] = v_fly[1]/f_steps
+        v_inc_fly[2] = v_fly[2]/f_steps
+        print(' f_steps = ' + str(f_steps))
+        print(' v_fly = ' + str(v_fly))
+        print(' v_inc_fly = ' + str(v_inc_fly))
+
+        ## Establish matrix for translating all points
+        m_Fly = np.matrix(\
+            [[1,0,0,v_inc_fly[0]],\
+             [0,1,0,v_inc_fly[1]],\
+             [0,0,1,v_inc_fly[2]],\
+             [0,0,0,1]])
+
+        ## Rename translation matrix for consistancy
+        self.flyMatrix = m_Fly        

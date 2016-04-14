@@ -360,15 +360,6 @@ class cl_panel:
         self.disc_label_thr = Label(disc_frame_thr, text="NOTE: Transformations are cumulative. Click 'Load' to reset transformation stack.")
         self.disc_label_thr.pack(side=LEFT,padx=0,pady=0)
 
-        self.updateVRPs()
-
-    def camera_selected(self,event):
-
-        self.controller.saveFormValues()
-        self.updateVRPs()
-
-
-    def updateVRPs(self):
         v_vrpA = self.controller.getCameraVRP_A()
         v_vrpB = self.controller.getCameraVRP_B()
 
@@ -385,6 +376,11 @@ class cl_panel:
         self.vrp_by.insert(0,'%.1f' % v_vrpB[1])
         self.vrp_bz.delete(0,"end")
         self.vrp_bz.insert(0,'%.1f' % v_vrpB[2])
+
+    def camera_selected(self,event):
+
+        self.controller.saveFormValues()
+        self.controller.updateVRPs()
         
     def browse_file(self):
         print(' ' + str(self.__class__.__name__) + '.browse_file() called')

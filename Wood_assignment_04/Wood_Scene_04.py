@@ -21,11 +21,13 @@ from Wood_Object_04 import *
 class Scene():
     def __init__(self):
 
-        self.clearObjects()
+        self.controller = None
+        self.renderer = None
+        self.clearScene()
 
         return
     
-    def clearObjects(self):
+    def clearScene(self):
         self.objects = []
         self.points = []
         self.lines = []
@@ -85,12 +87,34 @@ class Scene():
         self.updateScene()
 
     def applyMatrix(self, mMatrix):
-        
+        print(' ' + str(self.__class__.__name__) + '.applyMatrix() called')
+        print(' Applying Matrix ...')
         self.stack = np.matrix(mMatrix) * self.stack
-        self.world = np.transpose(self.stack * np.transpose(np.matrix(self.points))).tolist()
+        self.updateScene()
         
-    def establish_rotation_matrix(self, i_steps, v_a, v_b, i_degree):
+    def establish_rotation_matrix(self, i_steps=None, v_a=None, v_b=None, i_degree=None, i_option=None):
         # Establish the rotation matrix
+
+        if(i_steps==None):
+            i_steps = copy.copy(self.controller.rotationSteps)
+        if(v_a==None):
+            v_a = copy.copy(self.controller.rotationAxisVectorA)
+        if(v_b==None):
+            v_b = copy.copy(self.controller.rotationAxisVectorB)
+        if(i_degree==None):
+            i_degree = copy.copy(self.controller.rotationDegrees)
+        if(i_option==None):
+            i_option = copy.copy(self.controller.rotationAxisOption)
+            
+        if(i_option== 1):
+            v_a = [0,0,0]
+            v_b = [1,0,0]
+        if(i_option == 2):
+            v_a = [0,0,0]
+            v_b = [0,1,0]
+        if(i_option == 3):
+            v_a = [0,0,0]
+            v_b = [0,0,1]
         
         print(' Establishing rotation matrix ')
         v_a = np.array(v_a)
@@ -225,7 +249,21 @@ class Scene():
         ## Combine rotation transformation to be applied to points
         self.rotationMatrix = m_Rotate_Trans_Inv * m_Rotate_X_Inv * m_Rotate_Y_Inv * m_Rotate_Z * m_Rotate_Y * m_Rotate_X * m_Rotate_Trans
 
-    def establish_scale_matrix(self, i_steps, v_scale, v_center):
+    def establish_scale_matrix(self, i_steps=None, v_scale=None, v_center=None, i_option=None):
+        ## Establish the scale matrix
+        
+        if(i_steps==None):
+            i_steps = copy.copy(self.controller.flyVRPSteps)
+        if(v_scale==None):
+            v_scale = copy.copy(self.controller.scaleSizeVector)
+        if(v_center==None):
+            v_center = copy.copy(self.controller.scaleCenterVector)
+        if(i_option==None):
+            i_option = copy.copy(self.controller.scaleSizeOption)
+
+        if(i_option==1):
+            v_scale = [copy.copy(self.controller.scaleSizeScalar),copy.copy(self.controller.scaleSizeScalar),copy.copy(self.controller.scaleSizeScalar)]
+        
         print(' Establishing scale matrix ')
 
         f_steps = float(i_steps)
@@ -263,7 +301,14 @@ class Scene():
         ## Combine translation transformation to be applied to points
         self.scaleMatrix = m_Scale_Trans_Inv * m_Scale_Size * m_Scale_Trans
 
-    def establish_translation_matrix(self, i_steps, v_trans):
+    def establish_translation_matrix(self, i_steps=None, v_trans=None):
+        ## Establish the translation matrix
+
+        if(i_steps==None):
+            i_steps = copy.copy(self.controller.translationSteps)
+        if(v_trans==None):
+            v_trans = copy.copy(self.controller.translationVector)
+            
         print(' Establishing translation matrix ')
 
         f_steps = float(i_steps)
@@ -286,31 +331,6 @@ class Scene():
         ## Rename translation matrix for consistancy
         self.translationMatrix = m_Trans
 
-    def establish_fly_matrix(self, i_steps, v_start, v_stop):
-        print(' Establishing translation matrix ')
-
-        f_steps = float(i_steps)
-
-        v_inc_fly = [1.0, 1.0, 1.0]
-
-        v_fly = [v_stop[0]-v_start[0], v_stop[1]-v_start[1], v_stop[2]-v_start[2]]
-        v_inc_fly = [1.0, 1.0, 1.0]
-        v_inc_fly[0] = v_fly[0]/f_steps
-        v_inc_fly[1] = v_fly[1]/f_steps
-        v_inc_fly[2] = v_fly[2]/f_steps
-        print(' f_steps = ' + str(f_steps))
-        print(' v_fly = ' + str(v_fly))
-        print(' v_inc_fly = ' + str(v_inc_fly))
-
-        ## Establish matrix for translating all points
-        m_Fly = np.matrix(\
-            [[1,0,0,v_inc_fly[0]],\
-             [0,1,0,v_inc_fly[1]],\
-             [0,0,1,v_inc_fly[2]],\
-             [0,0,0,1]])
-
-        ## Rename translation matrix for consistancy
-        self.flyMatrix = m_Fly        
 
 
 

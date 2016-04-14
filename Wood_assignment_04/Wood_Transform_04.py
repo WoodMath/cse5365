@@ -168,11 +168,11 @@ class Transform:
         vReturn = np.array(mMatrix.T)[0]
         return vReturn
     def arrayAdd1(self, v_Array):
-        vArray = np.array(v_Array)
+        vArray = np.array(copy.copy(v_Array))
         vArray = np.append(vArray,1)
         return vArray
     def arrayRemove1(self, v_Array):
-        vArray = np.array(v_Array)
+        vArray = np.array(copy.copy(v_Array))
         if(vArray[len(vArray)-1]==1):
             vReturn = np.delete(vArray,len(vArray)-1)
         else:

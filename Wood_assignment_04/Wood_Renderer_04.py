@@ -167,6 +167,8 @@ class Renderer():
         oObject = Object()
         oObject.loadFile(sFileName)
         self.scene = Scene()
+        self.scene.renderer = self
+        self.scene.controller = self.controller
         self.scene.addObject(oObject)
 
         if(self.cameras):
@@ -190,7 +192,8 @@ class Renderer():
                 l_parsed.pop(0)
                 if(l_type == 'c'):                  # Adds new camera
                     if(cObj != None):               # If there is already a camera
-                        self.addCamera(cObj)        # Add it before you -- 
+                        self.addCamera(cObj)        # Add it before you --
+                        print(cObj.get())
                     cObj = Camera(self)             # Create a new camera
                 elif(l_type == 'i'):                # Adds info
                     cObj.addInfo(l_parsed)
@@ -217,7 +220,7 @@ class Renderer():
                 else:
                     raise ValueError(' "' + str(l_type) + '" Not valid ')
             self.addCamera(cObj)                    # Add last camera
-                    
+            print(cObj.get())       
 
-
+        
 
