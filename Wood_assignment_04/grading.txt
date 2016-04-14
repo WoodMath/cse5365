@@ -1,0 +1,20 @@
+Assignment 04 grading guidelines
+ 
+Step
+ % of grade
+Assignment 04: Load file and display all projections correctly
+40
+Assignment 04: Correct 3D Clipping in parallel projection
+5
+Assignment 04: Correct 3D Clipping in perspective projection
+15
+Assignment 04: Rotate objects incrementally and show in all viewports
+10
+Assignment 04: Scale objects and show in all viewports
+10
+Assignment 04: Translate objects incrementally and show in all viewports
+5
+Assignment 04: Fly and show the results
+10
+Resize the canvas and redisplay it correctly
+5
