@@ -193,7 +193,7 @@ class Renderer():
                 if(l_type == 'c'):                  # Adds new camera
                     if(cObj != None):               # If there is already a camera
                         self.addCamera(cObj)        # Add it before you --
-                        print(cObj.get())
+#                        print(cObj.get())
                     cObj = Camera(self)             # Create a new camera
                 elif(l_type == 'i'):                # Adds info
                     cObj.addInfo(l_parsed)

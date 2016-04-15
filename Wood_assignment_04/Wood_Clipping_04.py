@@ -12,6 +12,7 @@
 #       http://learnpythonthehardway.org/book/ex44.html
 
 import numpy as np
+import copy
 
 class Point:
     def __init__(self, f_x=None, f_y=None, f_z=None):
@@ -33,7 +34,7 @@ class Point:
     def getPointV4(self):
         return [self.x, self.y, self.z, 1]
     def get(self):
-        return self
+        return {'x':self.x,'y':self.y,'z':self.z,'v3':self.v3}
 
 class Plane:
     def __init__(self):
@@ -43,59 +44,107 @@ class Plane:
         self.D = None
         self.vector = None
     def set(self, v_set):
-        self.vector
+        self.vector = v_set
 
-class PlaneOperation(Plane):
+class PlaneOperation:
     def __init__(self):
-        Plane.__init__(self):
+        self.plane = None
+        self.point = None
+        self.point0 = None
+        self.point1 = None
         self.commonPoint = [0,0,0.5,1]
 
-    def test(none, v_plane, v_pass):
-        # Two points will be on same side of hyperplane ...
+    def setPlane(self, v_plane=None):
+        self.plane = v_plane
         
-        # ... if the dot of each point with the plane ...
+    def setPoint(self, v_point=None):
+        self.point = v_point
 
-        if(len(v_point)==3):
+    def getPlane(self):
+        return self.plane
+        
+    def getPoint(self):
+        return self.point
+
+    def test(self, v_plane=None, v_pass=None):
+        # Two points will be on same side of hyperplane ...
+
+        # ... if the dot of each point with the plane ...
+        if(v_plane==None):
+            v_plane = self.getPlane()
+        if(v_pass==None):
+            v_pass = self.getPoint()
+
+        if(len(v_pass)==3):
             v_point = [v_pass[0],v_pass[1],v_pass[2],1]
-        else
+        else:
             v_point = copy.copy(v_pass)
         
-        v_common_dot = np.dot(v_plane, self.commonePoint)
+        v_common_dot = np.dot(v_plane, self.commonPoint)
         v_point_dot = np.dot(v_plane, v_point)
 
         # ... results in numbers with the same sign.
-        b_Return = True if v_common_dot * v_point_dot > 0 else False
+        b_Return = True if v_common_dot * v_point_dot >= 0 else False
         return b_Return
+    def setPoint0(self,point0):
+        self.point0 = point0
+    def setPoint1(self,point1):
+        self.point1 = point1
+    def getT(self, plane=None, point0=None, point1=None):
+        if(plane==None):
+            plane = self.plane
+        if(point0==None):
+            point0 = self.point0
+        if(point1==None):
+            point1 = self.point1
+
+        v_zero = [point0[0], point0[1], point0[2], 1]
+        v_one_less_zero = [point1[0]-point0[0], point1[1]-point0[1], point1[2]-point0[2], 0]
+        f_left = -np.dot(plane, v_zero)
+        f_right = np.dot(plane, v_one_less_zero)
+
+        if(f_right == 0):
+            raise ValueError(' Line formed with point0 and point1 is parallel to plane')
+
+        return (f_left/f_right)
+    
+    def getPointT(self, plane=None, point0=None, point1=None):
+        if(plane==None):
+            plane = self.plane
+        if(point0==None):
+            point0 = self.point0
+        if(point1==None):
+            point1 = self.point1
+
+        f_t = self.getT(plane,point0,point1)
+#        print(' f_t = ' + str(f_t) + ' ; plane = '+str(plane)+' ; point0 = '+str(point0)+' ; point1 = '+str(point1)+'')
+        f_x = point0[0] + (point1[0]-point0[0])*f_t 
+        f_y = point0[1] + (point1[1]-point0[1])*f_t 
+        f_z = point0[2] + (point1[2]-point0[2])*f_t 
+
+        return [f_x, f_y, f_z, 1]
+
 
 
 class ClippingVolume:
     def __init__(self):
         ## Using normal of planes
+        self.setParallel()
+        self.commonPoint = [0,0,0.5,1]
+    def setPerspective(self):
+        self.xMin = [1,0,1,1]
+        self.xMax = [-1,0,1,1]
+        self.yMin = [0,1,1,1]
+        self.yMax = [0,-1,1,1]
+        self.zMin = [0,0,1,0]
+        self.zMax = [0,0,-1,1]
+    def setParallel(self):
         self.xMin = [1,0,0,1]
         self.xMax = [-1,0,0,1]
         self.yMin = [0,1,0,1]
         self.yMax = [0,-1,0,1]
         self.zMin = [0,0,1,0]
         self.zMax = [0,0,-1,1]
-        self.commonPoint = [0,0,0.5,1]
-
-    def test(none, v_plane, v_pass):
-        # Two points will be on same side of hyperplane ...
-        
-        # ... if the dot of each point with the plane ...
-
-        if(len(v_point)==3):
-            v_point = [v_pass[0],v_pass[1],v_pass[2],1]
-        else
-            v_point = copy.copy(v_pass)
-        
-        v_common_dot = np.dot(v_plane, self.commonePoint)
-        v_point_dot = np.dot(v_plane, v_point)
-
-        # ... results in numbers with the same sign.
-        b_Return = True if v_common_dot * v_point_dot > 0 else False
-        return b_Return
-    
     def get(self):
         return {'xMin':self.xMin, 'xMax':self.xMax, 'yMin':self.yMin, 'yMax':self.yMax, 'zMin':self.zMin, 'zMax':self.zMax}
 
@@ -129,6 +178,7 @@ class Clipping:
         self.point0old = Point()
         self.point1old = Point()
         self.cv = ClippingVolume()
+        self.po = PlaneOperation()
         self.done = False
         self.accept = False
         self.point0new = Point()
@@ -143,6 +193,7 @@ class Clipping:
     def getOutCode(self, point):
         code = OutCode()
         cv = self.cv
+        po = self.po
 
         f_x = point.x
         f_y = point.y
@@ -155,29 +206,29 @@ class Clipping:
         v_zmin = self.cv.zMin
         v_zmax = self.cv.zMax
 
-        v1_test = [f_x, f_y, f_z, 1]
+        v_test = [f_x, f_y, f_z, 1]
 
-        ## Check for being insidie X boundaries
-        if (not(self.cv.test(v_xmin,v1_test))):
+        ## Check for being insidie X boundaries (boundary inlcusive)
+        if (not(po.test(v_xmin,v_test))):
             code.left = 1
             code.all += code.left
-        elif (not(self.cv.test(v_xmax,v1_test))):
+        elif (not(po.test(v_xmax,v_test))):
             code.right = 2
             code.all += code.right
                 
-        ## Check for being insidie Y boundaries
-        if (not(self.cv.test(v_ymin,v1_test))):
+        ## Check for being insidie Y boundaries (boundary inlcusive)
+        if (not(po.test(v_ymin,v_test))):
             code.bottom = 4
             code.all += code.bottom
-        elif (not(self.cv.test(v_ymax,v1_test))):
+        elif (not(po.test(v_ymax,v_test))):
             code.top = 8
             code.all += code.top
 
-        ## Check for being insidie Z boundaries	
-        if (not(self.cv.test(v_zmin,v1_test))):
+        ## Check for being insidie Z boundaries	(boundary inlcusive)
+        if (not(po.test(v_zmin,v_test))):
             code.near = 16
             code.all += code.near
-        elif (not(self.cv.test(v_zmax,v1_test))):
+        elif (not(po.test(v_zmax,v_test))):
             code.far = 32
             code.all += code.far
 
@@ -192,7 +243,7 @@ class Clipping:
         self.point1new.setPoint(f_x1, f_y1, f_z1)
         #self.point1new = copy.copy(self.point1old)
         
-    def draw():
+    def draw(self):
         return self.accept
     def getPoint0(self):
         return self.point0new
@@ -202,6 +253,7 @@ class Clipping:
     def calcLine(self):
 
         cv = self.cv
+        po = self.po
         
         ## Cohen-Sutherland clipping algorithm for line
         ##      P0 = (x0, y0, z0) to P1 = (x1, y1, z1)
@@ -214,41 +266,12 @@ class Clipping:
         outCode1 = OutCode()
         outCodeOut = OutCode()
 
-        f_x = None
-        f_y = None
-        f_z = None
-
-        f_xmin = self.cv.xMin
-        f_xmax = self.cv.xMax
-        f_ymin = self.cv.yMin
-        f_ymax = self.cv.yMax
-        f_zmin = self.cv.zMin
-        f_zmax = self.cv.zMax
-
-        f_x0 = self.point0old.x
-        f_y0 = self.point0old.y
-        f_z0 = self.point0old.z
-
-        f_x1 = self.point1old.x
-        f_y1 = self.point1old.y
-        f_z1 = self.point1old.z
-
-
-        ## Solve 0 = v_plane*(v_one + v_zero*t) for t where
-        ##      v_plane = [A,B,C,D]                                         ## Where A*x+B*y+C*z+D*1=0
-        ##      v_one = [f_x0, f_y0, f_z0, 1]^T                             ## Has trailing 1
-        ##      v_zero = [f_x1-f_x0, f_x1-f_x0, f_x1-f_x0, 0]^T             ## Has trailing 0
-        
-        v0_point0 = [f_x0, f_y0, f_z0, 0] 
-        v0_point1 = [f_x0, f_y0, f_z0, 1] 
-
-
-
-        v1_point0 = [f_x1, f_y1, f_z1, 0] 
-        v1_point1 = [f_x1, f_y1, f_z1, 1] 
+        v_point0 = [self.point0old.x, self.point0old.y, self.point0old.z, 1]
+        v_point1 = [self.point1old.x, self.point1old.y, self.point1old.z, 1]
 
         outCode0 = self.getOutCode(self.point0old)
         outCode1 = self.getOutCode(self.point1old)
+      
         while(not self.done):
             if (outCode0.all == 0 and outCode1.all == 0):
                 self.accept = True
@@ -267,46 +290,33 @@ class Clipping:
 
 #                print(' outCodeOut = ' + str(outCodeOut.get()))
 
-                if (outCodeOut.hasLeft()):                    
-                    f_x = f_xmin
-                    f_y = f_y0 + (f_y1 - f_y0) * (f_xmin - f_x0) / (f_x1 - f_x0)
-                    f_z = f_z0 + (f_z1 - f_z0) * (f_xmin - f_x0) / (f_x1 - f_x0)
+                if (outCodeOut.hasLeft()):
+                    v_plane = cv.xMin
+                    v_point = po.getPointT(v_plane, v_point0, v_point1)
                 elif (outCodeOut.hasRight()):
-                    f_x = f_xmax
-                    f_y = f_y0 + (f_y1 - f_y0) * (f_xmax - f_x0) / (f_x1 - f_x0)
-                    f_z = f_z0 + (f_z1 - f_z0) * (f_xmax - f_x0) / (f_x1 - f_x0)
+                    v_plane = cv.xMax
+                    v_point = po.getPointT(v_plane, v_point0, v_point1)
                 elif (outCodeOut.hasBottom()):
-                    f_x = f_x0 + (f_x1 - f_x0) * (f_ymin - f_y0) / (f_y1 - f_y0)
-                    f_y = f_ymin
-                    f_z = f_z0 + (f_z1 - f_z0) * (f_ymin - f_y0) / (f_y1 - f_y0)
+                    v_plane = cv.yMin
+                    v_point = po.getPointT(v_plane, v_point0, v_point1)
                 elif (outCodeOut.hasTop()):
-                    f_x = f_x0 + (f_x1 - f_x0) * (f_ymax - f_y0) / (f_y1 - f_y0)
-                    f_y = f_ymax
-                    f_z = f_z0 + (f_z1 - f_z0) * (f_ymax - f_y0) / (f_y1 - f_y0)
+                    v_plane = cv.yMax
+                    v_point = po.getPointT(v_plane, v_point0, v_point1)
                 elif (outCodeOut.hasNear()):
-                    f_x = f_x0 + (f_x1 - f_x0) * (f_zmin - f_z0) / (f_z1 - f_z0)
-                    f_y = f_y0 + (f_y1 - f_y0) * (f_zmin - f_z0) / (f_z1 - f_z0)
-                    f_z = f_zmin
+                    v_plane = cv.zMin
+                    v_point = po.getPointT(v_plane, v_point0, v_point1)
                 elif (outCodeOut.hasFar()):
-                    f_x = f_x0 + (f_x1 - f_x0) * (f_zmax - f_z0) / (f_z1 - f_z0)
-                    f_y = f_y0 + (f_y1 - f_y0) * (f_zmax - f_z0) / (f_z1 - f_z0)
-                    f_z = f_zmax
-
+                    v_plane = cv.zMax
+                    v_point = po.getPointT(v_plane, v_point0, v_point1)
 
                 if (outCodeOut.all == outCode0.all):
-                    f_x0 = f_x
-                    f_y0 = f_y
-                    f_z0 = f_z
-                    self.point0new.setPoint(f_x0, f_y0, f_z0)
+                    v_point0 = v_point
+                    self.point0new.setPoint(v_point0[0], v_point0[1], v_point0[2])
                     outCode0 = self.getOutCode(self.point0new)
-#                else:
                 if (outCodeOut.all == outCode1.all):
-                    f_x1 = f_x
-                    f_y1 = f_y
-                    f_z1 = f_z
-                    self.point1new.setPoint(f_x1, f_y1, f_z1)
+                    v_point1 = v_point
+                    self.point1new.setPoint(v_point1[0], v_point1[1], v_point1[2])
                     outCode1 = self.getOutCode(self.point1new)
-
         
         return self.accept
 
@@ -322,8 +332,9 @@ def clipping_test():
     print(' p1 = ' + str(p1.getPointV3()))
     print(' c.getOutCode(p1) = ' + str(c.getOutCode(p1).all))
 
+
     c.setPoint0(0.5,-1.5,0.5)
-    c.setPoint1(0.5,-2.5,0.5)
+    c.setPoint1(0.5,2.5,0.5)
 
     c.calcLine()
 
@@ -334,12 +345,16 @@ def clipping_test():
     print(' c.point1old = ' + str(c.point1old.getPointV3()))
     print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
 
+    
     print(' **** ')
 
     print(' c.point0new = ' + str(c.point0new.getPointV3()))
     print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
     print(' c.point1new = ' + str(c.point1new.getPointV3()))
     print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
+    print(' c.draw() = ' + str(c.draw()))
+
+def other():
 
     c.setPoint0(-1.5,-1.5,-1.5)
     c.setPoint1(1.5,1.5,1.5)
@@ -352,6 +367,7 @@ def clipping_test():
     print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
     print(' c.point1old = ' + str(c.point1old.getPointV3()))
     print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
+    print(' c.draw() = ' + str(c.draw()))
 
     print(' **** ')
 
@@ -359,5 +375,33 @@ def clipping_test():
     print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
     print(' c.point1new = ' + str(c.point1new.getPointV3()))
     print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
+    print(' c.draw() = ' + str(c.draw()))
+
+    v0=[0.25,0.5,0.5]
+    v1=[0.75,0.5,0.5]
+
+
+    c=Clipping()
+    c.setPoint0(v0[0],v0[1],v0[2])
+    c.setPoint1(v1[0],v1[1],v1[2])
+
+
+    c.calcLine()
+
+    print(' **** ')
+
+    print(' c.point0old = ' + str(c.point0old.getPointV3()))
+    print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
+    print(' c.point1old = ' + str(c.point1old.getPointV3()))
+    print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
+    print(' c.draw() = ' + str(c.draw()))
+
+    print(' **** ')
+
+    print(' c.point0new = ' + str(c.point0new.getPointV3()))
+    print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
+    print(' c.point1new = ' + str(c.point1new.getPointV3()))
+    print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
+    print(' c.draw() = ' + str(c.draw()))
 
 
