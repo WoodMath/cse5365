@@ -52,7 +52,7 @@ class ViewTransform(Transform):
         Transform.__init__(self)
 
         self.camera = camera
-        self.clipping = Clipping()
+        self.clipping = Clipping(camera)
 
         self.type = 'parallel'
         
@@ -354,6 +354,9 @@ class ViewTransform(Transform):
             if(b_draw_new):
                 temp_point0 = clipp.getPoint0().getPointV4()
                 temp_point1 = clipp.getPoint1().getPointV4()
+
+#                temp_point0 = point0
+#                temp_point1 = point1
 
 #                print(' **************** ')
 #                print(' temp_point0 ' + str(temp_point0))
