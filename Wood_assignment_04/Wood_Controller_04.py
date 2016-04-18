@@ -97,13 +97,6 @@ class Controller:
         self.panel.vrp_bz.insert(0,'%.1f' % v_vrpB[2])
         
     def loadObject(self):        
-        print(' ' + str(self.__class__.__name__) + '.loadObject() called')
-
-        ## Reset VRPs
-#        for c in self.renderer.cameras:
-#            c.clearCamera()
-#            c.vrp = copy.copy(c.vrpFile)
-#            c.vrpA = copy.copy(c.vrpFile)
             
         self.renderer.addObjectFile(self.fileName)
         self.canvas.update()
@@ -112,7 +105,7 @@ class Controller:
     def addRenderer(self, renderer = Renderer()):
         self.renderer = renderer
         renderer.controller = self
-        print(' self.canvas = ' + str(self.canvas))
+
         if(self.canvas != None):
             self.renderer.canvas = self.canvas
         renderer.addCameraFile('cameras_04.txt')
@@ -215,7 +208,6 @@ class Controller:
         self.canvas.update()
         
     def saveFormValues(self):
-        print(' ' + str(self.__class__.__name__) + '.saveFormValues() called')
         
         self.fileName = self.panel.filename.get()
 
@@ -244,8 +236,6 @@ class Controller:
         ## Save VRP Information to current camera.
         self.setCameraVRP_AB()
     
-
-        print(' self.cameraSelectedNumber = ' + str(self.cameraSelectedNumber))        
         ## Switch old viewport to normal
         c = self.renderer.cameras[self.cameraSelectedNumber]
         self.canvas.itemconfig(c.rectangle,width=1)

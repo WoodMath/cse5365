@@ -294,7 +294,6 @@ class ViewTransform(Transform):
 #        self.world2NDCMatrix = self.viewMatrix * self.alignMatrix * self.originMatrix
 
     def establishNDCMatrix(self):
-        print(' ' + str(self.__class__.__name__) + '.establishNDCMatrix() called')
 
 #        self.establishOriginMatrix()
 #        self.establishAlignMatrix()
@@ -303,7 +302,6 @@ class ViewTransform(Transform):
         self.world2NDCMatrix = self.viewMatrix * self.alignMatrix * self.originMatrix
         
     def establishNDCCoordinates(self):
-        print(' ' + str(self.__class__.__name__) + '.establishNDCCoordinates() called')
 
         self.camera.linesNDC = copy.copy(self.camera.lines)
         self.camera.pointsNDC = copy.copy(self.camera.points)
@@ -317,9 +315,6 @@ class ViewTransform(Transform):
         ## Perspective clipping using NDC
 #        temp_NDC_coordinates = self.homogenize(self.camera.pointsNDC)
         
-#        print(' temp_NDC_coordinates = ')
-#        print(str(temp_NDC_coordinates))
-                
         print('##################################')
         print('##      Clipping Occurs Here    ##')
         print('##################################')
@@ -328,7 +323,6 @@ class ViewTransform(Transform):
 
         ##### Lines below should be toggled for correct perspective clipping #####
         ## Perspective clipping using NDC
-#        clipp.setType('parallel')
 
         for l in self.camera.linesNDC:
             
@@ -340,27 +334,16 @@ class ViewTransform(Transform):
             point0 = temp_NDC_coordinates[index0]
             point1 = temp_NDC_coordinates[index1]
 
-#            print(' point0 ' + str(point0))               
             clipp.setPoint0(point0[0], point0[1], point0[2], point0[3])
-
-#            print(' point1 ' + str(point1))
             clipp.setPoint1(point1[0], point1[1], point1[2], point1[3])
 
             ## Store info about whether line should be drawn
             b_draw_new = (1 if clipp.calcLine() else 0)
-#            print(' i = ' + str(i) + ' ; ' + str(b_draw_new))
             l[2] = b_draw_new
 
             if(b_draw_new):
                 temp_point0 = clipp.getPoint0().getPointV4()
                 temp_point1 = clipp.getPoint1().getPointV4()
-
-#                temp_point0 = point0
-#                temp_point1 = point1
-
-#                print(' **************** ')
-#                print(' temp_point0 ' + str(temp_point0))
-#                print(' temp_point1 ' + str(temp_point1))
 
                 ##### Lines below should be toggled for correct perspective clipping #####
                 ## Perspective clipping using Frustum                
@@ -370,9 +353,6 @@ class ViewTransform(Transform):
 #                point0 = temp_point0
 #                point1 = temp_point1
 
-#                print(' point0 ' + str(point0))
-#                print(' point1 ' + str(point1))
-                
                 temp_NDC_coordinates[index0] = point0
                 temp_NDC_coordinates[index1] = point1
 

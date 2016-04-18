@@ -69,35 +69,23 @@ class Object:
                 'linePoints': self.linePoints}
 
     def addPoint(self, l_parsed):
-
-#        print(' ** addPoint:l_parsed = ' + str(l_parsed))
         
         self.facePoints.append(l_parsed)        ## Append to faces
         self.linePoints.append(l_parsed)        ## Append to lines
     def addIndice(self, l_parsed):
         ## Faces can have any number of indices
         self.faceIndices.append(l_parsed)       
-#        print(' ** ')
-#        print(' ** addIndice:l_parsed = ' + str(l_parsed))
-#        print(' ** addIndice:len(l_parsed) = ' + str(len(l_parsed)))
 
         ## Lines should only have two indices
         for k in range(len(l_parsed)-1):
             l_passed = [l_parsed[k],l_parsed[k+1]]
             self.position( [l_passed[0], l_passed[1]], self.lineIndices)
-
                             
         ## Add line back to beginning, since some formats do not repeat first vertex for closed shape
         if(len(l_parsed)>2):
             if(l_parsed[0] != l_parsed[len(l_parsed)-1]):      
                 l_passed = [l_parsed[0], l_parsed[len(l_parsed)-1]]
                 self.position( [l_passed[0], l_passed[1]], self.lineIndices)
-
-
-
-#        print(' ** self.lineIndices = ')
-#        for i in range(len(self.lineIndices)):
-#            print(' ** self.lineIndices[' + str(i) + '] = ' + str(self.lineIndices[i]))
 
     def position(self, old_v_to_add, arr_add_to):
         ## Performs a prefix sort / radix sort
@@ -111,25 +99,10 @@ class Object:
         if(v_to_add[1] < v_to_add[0]):
             new_v_to_add = [v_to_add[1], v_to_add[0]]
             v_to_add = copy.copy(new_v_to_add)
-#        print(' **** ')
-
-#        print(' **** position:old_v_to_add = ' + str(old_v_to_add))
-#        print(' **** position:v_to_add = ' + str(v_to_add))
-#        print(' **** position:arr_add_to = ' + str(arr_add_to))
-
-
 
         i_current_vert_group = v_to_add[0]
         i_current_vert_group_count = len(self.start_index)
 
-#        if(v_to_add == [3,11]):
-#        print(' **** position:start_index = ' + str(self.start_index))
-#        print(' **** position:group_count = ' + str(self.group_count))
-
-#        print(' **** position:i_current_vert_group = ' + str(i_current_vert_group))
-#        print(' **** position:i_current_vert_group_count = ' + str(i_current_vert_group_count))
-            
-        
         if(i_current_vert_group < i_current_vert_group_count):
             if(self.start_index[i_current_vert_group] == None):
                 ## First edge in group (with v_to_add[0])
@@ -198,10 +171,6 @@ class Object:
                 if(self.start_index[i_inc] != None):
                     (self.start_index[i_inc]) += 1              ## Increment starting index of remaining group
 
-#        print(' **** position:lineIndices = ')
-#        for i in range(len(self.lineIndices)):
-#            print(' **** position:lineIndices[' + str(i) + '] = ' + str(self.lineIndices[i]))
-
     def loadFile(self,sFileName):
         print(' ' + str(self.__class__.__name__) + '.loadFile() called')
         
@@ -213,7 +182,6 @@ class Object:
                 l_parsed = l.split()
                 l_type = l_parsed[0]
                 l_parsed.pop(0)
-#                print(' loadFile:l_parsed = ' + str(l_parsed))
                 if(len(l_parsed)>0):
                     if(l_type == 'v'):
                         l_parsed.append('1.0')
@@ -226,19 +194,8 @@ class Object:
                         print(' "' + str(l) + '" Not valid ')
                         raise ValueError(' "' + str(l) + '" Not valid ')
 
-#        print(' self.lineIndices = ')
-#        for i in range(len(self.lineIndices)):
-#            print(' self.lineIndices[' + str(i) + '] = ' + str(self.lineIndices[i]))
-#        print(' self.linePoints = ')
-#        for i in range(len(self.linePoints)):
-#            print(' self.linePoints[' + str(i) + '] = ' + str(self.linePoints[i]))
-#            
-#        print(' self.testIndices() = ' + str(self.testIndices()))
-
         self.seperatePoints()   ## Make sure each point is only referenced by 1 line
 
-#        print(' self.testIndices() = ' + str(self.testIndices()))
-        
     def testIndices(self):
 
         b_Return = True

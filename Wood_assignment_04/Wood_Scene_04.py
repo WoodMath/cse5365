@@ -59,7 +59,6 @@ class Scene():
              [0,0,0,1]])
         
     def updateScene(self):
-        print(' ' + str(self.__class__.__name__) + '.updateScene() called')
         print(' Updating scene ...')
         self.world = np.transpose(self.stack * np.transpose(np.matrix(self.points))).tolist()
         return
@@ -87,7 +86,6 @@ class Scene():
         self.updateScene()
 
     def applyMatrix(self, mMatrix):
-        print(' ' + str(self.__class__.__name__) + '.applyMatrix() called')
         print(' Applying Matrix ...')
         self.stack = np.matrix(mMatrix) * self.stack
         self.updateScene()

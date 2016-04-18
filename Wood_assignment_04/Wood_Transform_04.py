@@ -152,7 +152,6 @@ class Transform:
 
 
     def setPerspectiveNear(self):
-        print(' ' + str(self.__class__.__name__) + '.setPerspectiveNear() called')
         if(self.type == 'parallel'):
             return
         self.clipping.setPerspectiveNear(self.getN(),self.getPRP())
@@ -166,16 +165,8 @@ class Transform:
 #        fNear = vDimN[0] + vVRP[2] if abs(vDimN[1] + vVRP[2]) > abs(vDimN[0] + vVRP[2]) else vDimN[1] + vVRP[2]
         
         self.perspectiveNear = fNear/fFar
-        print(' self.perspectiveNear = ' + str(self.perspectiveNear))
-
-#        print(' vDimN = ' + str(vDimN))
-#        print(' vPRP = ' + str(vPRP))
-#        print(' fNear = ' + str(fNear))
-#        print(' fFare = ' + str(fFar))
-#        print(' self.perspectiveNear = ' + str(self.perspectiveNear))
 
     def getPerspectiveNear(self):
-        print(' ' + str(self.__class__.__name__) + '.getPerspectiveNear() called')
         return self.perspectiveNear
         
     ##########################
@@ -524,9 +515,6 @@ class Transform:
         vDim_U = np.array(v_Dim_U)
         vDim_V = np.array(v_Dim_V)
         vDim_N = np.array(v_Dim_N)
-#        print(' vDim_U.tolist() = ' + str(vDim_U.tolist()))
-#        print(' vDim_V.tolist() = ' + str(vDim_V.tolist()))
-#        print(' vDim_N.tolist() = ' + str(vDim_N.tolist()))
         
         fScale_U = self.fNDCx/(vDim_U[1]-vDim_U[0])
         fScale_V = self.fNDCy/(vDim_V[1]-vDim_V[0])
@@ -561,9 +549,6 @@ class Transform:
         vDim_V = np.array(v_Dim_V)
         vDim_N = np.array(v_Dim_N)
         vVRP = np.array(v_VRP)
-#        print(' vDim_U.tolist() = ' + str(vDim_U.tolist()))
-#        print(' vDim_V.tolist() = ' + str(vDim_V.tolist()))
-#        print(' vDim_N.tolist() = ' + str(vDim_N.tolist()))
 
         fFar = vDim_N[1] + vVRP[2] if abs(vDim_N[1] + vVRP[2]) > abs(vDim_N[0] + vVRP[2]) else vDim_N[0] + vVRP[2] 
         fNear = vDim_N[0] + vVRP[2] if abs(vDim_N[1] + vVRP[2]) > abs(vDim_N[0] + vVRP[2]) else vDim_N[1] + vVRP[2]
@@ -591,10 +576,8 @@ class Transform:
         return mReturn
 
     def transformFrustum(self, v_Dim_N=None, v_PRP=None):
-        print(' ' + str(self.__class__.__name__) + '.transformFrustum() called')
         if(self.type == 'parallel'):
             return
-#        self.clipping.setPerspectiveNear(self.getN(),self.getPRP())
         if(v_Dim_N == None):
             v_Dim_N = self.getN()
         if(v_PRP == None):

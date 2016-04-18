@@ -56,13 +56,10 @@ class Point:
     def get(self):
         return {'x':self.x,'y':self.y,'z':self.z,'v3':self.v3}
     def setParallel(self):
-        print(' ' + str(self.__class__.__name__) + '.setParallel() called')
         self.type = 'parallel'
     def setPerspective(self):
-        print(' ' + str(self.__class__.__name__) + '.setPerspective() called')
         self.type = 'perspective'
     def setType(self,s_type):
-        print(' ' + str(self.__class__.__name__) + '.setType() called')
         self.type = s_type
         if(self.type == 'parallel'):
             self.setParallel()
@@ -79,24 +76,20 @@ class ClippingVolume:
         self.zMax = 1
         self.perspectiveNear = None
     def setParallel(self):
-        print(' ' + str(self.__class__.__name__) + '.setParallel() called')
         self.type = 'parallel'
         print(' self.type = ' + str(self.type))
 
     def setPerspective(self):
-        print(' ' + str(self.__class__.__name__) + '.setPerspective() called')
         self.type = 'perspective'
         print(' self.type = ' + str(self.type))
 
     def setType(self,s_type):
-        print(' ' + str(self.__class__.__name__) + '.setType() called')
         self.type = s_type
         if(s_type=='parallel'):
             self.setParallel()
         if(s_type=='perspective'):
             self.setPerspective()
     def setPerspectiveNear(self, perspectiveNear=None):
-        print(' ' + str(self.__class__.__name__) + '.setPerspectiveNear() called')
         print(' perspectiveNear = ' + str(perspectiveNear))
         if(self.type=='parallel'):
             return
@@ -140,7 +133,6 @@ class Clipping:
         self.point1new = Point()
         self.perspectiveNear = None
     def setPerspectiveNear(self,v_Dim_N, v_PRP):
-        print(' ' + str(self.__class__.__name__) + '.setPerspectiveNear() called')
         if(self.type == 'parallel'):
             return
         vDimN = np.array(v_Dim_N)
@@ -155,7 +147,6 @@ class Clipping:
         self.perspectiveNear = fNear/fFar
         
     def setParallel(self):
-        print(' ' + str(self.__class__.__name__) + '.setParallel() called')
         self.type = 'parallel'
         self.cv.setParallel()
         self.point0old.setParallel()
@@ -164,7 +155,6 @@ class Clipping:
         self.point1new.setParallel()
         
     def setPerspective(self):
-        print(' ' + str(self.__class__.__name__) + '.setPerspective() called')
         self.type = 'perspective'
         self.cv.setPerspective()
         self.point0old.setPerspective()
@@ -173,7 +163,6 @@ class Clipping:
         self.point1new.setPerspective()
         
     def setType(self,s_type):
-        print(' ' + str(self.__class__.__name__) + '.setType() called')
         self.type = s_type
         self.cv.setType(s_type)
         if(self.type == 'parallel'):
@@ -188,12 +177,6 @@ class Clipping:
             self.point1new.setPerspective()
         
     def setPoint0(self, f_x0, f_y0, f_z0, f_w0=None):
-#        print(' f_x0 = ' + str(f_x0))
-#        print(' f_y0 = ' + str(f_y0))
-#        print(' f_z0 = ' + str(f_z0))
-#        print(' f_w0 = ' + str(f_w0))
-        
-#        self.point0old.setPoint(f_x0, f_y0, f_z0)
         if(f_w0 == None):
             self.point0old.setPoint(f_x0, f_y0, f_z0, 1)
             self.point0new.setPoint(f_x0, f_y0, f_z0, 1)
@@ -203,12 +186,6 @@ class Clipping:
         self.point0new = copy.copy(self.point0old)
         
     def setPoint1(self, f_x1, f_y1, f_z1, f_w1=None):
-#        print(' f_x1 = ' + str(f_x1))
-#        print(' f_y1 = ' + str(f_y1))
-#        print(' f_z1 = ' + str(f_z1))
-#        print(' f_w1 = ' + str(f_w1))
-        
-#        self.point1old.setPoint(f_x1, f_y1, f_z1)
         if(f_w1 == None):
             self.point1old.setPoint(f_x1, f_y1, f_z1, 1)
             self.point1new.setPoint(f_x1, f_y1, f_z1, 1)
@@ -226,7 +203,6 @@ class Clipping:
         return self.accept
     
     def getParallelOutCode(self, point):
-#        print(' ' + str(self.__class__.__name__) + '.getParallelOutCode() called')
         code = OutCode()
 
         f_x = point.x
@@ -267,8 +243,6 @@ class Clipping:
         return code
 
     def calcParallelLine(self):
-#        print(' ' + str(self.__class__.__name__) + '.calcParallelLine() called')
-
         ## Cohen-Sutherland clipping algorithm for line
         ##      P0 = (x0, y0, z0) to P1 = (x1, y1, z1)
         ##  a clip volume with diagonal
@@ -307,17 +281,12 @@ class Clipping:
                 self.done = True ## Logical intersection is true, so trivial reject and exit
 
             elif ((outCode0.all & outCode1.all) != 0):
-#                print(' We Done !')
                 self.done = True; ## Logical intersection is true, so trivial reject and exit
             else:
-#                print(' We NOT Done !')
                 if (outCode0.all != 0):
                     outCodeOut = outCode0
-#                else:
                 if (outCode1.all != 0):
                     outCodeOut = outCode1
-
-#                print(' outCodeOut = ' + str(outCodeOut.get()))
 
                 if (outCodeOut.hasLeft()):                    
                     f_x = f_xmin
@@ -350,7 +319,6 @@ class Clipping:
                     f_z0 = f_z
                     self.point0new.setPoint(f_x0, f_y0, f_z0)
                     outCode0 = self.getParallelOutCode(self.point0new)
-#                else:
                 if (outCodeOut.all == outCode1.all):
                     f_x1 = f_x
                     f_y1 = f_y
@@ -361,7 +329,6 @@ class Clipping:
         return self.accept
 
     def getPerspectiveOutCode(self, point):
-#        print(' ' + str(self.__class__.__name__) + '.getPerspectiveOutCode() called')
         code = OutCode()
 
         f_x = round(point.x, iClippingRoundPlaces)
@@ -402,8 +369,6 @@ class Clipping:
         return code
 
     def calcPerspectiveLine(self):
-#        print(' ' + str(self.__class__.__name__) + '.calcPerspectiveLine() called')
-
         ## Cohen-Sutherland clipping algorithm for line
         ##      P0 = (x0, y0, z0) to P1 = (x1, y1, z1)
         ##  a clip volume with diagonal
@@ -435,17 +400,12 @@ class Clipping:
                 self.done = True ## Logical intersection is true, so trivial reject and exit
 
             elif ((outCode0.all & outCode1.all) != 0):
-#                print(' We Done !')
                 self.done = True; ## Logical intersection is true, so trivial reject and exit
             else:
-#                print(' We NOT Done !')
                 if (outCode0.all != 0):
                     outCodeOut = outCode0
-#                else:
                 if (outCode1.all != 0):
                     outCodeOut = outCode1
-
-#                print(' outCodeOut = ' + str(outCodeOut.get()))
 
                 if (outCodeOut.hasLeft()):
                     f_x = f_x0 - (f_x1 - f_x0) * (f_z0 + f_x0) / ((f_x1 - f_x0)+(f_z1 - f_z0))
@@ -478,7 +438,6 @@ class Clipping:
                     f_z0 = f_z
                     self.point0new.setPoint(f_x0, f_y0, f_z0)
                     outCode0 = self.getPerspectiveOutCode(self.point0new)
-#                else:
                 if (outCodeOut.all == outCode1.all):
                     f_x1 = f_x
                     f_y1 = f_y
@@ -489,11 +448,9 @@ class Clipping:
         return self.accept
 
     def calcLine(self):
-#        print(' ' + str(self.__class__.__name__) + '.calcLine() called')
         if(self.type=='parallel'):
             return self.calcParallelLine()
         if(self.type=='perspective'):
-#            return True
             return self.calcPerspectiveLine()
 
 def clipping_test():
