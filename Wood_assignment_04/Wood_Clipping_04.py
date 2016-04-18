@@ -15,27 +15,59 @@ import numpy as np
 import copy
 
 class Point:
-    def __init__(self, f_x=None, f_y=None, f_z=None):
+    def __init__(self, f_x=None, f_y=None, f_z=None, f_w=None):
         self.x = f_x
         self.y = f_y
         self.z = f_z
+        self.w = f_w
         self.v3 = None
+        self.v4 = None
+        self.type = None
         self.updateV3()
+        self.updateV4()
     def updateV3(self):
         self.v3 = [self.x, self.y, self.z]
-    def setPoint(self, f_x, f_y, f_z):
+    def updateV4(self):
+        self.v4 = [self.x, self.y, self.z, self.w]
+    def setPoint(self, f_x, f_y, f_z, f_w=None):
+        if(f_w==None):
+            f_w = 1
         v3_point = [f_x, f_y, f_z]
-        self.x = v3_point[0]
-        self.y = v3_point[1]
-        self.z = v3_point[2]
+        v4_point = [f_x, f_y, f_z, f_w]
+        self.x = f_x
+        self.y = f_y
+        self.z = f_z
+        self.w = f_w
         self.updateV3()
+        self.updateV4()
     def getPointV3(self):
         return [self.x, self.y, self.z]
     def getPointV4(self):
-        return [self.x, self.y, self.z, 1]
+        if(self.type == 'parallel'):
+            return [self.x, self.y, self.z, 1]
+        if(self.type == 'perspective'):
+            return [self.x, self.y, self.z, self.z]        
+    def getHomoPointV4(self):
+        v_temp = self.getPointV4()
+        v_return = [v_temp[0]/v_temp[3], v_temp[1]/v_temp[3], v_temp[2]/v_temp[3], 1]
+        return v_return
     def get(self):
         return {'x':self.x,'y':self.y,'z':self.z,'v3':self.v3}
+    def setParallel(self):
+        print(' ' + str(self.__class__.__name__) + '.setParallel() called')
+        self.type = 'parallel'
+    def setPerspective(self):
+        print(' ' + str(self.__class__.__name__) + '.setPerspective() called')
+        self.type = 'perspective'
+    def setType(self,s_type):
+        print(' ' + str(self.__class__.__name__) + '.setType() called')
+        self.type = s_type
+        if(self.type == 'parallel'):
+            self.setParallel()
+        if(self.type == 'perspective'):
+            self.setPerspective()
 
+        
 class Plane:
     def __init__(self):
         self.A = None
@@ -53,7 +85,10 @@ class PlaneOperation:
         self.point0 = None
         self.point1 = None
         self.commonPoint = [0,0,0.5,1]
-
+        
+    def setCommonPoint(self,v_Common):
+        self.commonPoint = v_Common
+        
     def setPlane(self, v_plane=None):
         self.plane = v_plane
         
@@ -79,9 +114,16 @@ class PlaneOperation:
             v_point = [v_pass[0],v_pass[1],v_pass[2],1]
         else:
             v_point = copy.copy(v_pass)
+
+#        print(' v_point = ' + str(v_point))
+#        print(' self.commonPoint = ' + str(self.commonPoint))
+#        print(' v_plane = ' + str(v_plane))
         
         v_common_dot = np.dot(v_plane, self.commonPoint)
         v_point_dot = np.dot(v_plane, v_point)
+
+#        print(' v_common_dot = ' + str(v_common_dot))
+#        print(' v_point_dot = ' + str(v_point_dot))
 
         # ... results in numbers with the same sign.
         b_Return = True if v_common_dot * v_point_dot >= 0 else False
@@ -128,23 +170,55 @@ class PlaneOperation:
 
 class ClippingVolume:
     def __init__(self):
+        print(' ' + str(self.__class__.__name__) + '.__init__() called')
         ## Using normal of planes
-        self.setParallel()
+#        self.setParallel()
         self.commonPoint = [0,0,0.5,1]
-    def setPerspective(self):
-        self.xMin = [1,0,1,1]
-        self.xMax = [-1,0,1,1]
-        self.yMin = [0,1,1,1]
-        self.yMax = [0,-1,1,1]
-        self.zMin = [0,0,1,0]
-        self.zMax = [0,0,-1,1]
+
+    def setCommonPoint(self,v_Common):
+        self.commonPoint = v_Common
+        
     def setParallel(self):
+        print(' ' + str(self.__class__.__name__) + '.setParallel() called')
+        self.type = 'parallel'
         self.xMin = [1,0,0,1]
         self.xMax = [-1,0,0,1]
         self.yMin = [0,1,0,1]
         self.yMax = [0,-1,0,1]
         self.zMin = [0,0,1,0]
         self.zMax = [0,0,-1,1]
+        print(' self.type = ' + str(self.type))
+#        print(' self.get() = ' + str(self.get()))
+    def setPerspective(self):
+        print(' ' + str(self.__class__.__name__) + '.setPerspective() called')
+        self.type = 'perspective'
+        self.xMin = [1,0,1,0]
+        self.xMax = [-1,0,1,0]
+        self.yMin = [0,1,1,0]
+        self.yMax = [0,-1,1,0]
+        self.zMin = [0,0,1,0]
+        self.zMax = [0,0,-1,1]
+        print(' self.type = ' + str(self.type))
+#        print(' self.get() = ' + str(self.get()))
+    def setType(self,s_type):
+        print(' ' + str(self.__class__.__name__) + '.setType() called')
+        self.type = s_type
+        if(s_type=='parallel'):
+            self.setParallel()
+        if(s_type=='perspective'):
+            self.setPerspective()
+    def setPerspectiveNear(self, perspectiveNear=None):
+        print(' ' + str(self.__class__.__name__) + '.setPerspectiveNear() called')
+        print(' perspectiveNear = ' + str(perspectiveNear))
+        if(self.type=='parallel'):
+            return
+        if(perspectiveNear==None):
+            self.zMin = [0,0,1,0]
+        else:
+           self.zMin = [0,0,1,-perspectiveNear]
+        print(' self.zMin = ' + str(self.zMin))
+
+
     def get(self):
         return {'xMin':self.xMin, 'xMax':self.xMax, 'yMin':self.yMin, 'yMax':self.yMax, 'zMin':self.zMin, 'zMax':self.zMax}
 
@@ -175,6 +249,7 @@ class OutCode:
 
 class Clipping:
     def __init__(self):
+        print(' ' + str(self.__class__.__name__) + '.__init__() called')
         self.point0old = Point()
         self.point1old = Point()
         self.cv = ClippingVolume()
@@ -183,12 +258,98 @@ class Clipping:
         self.accept = False
         self.point0new = Point()
         self.point1new = Point()
-    def setPoint0(self, f_x0, f_y0, f_z0):
-        self.point0old.setPoint(f_x0, f_y0, f_z0)
+        self.commonPoint = None
+        self.type = 'parallel'
+    def setCommonPoint(self,v_CommonPoint):
+        self.commonPoint = v_CommonPoint
+        self.cv.setCommonPoint(v_CommonPoint)
+        self.po.setCommonPoint(v_CommonPoint)
+    def setPerspectiveNear(self,v_Dim_N, v_PRP):
+        print(' ' + str(self.__class__.__name__) + '.setPerspectiveNear() called')
+        if(self.type == 'parallel'):
+            return
+        vDimN = np.array(v_Dim_N)
+        vPRP = np.array(v_PRP)
+        ## Use vVRP' = SH*T(-vPRP)*[0 0 0 1]^T
+        fFar = vDimN[1] - vPRP[2] if abs(vDimN[1] - vPRP[2]) > abs(vDimN[0] - vPRP[2]) else vDimN[0] - vPRP[2]
+        fNear = vDimN[0] - vPRP[2] if abs(vDimN[1] - vPRP[2]) > abs(vDimN[0] - vPRP[2]) else vDimN[1] - vPRP[2]
+#        fFar = vDimN[1] + vVRP[2] if abs(vDimN[1] + vVRP[2]) > abs(vDimN[0] + vVRP[2]) else vDimN[0] + vVRP[2] 
+#        fNear = vDimN[0] + vVRP[2] if abs(vDimN[1] + vVRP[2]) > abs(vDimN[0] + vVRP[2]) else vDimN[1] + vVRP[2]
+
+        self.setCommonPoint([0,0,(1+fNear/fFar)/2,1])
+        self.cv.setPerspectiveNear(fNear/fFar)
+        
+    def setParallel(self):
+        print(' ' + str(self.__class__.__name__) + '.setParallel() called')
+        self.type = 'parallel'
+        self.cv.setParallel()
+        self.point0old.setParallel()
+        self.point1old.setParallel()
+        self.point0new.setParallel()
+        self.point1new.setParallel()
+        
+    def setPerspective(self):
+        print(' ' + str(self.__class__.__name__) + '.setPerspective() called')
+        self.type = 'perspective'
+        self.cv.setPerspective()
+        self.point0old.setPerspective()
+        self.point1old.setPerspective()
+        self.point0new.setPerspective()
+        self.point1new.setPerspective()
+        
+    def setType(self,s_type):
+        print(' ' + str(self.__class__.__name__) + '.setType() called')
+        self.type = s_type
+        self.cv.setType(s_type)
+        if(self.type == 'parallel'):
+            self.point0old.setParallel()
+            self.point1old.setParallel()
+            self.point0new.setParallel()
+            self.point1new.setParallel()
+        if(self.type == 'perspective'):
+            self.point0old.setPerspective()
+            self.point1old.setPerspective()
+            self.point0new.setPerspective()
+            self.point1new.setPerspective()
+        
+    def setPoint0(self, f_x0, f_y0, f_z0, f_w0=None):
+#        print(' f_x0 = ' + str(f_x0))
+#        print(' f_y0 = ' + str(f_y0))
+#        print(' f_z0 = ' + str(f_z0))
+#        print(' f_w0 = ' + str(f_w0))
+        
+#        self.point0old.setPoint(f_x0, f_y0, f_z0)
+        if(f_w0 == None):
+            self.point0old.setPoint(f_x0, f_y0, f_z0, 1)
+            self.point0new.setPoint(f_x0, f_y0, f_z0, 1)
+        else:
+            self.point0old.setPoint(f_x0, f_y0, f_z0, f_w0)
+            self.point0new.setPoint(f_x0, f_y0, f_z0, f_w0)
         self.point0new = copy.copy(self.point0old)
-    def setPoint1(self, f_x1, f_y1, f_z1):
-        self.point1old.setPoint(f_x1, f_y1, f_z1)
+        
+    def setPoint1(self, f_x1, f_y1, f_z1, f_w1=None):
+#        print(' f_x1 = ' + str(f_x1))
+#        print(' f_y1 = ' + str(f_y1))
+#        print(' f_z1 = ' + str(f_z1))
+#        print(' f_w1 = ' + str(f_w1))
+        
+#        self.point1old.setPoint(f_x1, f_y1, f_z1)
+        if(f_w1 == None):
+            self.point1old.setPoint(f_x1, f_y1, f_z1, 1)
+            self.point1new.setPoint(f_x1, f_y1, f_z1, 1)
+        else:
+            self.point1old.setPoint(f_x1, f_y1, f_z1, f_w1)
+            self.point1new.setPoint(f_x1, f_y1, f_z1, f_w1)
         self.point1new = copy.copy(self.point1old)
+
+    def old_setPoint0(self, f_x0, f_y0, f_z0):
+        self.point0old.setPoint(f_x0, f_y0, f_z0)
+        self.point0new.setPoint(f_x0, f_y0, f_z0)
+        #self.point0new = copy.copy(self.point0old)
+    def old_setPoint1(self, f_x1, f_y1, f_z1):
+        self.point1old.setPoint(f_x1, f_y1, f_z1)
+        self.point1new.setPoint(f_x1, f_y1, f_z1)
+        #self.point1new = copy.copy(self.point1old)
         
     def getOutCode(self, point):
         code = OutCode()
@@ -233,15 +394,6 @@ class Clipping:
             code.all += code.far
 
         return code
-    
-    def setPoint0(self, f_x0, f_y0, f_z0):
-        self.point0old.setPoint(f_x0, f_y0, f_z0)
-        self.point0new.setPoint(f_x0, f_y0, f_z0)
-        #self.point0new = copy.copy(self.point0old)
-    def setPoint1(self, f_x1, f_y1, f_z1):
-        self.point1old.setPoint(f_x1, f_y1, f_z1)
-        self.point1new.setPoint(f_x1, f_y1, f_z1)
-        #self.point1new = copy.copy(self.point1old)
         
     def draw(self):
         return self.accept
@@ -288,8 +440,13 @@ class Clipping:
                 if (outCode1.all != 0):
                     outCodeOut = outCode1
 
-#                print(' outCodeOut = ' + str(outCodeOut.get()))
-
+                print(' ********** ')
+                print(' v_point0 = ' + str(v_point0))
+                print(' v_point1 = ' + str(v_point1))
+                print(' outCode0 = ' + str(outCode0.get()))
+                print(' outCode1 = ' + str(outCode1.get()))
+                print(' outCodeOut = ' + str(outCodeOut.get()))
+                
                 if (outCodeOut.hasLeft()):
                     v_plane = cv.xMin
                     v_point = po.getPointT(v_plane, v_point0, v_point1)
@@ -356,6 +513,8 @@ def clipping_test():
 
 def other():
 
+    c.calcLine()
+
     c.setPoint0(-1.5,-1.5,-1.5)
     c.setPoint1(1.5,1.5,1.5)
 
@@ -405,3 +564,49 @@ def other():
     print(' c.draw() = ' + str(c.draw()))
 
 
+v0=[0,0,0.50,1]
+v1=[0,0,0.75,1]
+v2=[0,0,0.0,1]
+
+
+c=Clipping()
+cv=ClippingVolume()
+cv.setPerspective()
+v_plane = [0, 0, 1, 0.02564102564102564]
+#c.setPoint0(v0[0],v0[1],v0[2])
+#c.setPoint1(v1[0],v1[1],v1[2])
+
+#c.setPerspective()
+#c.setParallel()
+
+#c.calcLine()
+
+#print(' **** ')
+
+#print(' c.point0old = ' + str(c.point0old.getPointV3()))
+#print(' c.getOutCode(c.point0old) = ' + str(c.getOutCode(c.point0old).all))
+#print(' c.point1old = ' + str(c.point1old.getPointV3()))
+#print(' c.getOutCode(c.point1old) = ' + str(c.getOutCode(c.point1old).all))
+#print(' c.draw() = ' + str(c.draw()))
+
+#print(' **** ')
+
+#print(' c.point0new = ' + str(c.point0new.getPointV3()))
+#print(' c.getOutCode(c.point0new) = ' + str(c.getOutCode(c.point0new).all))
+#print(' c.point1new = ' + str(c.point1new.getPointV3()))
+#print(' c.getOutCode(c.point1new) = ' + str(c.getOutCode(c.point1new).all))
+#print(' c.draw() = ' + str(c.draw()))
+
+#print(' ************ ')
+po=PlaneOperation()
+po.setPlane(v_plane)
+po.setPoint0(v0)
+po.setPoint1(v1)
+#print(' po.getT() = ' + str(po.getT()))
+#print(' po.getPointT() = ' + str(po.getPointT()))
+
+print(' po.test(v_plane,v0) = ' + str(po.test(v_plane,v0)))
+print(' ************ ')
+print(' po.test(v_plane,v1) = ' + str(po.test(v_plane,v1)))
+print(' ************ ')
+print(' po.test(v_plane,v2) = ' + str(po.test(v_plane,v2)))

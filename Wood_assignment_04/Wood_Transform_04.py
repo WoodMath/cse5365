@@ -57,6 +57,7 @@ class Transform:
         self.vVPN = []
         self.vVUP = []
         self.vPRP = []
+        self.perspectiveNear = None
         self.updateNDC()
 
     ##########################
@@ -149,6 +150,34 @@ class Transform:
         else:
             return None
 
+
+    def setPerspectiveNear(self):
+        print(' ' + str(self.__class__.__name__) + '.setPerspectiveNear() called')
+        if(self.type == 'parallel'):
+            return
+        self.clipping.setPerspectiveNear(self.getN(),self.getPRP())
+        vDimN = np.array(self.getN())
+        vPRP = np.array(self.getPRP())
+        
+        ## Use vVRP' = SH*T(-vPRP)*[0 0 0 1]^T
+        fFar = vDimN[1] - vPRP[2] if abs(vDimN[1] - vPRP[2]) > abs(vDimN[0] - vPRP[2]) else vDimN[0] - vPRP[2]
+        fNear = vDimN[0] - vPRP[2] if abs(vDimN[1] - vPRP[2]) > abs(vDimN[0] - vPRP[2]) else vDimN[1] - vPRP[2]
+#        fFar = vDimN[1] + vVRP[2] if abs(vDimN[1] + vVRP[2]) > abs(vDimN[0] + vVRP[2]) else vDimN[0] + vVRP[2] 
+#        fNear = vDimN[0] + vVRP[2] if abs(vDimN[1] + vVRP[2]) > abs(vDimN[0] + vVRP[2]) else vDimN[1] + vVRP[2]
+        
+        self.perspectiveNear = fNear/fFar
+        print(' self.perspectiveNear = ' + str(self.perspectiveNear))
+
+#        print(' vDimN = ' + str(vDimN))
+#        print(' vPRP = ' + str(vPRP))
+#        print(' fNear = ' + str(fNear))
+#        print(' fFare = ' + str(fFar))
+#        print(' self.perspectiveNear = ' + str(self.perspectiveNear))
+
+    def getPerspectiveNear(self):
+        print(' ' + str(self.__class__.__name__) + '.getPerspectiveNear() called')
+        return self.perspectiveNear
+        
     ##########################
 
     def updateNDC(self):
@@ -417,7 +446,7 @@ class Transform:
 
         return mReturn
 
-    def transformVRCtranslate(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
+    def transformVRCtranslate_DimUVN(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
         comment='''
         if(v_Dim_U != None):
             self.setU(v_Dim_U)
@@ -452,7 +481,29 @@ class Transform:
 
         return mReturn
 
-    def transformVRCscale(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
+    def transformVRCtranslate_PRP(self, v_PRP=None):
+        comment='''
+        if(v_PRP != None):
+            self.setPRP(v_PRP)
+        else:
+            v_PRP = self.getPRP()
+        '''
+
+        vPRP = np.array(v_PRP)
+        
+        vPRP_x = vPRP[0]
+        vPRP_y = vPRP[1]
+        vPRP_z = vPRP[2]
+        
+        mReturn = np.matrix(\
+            [[1, 0, 0, -vPRP_x],\
+             [0, 1, 0, -vPRP_y],\
+             [0, 0, 1, -vPRP_z],\
+             [0, 0, 0, 1]])
+
+        return mReturn
+    
+    def transformVRCscale_DimUVN(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None):
         comment='''
         if(v_Dim_U != None):
             self.setU(v_Dim_U)
@@ -488,4 +539,81 @@ class Transform:
 
         return mReturn
 
+    def transformVRCscale_DimUVN_VRPz(self, v_Dim_U = None, v_Dim_V = None, v_Dim_N = None, v_VRP = None):
+        comment='''
+        if(v_Dim_U != None):
+            self.setU(v_Dim_U)
+        else:
+            v_Dim_U = self.getU()
 
+        if(v_Dim_V != None):
+            self.setV(v_Dim_V)
+        else:
+            v_Dim_V = self.getV()
+
+        if(v_Dim_N != None):
+            self.setN(v_Dim_N)
+        else:
+            v_Dim_N = self.getN()
+        '''
+            
+        vDim_U = np.array(v_Dim_U)
+        vDim_V = np.array(v_Dim_V)
+        vDim_N = np.array(v_Dim_N)
+        vVRP = np.array(v_VRP)
+#        print(' vDim_U.tolist() = ' + str(vDim_U.tolist()))
+#        print(' vDim_V.tolist() = ' + str(vDim_V.tolist()))
+#        print(' vDim_N.tolist() = ' + str(vDim_N.tolist()))
+
+        fFar = vDim_N[1] + vVRP[2] if abs(vDim_N[1] + vVRP[2]) > abs(vDim_N[0] + vVRP[2]) else vDim_N[0] + vVRP[2] 
+        fNear = vDim_N[0] + vVRP[2] if abs(vDim_N[1] + vVRP[2]) > abs(vDim_N[0] + vVRP[2]) else vDim_N[1] + vVRP[2]
+        
+        fScale_U = -2*vVRP[2]/(vDim_U[1]-vDim_U[0])
+        fScale_V = -2*vVRP[2]/(vDim_V[1]-vDim_V[0])
+        fScale_N = 1
+        
+        mUniformSlope = np.matrix(\
+            [[fScale_U, 0, 0, 0],\
+             [0, fScale_V, 0, 0],\
+             [0, 0, fScale_N, 0],\
+             [0, 0, 0, 1]])
+
+        fScale_All = 1/fFar
+
+        mUniformScale = np.matrix(\
+            [[fScale_All, 0, 0, 0],\
+             [0, fScale_All, 0, 0],\
+             [0, 0, fScale_All, 0],\
+             [0, 0, 0, 1]])
+        
+        mReturn = mUniformScale * mUniformSlope
+
+        return mReturn
+
+    def transformFrustum(self, v_Dim_N=None, v_PRP=None):
+        print(' ' + str(self.__class__.__name__) + '.transformFrustum() called')
+        if(self.type == 'parallel'):
+            return
+#        self.clipping.setPerspectiveNear(self.getN(),self.getPRP())
+        if(v_Dim_N == None):
+            v_Dim_N = self.getN()
+        if(v_PRP == None):
+            v_PRP = self.getVRP()
+            
+        vDimN = np.array(v_Dim_N)
+        vPRP = np.array(v_PRP)
+        ## Use vVRP' = SH*T(-vPRP)*[0 0 0 1]^T
+        fFar = vDimN[1] - vPRP[2] if abs(vDimN[1] - vPRP[2]) > abs(vDimN[0] - vPRP[2]) else vDimN[0] - vPRP[2]
+        fNear = vDimN[0] - vPRP[2] if abs(vDimN[1] - vPRP[2]) > abs(vDimN[0] - vPRP[2]) else vDimN[1] - vPRP[2]
+#        fFar = vDimN[1] + vVRP[2] if abs(vDimN[1] + vVRP[2]) > abs(vDimN[0] + vVRP[2]) else vDimN[0] + vVRP[2] 
+#        fNear = vDimN[0] + vVRP[2] if abs(vDimN[1] + vVRP[2]) > abs(vDimN[0] + vVRP[2]) else vDimN[1] + vVRP[2]
+        fPerspectiveNear = fNear/fFar
+        fOnePlus = 1 + fPerspectiveNear
+        fOneLess = 1 - fPerspectiveNear
+        
+        mReturn = np.matrix([[1,0,0,0],\
+                             [0,1,0,0],\
+                             [0,0,1/fOneLess,-fPerspectiveNear/fOneLess],\
+                             [0,0,1,0]])
+
+        return mReturn

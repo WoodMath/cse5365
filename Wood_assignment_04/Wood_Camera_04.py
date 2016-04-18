@@ -23,6 +23,8 @@ fDelay = 0.5
 
 class Camera:
     def __init__(self,renderer):
+        print(' ************************** ')
+        print(' ' + str(self.__class__.__name__) + '.__init__() called')
         self.renderer = renderer
         self.controller = renderer.controller
         self.cameraFileName = []
@@ -83,16 +85,37 @@ class Camera:
         self.transform.setVUP(self.vup)
         self.transform.setPRP(self.prp)
 
+    def homogenize(self,list_to_convert):
+
+        l_return = []
+        for i in range(len(list_to_convert)):
+            l = list_to_convert[i]
+            if(len(l) != 4):
+                raise ValueError(' List does not contain vectors of length 4')
+            else:
+                f_last = l[3]
+                v_append = [l[0] / f_last, l[1] / f_last, l[2] / f_last, 1]
+                l_return.append(v_append)
+        return l_return
+            
+
     def updateFromScene(self):
         print(' ' + str(self.__class__.__name__) + '.updateFromScene() called')
-#        self.renderer.updateScene()
-#        self.scene = self.renderer.scene
+
         self.lines = copy.deepcopy(self.renderer.scene.lines)
         self.points = copy.deepcopy(self.renderer.scene.world)          # World is buffer of coordinates after scale takes place
+#        self.points = self.homogenize(self.renderer.scene.world)
+
+#        print(' type(self.points) = ' + str(type(self.points)))
+#        print(' self.points = ' + str(self.points))
 
     def updateNDC(self):
         self.transform.establishOriginMatrix()
-        self.transform.establishAfterOriginMatrix()
+        self.transform.establishAlignMatrix()
+        if(self.type == 'parallel'):
+            self.transform.establishParallelViewMatrix()
+        if(self.type == 'perspective'):
+            self.transform.establishPerspectiveViewMatrix()            
         self.transform.establishNDCMatrix()
         self.transform.establishNDCCoordinates()
 
@@ -134,91 +157,18 @@ class Camera:
             b_Draw = l[2]
             p0 = self.pointsScreen[i0]
             p1 = self.pointsScreen[i1]
+            p0 = [int(self.pointsScreen[i0][0]),int(self.pointsScreen[i0][1])]
+            p1 = [int(self.pointsScreen[i1][0]),int(self.pointsScreen[i1][1])]
             v_line = [p0[0],p0[1],p1[0],p1[1]]
             if(b_Draw):
                 self.canvasItems.append(self.renderer.canvas.create_line(v_line, width=1.0, fill='black'))
             else:
                 self.canvasItems.append(None)
 
+#        self.debug_refreshCanvasItems()                
 #        self.refreshCanvasItems()                
 
 
-    def printSpecial(self,str_to_print,i=0):
-        if(self.info[0]=='perspective_1' and i>880):
-            print(str_to_print)        
-    def getSpecial(self):
-        if(self.info[0]=='perspective_1'):
-            print(' ************************ ')
-#            print(' self.vrp = ' + str(self.vrp))
-
-#            print(' self.transform.originMatrix = ')
-#            print(str(self.transform.originMatrix))
-#            print('\n')
-
-#            print(' self.transform.afterOriginMatrix = ')
-#            print(str(self.transform.afterOriginMatrix))
-#            print('\n')
-
-#            print(' self.transform.step2Matrix = ')
-#            print(str(self.transform.step2Matrix))
-#            print('\n')
-
-#            print(' self.transform.step3Matrix = ')
-#            print(str(self.transform.step3Matrix))
-#            print('\n')
-
-#            print(' self.transform.step4Matrix = ')
-#            print(str(self.transform.step4Matrix))
-#            print('\n')
-
-#            print(' self.transform.step5Matrix = ')
-#            print(str(self.transform.step5Matrix))
-#            print('\n')
-
-#            print(' self.transform.step6Matrix = ')
-#            print(str(self.transform.step6Matrix))
-#            print('\n')
-
-            x0 = self.vx[0]*self.renderer.canvasWidth
-            y0 = self.vy[0]*self.renderer.canvasHeight
-            x1 = self.vx[1]*self.renderer.canvasWidth
-            y1 = self.vy[1]*self.renderer.canvasHeight
-
-            
-
-            for i in range(len(self.canvasItems)):
-                l = self.linesScreen[i]
-                i0 = l[0]
-                i1 = l[1]
-                b_Draw = l[2]
-                p0 = self.pointsScreen[i0]
-                p1 = self.pointsScreen[i1]
-                v_line = [p0[0],p0[1],p1[0],p1[1]]
-                print(' l = self.linesScreen['+str(i)+'] = ' + str(l))
-                if(b_Draw):
-                    print(' x = [' + str([x0,x1]) + '] ; y = [' + str([y0,y1]) + ']')
-                    print(' Draw p0 = ['+str(p0)+'] ')
-                    print(' Draw p1 = ['+str(p1)+'] ')
-                else:
-                    print(' x = [' + str([x0,x1]) + '] ; y = [' + str([y0,y1]) + ']')
-                    print(' Skip p0 = ['+str(p0)+'] ')
-                    print(' Skip p1 = ['+str(p1)+'] ')
-                          
-                print('')
-#            print(' self.transform.world2NDCMatrix = ')
-#            print(str(self.transform.world2NDCMatrix))
-#            print('\n')
-            
-            
-#            print(' self.NDC2viewportMatrix = ')
-#            print(str(self.NDC2viewportMatrix))
-#            print('\n')
-
-#            print(' self.viewport2screenMatrix = ')
-#            print(str(self.viewport2screenMatrix))
-#            print('\n')
-            
-            print(' ************************ ')
 
     def updateCamera(self):
         print(' ' + str(self.__class__.__name__) + '.updateCamera() called')
@@ -233,76 +183,77 @@ class Camera:
                 
         self.refreshCanvasItems()
 
-#        self.controller.root.update_idletasks()
-#        time.sleep(fDelay)
-
     def resizeCamera(self):
 
-#        self.controller.root.update_idletasks()
-#        time.sleep(fDelay)
-        
+        self.setBox()
         self.controller.setSize()
         self.establishScreenMatrix()
         self.establishScreenCoordinates()
-
+        
         self.refreshCanvasItems()
 
-#        self.getSpecial()
 
+    def printSpecial(self,str_to_print,i=0):
+        if(self.info=='perspective_1' and i>400):
+            print(str_to_print)        
 
     def debug_refreshCanvasItems(self):
-        print(' ' + str(self.__class__.__name__) + '.resizeCamera() called')
+        print(' **** ' + str(self.__class__.__name__) + '.debug_refreshCanvasItems() called')
 
-
-#        print(' self.linesScreen = ')
-#        print(self.linesScreen)
-#        print(' self.linesNDC = ')
-#        print(self.linesNDC)
-        
         self.setBox()
         for i in range(len(self.canvasItems)):
-            self.printSpecial(' ************************ ', i) 
+#            self.printSpecial(' ************************ ', i) 
             l = self.linesScreen[i]
             i0 = l[0]
             i1 = l[1]
             b_Draw = l[2]
             p0 = self.pointsScreen[i0]
             p1 = self.pointsScreen[i1]
+            p0 = [int(self.pointsScreen[i0][0]),int(self.pointsScreen[i0][1])]
+            p1 = [int(self.pointsScreen[i1][0]),int(self.pointsScreen[i1][1])]
+
             v_line = [p0[0],p0[1],p1[0],p1[1]]
-            self.printSpecial(' l = self.linesScreen['+str(i)+'] = ' + str(l), i)
-            if(b_Draw):
-                self.printSpecial(' b_Draw = True', i)
-            else:
-                self.printSpecial(' b_Draw = False', i)
+#            v_line = [int(p0[0]),int(p0[1]),int(p1[0]),int(p1[1])]
+
+#            self.printSpecial(' l = self.linesScreen['+str(i)+'] = ' + str(l), i)
+#            if(b_Draw):
+#                self.printSpecial(' b_Draw = True', i)
+#            else:
+#                self.printSpecial(' b_Draw = False', i)
 
             if(b_Draw):
-                self.printSpecial(' x = ' + str(self.x01) + ' ; y = ' + str(self.y01) + '', i)
+#                self.printSpecial(' x = ' + str(self.x01) + ' ; y = ' + str(self.y01) + '', i)
                 if(self.canvasItems[i] == None):        ## Need to draw but doesnt exist
                     self.canvasItems[i] = self.renderer.canvas.create_line(v_line, width=1.0, fill='black')
                 else:                                   ## Need to draw already exists
                     self.renderer.canvas.coords(self.canvasItems[i], v_line)
             else:
-                self.printSpecial(' x = ' + str(self.x01) + ' ; y = ' + str(self.y01) + '', i)
+#                self.printSpecial(' x = ' + str(self.x01) + ' ; y = ' + str(self.y01) + '', i)
                 if(self.canvasItems[i] != None):        ## Don't draw, something that already exists
                     self.renderer.canvas.delete(self.canvasItems[i])
                     self.canvasItems[i] = None
 
 
             ## Other stuff
-            
-            if(self.x01[0] <= p0[0] and p0[0] <= self.x01[1] and \
-               self.y01[0] <= p0[1] and p0[1] <= self.y01[1]):
-                self.printSpecial(' Draw p0 = '+str(p0)+' ', i)
-            else:
-                self.printSpecial(' Skip p0 = '+str(p0)+' ', i)
-            if(self.x01[0] <= p1[0] and p1[0] <= self.x01[1] and \
-               self.y01[0] <= p1[1] and p1[1] <= self.y01[1]):
-                self.printSpecial(' Draw p1 = '+str(p1)+' ', i)
-            else:
-                self.printSpecial(' Skip p1 = '+str(p1)+' ', i)
+            if(b_Draw):
+#                print(' v_line = ' + str(v_line))
+                self.printSpecial(' v_line = ' + str(v_line))
 
+                if(self.x01[0] <= p0[0] and p0[0] <= self.x01[1] and \
+                   self.y01[0] <= p0[1] and p0[1] <= self.y01[1]):
+                    self.printSpecial(' Draw p0 = '+str(p0)+' ', i)
+                else:
+                    self.printSpecial(' x = ' + str(self.x01) + ' ; y = ' + str(self.y01) + '', i)
+                    self.printSpecial(' Skip p0 = '+str(p0)+' ', i)
+                if(self.x01[0] <= p1[0] and p1[0] <= self.x01[1] and \
+                    self.y01[0] <= p1[1] and p1[1] <= self.y01[1]):
+                    self.printSpecial(' Draw p1 = '+str(p1)+' ', i)
+                    print('',end='')
+                else:
+                    self.printSpecial(' x = ' + str(self.x01) + ' ; y = ' + str(self.y01) + '', i)
+                    self.printSpecial(' Skip p1 = '+str(p1)+' ', i)
 
-            self.printSpecial(' ************************ ', i)
+#            self.printSpecial(' ************************ ', i)
 
     def refreshCanvasItems(self):
         print(' ' + str(self.__class__.__name__) + '.resizeCamera() called')
@@ -314,6 +265,8 @@ class Camera:
             b_Draw = l[2]
             p0 = self.pointsScreen[i0]
             p1 = self.pointsScreen[i1]
+            p0 = [int(self.pointsScreen[i0][0]),int(self.pointsScreen[i0][1])]
+            p1 = [int(self.pointsScreen[i1][0]),int(self.pointsScreen[i1][1])]
             v_line = [p0[0],p0[1],p1[0],p1[1]]
             if(b_Draw):
                 if(self.canvasItems[i] == None):        ## Need to draw but doesnt exist
@@ -396,14 +349,12 @@ class Camera:
                 'vY':self.vy}
 
     def setBox(self):
-        x0 = self.vx[0]*self.renderer.canvasWidth
-        y0 = self.vy[0]*self.renderer.canvasHeight
-        x1 = self.vx[1]*self.renderer.canvasWidth
-        y1 = self.vy[1]*self.renderer.canvasHeight
-#        print(' x0 = ' + str(x0) + ' ; x1 = ' + str(x1) + ' ; y0 = ' + str(y0) + ' ; y1 = ' + str(y1) )
+        x0 = int(self.vx[0]*self.renderer.canvasWidth)
+        y0 = int(self.vy[0]*self.renderer.canvasHeight)
+        x1 = int(self.vx[1]*self.renderer.canvasWidth)
+        y1 = int(self.vy[1]*self.renderer.canvasHeight)
         self.x01 = [x0,x1]
         self.y01 = [y0,y1]
-#        print(' self.x01 = ' + str(self.x01) + ' ; self.y01 = ' + str(self.y01))  
         
     def getBox(self):
         return (self.x01, self.y01)
@@ -416,7 +367,13 @@ class Camera:
         self.info = sInfo[0]
         return
     def addType(self, sType):                   # Lines beginning with 't'
+        print(' ' + str(self.__class__.__name__) + '.addType() called')
+#        sType = ['parallel']
         self.type = sType[0]
+        if(self.type=='parallel'):
+            self.setParallel()
+        if(self.type=='perspective'):
+            self.setPerspective()
         return
     def addWindow(self, lWindow):               # Lines beginning with 'w'
         self.window = lWindow
@@ -426,6 +383,8 @@ class Camera:
         self.transform.setU(self.wu)
         self.transform.setV(self.wv)
         self.transform.setN(self.wn)
+        if(self.type=='perspective' and self.wn != None):
+            self.transform.setPerspectiveNear()
         return
     def addViewport(self, lViewport):           # Lines beginning wtih 's'
         self.viewport = lViewport
@@ -451,8 +410,24 @@ class Camera:
         self.prp = vPRP
         self.transform.setPRP(self.prp)
         return
+    def setParallel(self):
+        print(' ' + str(self.__class__.__name__) + '.setParallel() called')
+        self.type = 'parallel'
+        self.transform.setParallel()
+    def setPerspective(self):
+        print(' ' + str(self.__class__.__name__) + '.setPerspective() called')
+        self.type = 'perspective'
+        self.transform.setPerspective()
+        if(self.type=='perspective' and self.wn != None):
+            self.transform.setPerspectiveNear()
 
-
+    def setType(self,s_type):
+        print(' ' + str(self.__class__.__name__) + '.setType() called')
+        self.type = s_type
+        self.transform.setType(s_type)
+        if(self.type=='perspective' and self.wn != None):
+            self.transform.setPerspectiveNear()
+            
     def establish_fly_matrix(self, i_steps=None, v_start=None, v_stop=None):
         ## Establish the fly matrix
         

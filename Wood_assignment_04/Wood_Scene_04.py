@@ -253,7 +253,7 @@ class Scene():
         ## Establish the scale matrix
         
         if(i_steps==None):
-            i_steps = copy.copy(self.controller.flyVRPSteps)
+            i_steps = copy.copy(self.controller.scaleSteps)
         if(v_scale==None):
             v_scale = copy.copy(self.controller.scaleSizeVector)
         if(v_center==None):

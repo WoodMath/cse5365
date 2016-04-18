@@ -46,7 +46,6 @@ class Renderer():
         self.canvasWidth = None
         self.canvasHeight = None
         self.viewport2screenMatrix = None
-        self.addCamera('cameras_04.txt')
 
         return
 
@@ -92,6 +91,7 @@ class Renderer():
 
         
     def createViewports(self):
+        print(' ' + str(self.__class__.__name__) + '.createViewport() called')
         self.controller.setSize()
         if(self.canvasWidth == None or self.canvasHeight == None):
             raise ValueError('Size has not been set yet')
@@ -100,10 +100,14 @@ class Renderer():
         zeroSet = False
         print(' *** Start Cycling Cameras *** ')
         for c in self.cameras:
-            x0 = c.vx[0]*self.canvasWidth
-            y0 = c.vy[0]*self.canvasHeight
-            x1 = c.vx[1]*self.canvasWidth
-            y1 = c.vy[1]*self.canvasHeight
+#            x0 = c.vx[0]*self.canvasWidth
+#            y0 = c.vy[0]*self.canvasHeight
+#            x1 = c.vx[1]*self.canvasWidth
+#            y1 = c.vy[1]*self.canvasHeight
+            x0 = int(c.vx[0]*self.canvasWidth)
+            y0 = int(c.vy[0]*self.canvasHeight)
+            x1 = int(c.vx[1]*self.canvasWidth)
+            y1 = int(c.vy[1]*self.canvasHeight)
 
             if(not zeroSet):
                 zeroSet = True
@@ -120,10 +124,15 @@ class Renderer():
             return
         print(' *** Start Cycling Cameras *** ')
         for c in self.cameras:
-            x0 = c.vx[0]*self.canvasWidth
-            y0 = c.vy[0]*self.canvasHeight
-            x1 = c.vx[1]*self.canvasWidth
-            y1 = c.vy[1]*self.canvasHeight
+#            x0 = c.vx[0]*self.canvasWidth
+#            y0 = c.vy[0]*self.canvasHeight
+#            x1 = c.vx[1]*self.canvasWidth
+#            y1 = c.vy[1]*self.canvasHeight
+            x0 = int(c.vx[0]*self.canvasWidth)
+            y0 = int(c.vy[0]*self.canvasHeight)
+            x1 = int(c.vx[1]*self.canvasWidth)
+            y1 = int(c.vy[1]*self.canvasHeight)
+
             if(c.rectangle and c.text):
                 self.canvas.coords(c.rectangle,x0,y0,x1,y1)
                 self.canvas.coords(c.text,x0,y0)
@@ -131,7 +140,7 @@ class Renderer():
     
         
     def setSize(self,iWidth,iHeight):
-
+        print(' ' + str(self.__class__.__name__) + '.setSize() called')
         self.canvasWidth = iWidth
         self.canvasHeight = iHeight
 
@@ -143,6 +152,7 @@ class Renderer():
 
 
     def addCamera(self, cam):
+        print(' ' + str(self.__class__.__name__) + '.addCamera() called')
         if(self.scene):
             cam.scene = self.scene
         self.cameras.append(cam)
@@ -179,9 +189,10 @@ class Renderer():
             print(' *** Stop Cycling Cameras *** ')
     
     def addCameraFile(self, sFileName):
+        print(' ' + str(self.__class__.__name__) + '.addCameraFile() called')
+
         self.cameraFileName = sFileName
         self.clearCameras()
-        
         cObj = None
         with open(sFileName) as openCameraFile:
             print(' sFileName = ' + str(sFileName))
@@ -193,7 +204,6 @@ class Renderer():
                 if(l_type == 'c'):                  # Adds new camera
                     if(cObj != None):               # If there is already a camera
                         self.addCamera(cObj)        # Add it before you --
-#                        print(cObj.get())
                     cObj = Camera(self)             # Create a new camera
                 elif(l_type == 'i'):                # Adds info
                     cObj.addInfo(l_parsed)
@@ -219,8 +229,5 @@ class Renderer():
                     cObj.addPRP(l_parsed)
                 else:
                     raise ValueError(' "' + str(l_type) + '" Not valid ')
-            self.addCamera(cObj)                    # Add last camera
-            print(cObj.get())       
-
-        
+            self.addCamera(cObj)                    # Add last camera        
 
