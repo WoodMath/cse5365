@@ -1,8 +1,8 @@
 # Wood, Jeff
 # 100-103-5461
-# 2016-04-19
-# Assignment_04
-
+# 2016-05-02
+# Assignment_05
+#
 #   From
 #       http://www.jesshamrick.com/2011/05/18/an-introduction-to-classes-and-inheritance-in-python/
 #       http://stackoverflow.com/questions/1607612/python-how-do-i-make-a-subclass-from-a-superclass
@@ -16,7 +16,7 @@ import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
 
-from Wood_Object_04 import *
+from Wood_Object_05 import *
 
 class Scene():
     def __init__(self):
@@ -29,9 +29,6 @@ class Scene():
     
     def clearScene(self):
         self.objects = []
-        self.points = []
-        self.lines = []
-        self.world = None
         self.stack = np.matrix(\
             [[1,0,0,0],\
              [0,1,0,0],\
@@ -70,20 +67,7 @@ class Scene():
         self.objects.append(obj)
 
         ## Establish current point index
-        i_point_index = len(self.points)
 
-        ## Append object points and indices
-        for i in range(len(obj.lineIndices)):
-            i_ind0 = obj.lineIndices[i][0]
-            i_ind1 = obj.lineIndices[i][1]
-            p0 = obj.linePoints[i_ind0]
-            p1 = obj.linePoints[i_ind1]
-
-            self.points.append(p0)
-            self.points.append(p1)
-            self.lines.append([i_ind0 + i_point_index, i_ind1 + i_point_index, 1])
-
-        self.updateScene()
 
     def applyMatrix(self, mMatrix):
         print(' Applying Matrix ...')
@@ -93,16 +77,16 @@ class Scene():
     def establish_rotation_matrix(self, i_steps=None, v_a=None, v_b=None, i_degree=None, i_option=None):
         # Establish the rotation matrix
 
-        if(i_steps==None):
-            i_steps = copy.copy(self.controller.rotationSteps)
-        if(v_a==None):
-            v_a = copy.copy(self.controller.rotationAxisVectorA)
-        if(v_b==None):
-            v_b = copy.copy(self.controller.rotationAxisVectorB)
-        if(i_degree==None):
-            i_degree = copy.copy(self.controller.rotationDegrees)
-        if(i_option==None):
-            i_option = copy.copy(self.controller.rotationAxisOption)
+#        if(i_steps==None):
+#            i_steps = copy.copy(self.controller.rotationSteps)
+#        if(v_a==None):
+#            v_a = copy.copy(self.controller.rotationAxisVectorA)
+#        if(v_b==None):
+#            v_b = copy.copy(self.controller.rotationAxisVectorB)
+#        if(i_degree==None):
+#            i_degree = copy.copy(self.controller.rotationDegrees)
+#        if(i_option==None):
+#            i_option = copy.copy(self.controller.rotationAxisOption)
             
         if(i_option== 1):
             v_a = [0,0,0]
@@ -250,17 +234,17 @@ class Scene():
     def establish_scale_matrix(self, i_steps=None, v_scale=None, v_center=None, i_option=None):
         ## Establish the scale matrix
         
-        if(i_steps==None):
-            i_steps = copy.copy(self.controller.scaleSteps)
-        if(v_scale==None):
-            v_scale = copy.copy(self.controller.scaleSizeVector)
-        if(v_center==None):
-            v_center = copy.copy(self.controller.scaleCenterVector)
-        if(i_option==None):
-            i_option = copy.copy(self.controller.scaleSizeOption)
+#        if(i_steps==None):
+#            i_steps = copy.copy(self.controller.scaleSteps)
+#        if(v_scale==None):
+#            v_scale = copy.copy(self.controller.scaleSizeVector)
+#        if(v_center==None):
+#            v_center = copy.copy(self.controller.scaleCenterVector)
+#        if(i_option==None):
+#            i_option = copy.copy(self.controller.scaleSizeOption)
 
-        if(i_option==1):
-            v_scale = [copy.copy(self.controller.scaleSizeScalar),copy.copy(self.controller.scaleSizeScalar),copy.copy(self.controller.scaleSizeScalar)]
+#        if(i_option==1):
+#            v_scale = [copy.copy(self.controller.scaleSizeScalar),copy.copy(self.controller.scaleSizeScalar),copy.copy(self.controller.scaleSizeScalar)]
         
         print(' Establishing scale matrix ')
 
@@ -302,10 +286,10 @@ class Scene():
     def establish_translation_matrix(self, i_steps=None, v_trans=None):
         ## Establish the translation matrix
 
-        if(i_steps==None):
-            i_steps = copy.copy(self.controller.translationSteps)
-        if(v_trans==None):
-            v_trans = copy.copy(self.controller.translationVector)
+#        if(i_steps==None):
+#            i_steps = copy.copy(self.controller.translationSteps)
+#        if(v_trans==None):
+#            v_trans = copy.copy(self.controller.translationVector)
             
         print(' Establishing translation matrix ')
 
