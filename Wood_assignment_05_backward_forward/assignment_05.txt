@@ -1,0 +1,54 @@
+DUE DATE:  May. 2, 2016
+Purpose:  Practice in OpenGL.
+Convert your assignment 04 program to use OpenGL (You MUST use OpenGL for this assignment).
+When you start your program it should automatically read a file called "cameras_05.txt". This file contains the information about a camera. Notice that "cameras_05.txt' file may include information about multiple cameras.
+Detail format for the camera file:
+c      // Start the definition of a new camera.
+i  camera_name  //Name of the camera. Default=""
+t Parallel / Perspective  // Define camera type. Default= parallel
+e <x> <y><z>   //Define Eye (WC)
+l <x> <y><z>  //Define Look at point (WC)
+u <x> <y><z>  //Define VUP (WC)
+w <umin><umax><vmin><vnax><nmin><nmax>    //Define View Volume (VRC). Default= -1 , 1, -1, 1, -1, 1
+s <xmin><ymin><xmax><ymax.   //Define viewport (normalized coordinates). Default=0.1, 0.1, 0.9, 0.9
+Commands for this lab include:
+         Input File Name:
+This command loads all the data and parameters from a text file. Hitting the "n" key should prompt the user for the name of the file. (The default value for the file name should be "pyramid_05.txt")
+Load and Display:
+This command should load and display the input file. Hitting the "d" key should load the input file and and redisplay all the viewports. Notice that this command should reload the "cameras_05.txt" file and reset all the viewing coordinates.
+Rotate: "x" and "X" keys
+Hitting the "x" key should rotate all the objects around the world coordinate x axis by 5 degrees.
+Hitting the "X" key should rotate all the objects around the world coordinate x axis by -5 degrees.
+Rotate: "y" and "Y" keys
+Hitting the "y" key should rotate all the objects around the world coordinate y axis by 5 degrees.
+Hitting the "Y" key should rotate all the objects around the world coordinate y axis by -5 degrees.
+Rotate: "z" and "Z" keys
+Hitting the "z" key should rotate all the objects around the world coordinate z axis by 5 degrees.
+Hitting the "Z" key should rotate all the objects around the world coordinate z axis by -5 degrees.
+Scale: "s" and "S" keys
+Hitting the "s" key should scale all the objects by 1.05.
+Hitting the "S" key should scale all objects by 1/1.05
+Move forward or backward: "f" and "b" keys
+Hitting the "f" Key should move the eye toward the Look at point by 0.05 of the distance between the eye and look at point.
+Hitting the "b" Key should move the eye away from the Look at point by 0.05/1.05 of the distance between the eye and look at point.
+Move left or right:
+Hitting the "left arrow" Key should move the eye in the positive direction of the view coordinate u axis by 0.05 of the distance between the eye and look at point.
+Hitting the "right arrow" Key should move the eye in the negative direction of the view coordinate u axis by 0.05 of the distance between the eye and look at point.
+Move up or down:
+Hitting the "up arrow" Key should move the eye in the positive direction of the view coordinate v axis by 0.05 of the distance between the eye and look at point.
+Hitting the "down arrow" Key should move the eye in the negative direction of the view coordinate v axis by 0.05 of the distance between the eye and look at point.
+Change projection (Parallel /Perspective)
+Hitting the "p" key should switch the views between parallel and perspective projections.
+Note:
+The format of all the data files (except cameras_05.txt) in this assignment is the same as the files in the assignmet_04
+Sample cameras file:
+camera
+Sample input data files:
+pyramid
+cow
+teapot
+opengl_multiple_viewport_sample.py
+ 
+
+ 	Assignment 05 (Due date May 2, 2016)
+ 

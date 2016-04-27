@@ -1,11 +1,3 @@
-# Wood, Jeff
-# 100-103-5461
-# 2016-05-02
-# Assignment_05
-
-#   From
-#       http:
-
 import sys
 import OpenGL
 
@@ -78,7 +70,6 @@ def display():
       w=glutGet(GLUT_WINDOW_WIDTH)
       h=glutGet(GLUT_WINDOW_HEIGHT)
       
-      ## Upper-Left
       glEnable(GL_SCISSOR_TEST)
       glScissor(int(0.05*w),int(0.55*h),int(0.4*w),int(0.4*h))
       glClearColor(0.4,0.4,0.6,0)
@@ -95,7 +86,6 @@ def display():
       glCallList(2) 
       glPopMatrix()
       
-      ## Lower-Left
       glEnable(GL_SCISSOR_TEST)
       glScissor(int(0.05*w),int(0.05*h),int(0.4*w),int(0.4*h))
       glClearColor(0.4,0.4,0.6,0)
@@ -112,7 +102,6 @@ def display():
       glCallList(2) 
       glPopMatrix()      
       
-      ## Upper-Right
       glScissor(int(0.55*w),int(0.55*h),int(0.4*w),int(0.4*h))
       glClearColor(0.4,0.4,0.6,0)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)      
@@ -129,7 +118,6 @@ def display():
       glCallList(2) 
       glPopMatrix() 
       
-      ## Lower-Right
       glScissor(int(0.55*w),int(0.05*h),int(0.4*w),int(0.4*h))
       glClearColor(0.4,0.4,0.6,0)
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -176,36 +164,25 @@ def timer(dummy):
       glutTimerFunc(30,timer,0)
 def reshape(w, h):
       print ("Width=",w,"Height=",h)
+          
+glutInit(sys.argv)
+glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH)
+glutInitWindowSize(800, 500)
+glutInitWindowPosition(100, 100)
+glutCreateWindow(b"PyOpenGL Demo")
+glClearColor(1,1,0,0)
+glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
+glEnable(GL_DEPTH_TEST)
+glDepthFunc(GL_LESS);
 
-def init():
-    glutInit(sys.argv)
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH)
-    glutInitWindowSize(800, 500)
-    glutInitWindowPosition(100, 100)
-    glutCreateWindow(b"PyOpenGL Demo")
-    glClearColor(1,1,0,0)
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
-    glEnable(GL_DEPTH_TEST)
-    glDepthFunc(GL_LESS);
-
-def callbacks():
-    glutDisplayFunc(display)
-    glutKeyboardFunc(keyHandler)
-    glutTimerFunc(300,timer,0)
-    glutReshapeFunc(reshape)
-
-def draw():
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    glMatrixMode(GL_MODELVIEW)
-    create_pyramid()
-    create_3d_axes()
-
-def main():
-    init()
-    callbacks()
-    draw()
-    glutMainLoop()
-
-main()
+glutDisplayFunc(display)
+glutKeyboardFunc(keyHandler)
+glutTimerFunc(300,timer,0)
+glutReshapeFunc(reshape)
+glMatrixMode(GL_PROJECTION)
+glLoadIdentity()
+glMatrixMode(GL_MODELVIEW)
+create_pyramid()
+create_3d_axes()
+glutMainLoop()
 
