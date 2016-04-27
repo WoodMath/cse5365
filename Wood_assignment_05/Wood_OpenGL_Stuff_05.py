@@ -126,6 +126,7 @@ class OpenGL_Stuff():
         print(' mouseX = ' + str(mouseX))
         print(' mouseY = ' + str(mouseY))
 
+        ## Load file
         if key == b'n' or key == b'N':
             result = input(' Load a file : ')
             print(' result = ' + str(result))
@@ -133,6 +134,38 @@ class OpenGL_Stuff():
         if key == b'd' or key == b'D':
             result = input(' Load a file : ')
             print(' result = ' + str(result))
+
+        ## Rotate about x-Axis
+        if key == b'x':
+            glMatrixMode(GL_MODELVIEW)
+            glRotated(5, 1, 0, 0)
+        if key == b'X':
+            glMatrixMode(GL_MODELVIEW)
+            glRotated(-5, 1, 0, 0)
+
+        ## Rotate about y-Axis
+        if key == b'y':
+            glMatrixMode(GL_MODELVIEW)
+            glRotated(5, 0, 1, 0)
+        if key == b'Y':
+            glMatrixMode(GL_MODELVIEW)
+            glRotated(-5, 0, 1, 0)
+
+        ## Rotate about z-Axis
+        if key == b'z':
+            glMatrixMode(GL_MODELVIEW)
+            glRotated(5, 0, 0, 1)
+        if key == b'Z':
+            glMatrixMode(GL_MODELVIEW)
+            glRotated(-5, 0, 0, 1)
+
+        ## Scale
+        if key == b's':
+            glMatrixMode(GL_MODELVIEW)
+            glScalef(1.05, 1.05, 1.05)
+        if key == b'S':
+            glMatrixMode(GL_MODELVIEW)
+            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
 
         elif key == b'f' or key == b'F':
             print (b"Speeding Up")
