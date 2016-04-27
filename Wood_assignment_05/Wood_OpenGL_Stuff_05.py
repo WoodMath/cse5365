@@ -115,16 +115,16 @@ class OpenGL_Stuff():
         glFlush()
         glutSwapBuffers()
         ## glLoadIdentity()
-        print(' Finished Display')
+#        print(' Finished Display')
         return
 
 
     def keyHandler(self, key, mouseX, mouseY):
         global incr
 
-        print(' key = ' + str(key))
-        print(' mouseX = ' + str(mouseX))
-        print(' mouseY = ' + str(mouseY))
+#        print(' key = ' + str(key))
+#        print(' mouseX = ' + str(mouseX))
+#        print(' mouseY = ' + str(mouseY))
 
         ## Load file
         if key == b'n' or key == b'N':
