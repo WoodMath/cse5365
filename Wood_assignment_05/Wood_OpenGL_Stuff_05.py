@@ -19,14 +19,36 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 
-class OpenGL_Stuff():
+class OpenGL_Stuff:
     def __init__(self, controller):
         self.controller = controller
         self.glList = 1
         self.width = None
         self.height = None
-        self.offsetFactorVector = [1,1,1]
+        self.offsetVector = [0,0,0]
         return
+
+    def createAxes(self):
+        glNewList(2,GL_COMPILE)
+        glBegin(GL_LINES)
+        glColor3f(1,0,0)
+        glVertex3f(0,0,0)
+        glVertex3f(2,0,0)
+        glEnd() 
+                  
+        glBegin(GL_LINES)
+        glColor3f(0,1,0)
+        glVertex3f(0,0,0)
+        glVertex3f(0,2,0)
+        glEnd() 
+                  
+        glBegin(GL_LINES)
+        glColor3f(0,0,1)
+        glVertex3f(0,0,0)
+        glVertex3f(0,0,2)
+        glEnd() 
+        glEndList()
+        
     def createObject(self,obj):
         # 3 for triangles
         # 4 for quads
@@ -175,33 +197,27 @@ class OpenGL_Stuff():
         ## Backward / Forward
         if key == b'b':
             glMatrixMode(GL_MODELVIEW)
-            glRotated(-5, 0, 0, 1)
         if key == b'f':
-            self.vectorOffset = 
+            glMatrixMode(GL_MODELVIEW) 
 
         ## Up / Down
         if key == GLUT_KEY_DOWN:
             glMatrixMode(GL_MODELVIEW)
-            glScalef(1.05, 1.05, 1.05)
+#            glScalef(1.05, 1.05, 1.05)
         if key == GLUT_KEY_UP:
             glMatrixMode(GL_MODELVIEW)
-            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
+#            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
 
         ## Left / Right
         if key == GLUT_KEY_LEFT:
             glMatrixMode(GL_MODELVIEW)
-            glScalef(1.05, 1.05, 1.05)
+#            glScalef(1.05, 1.05, 1.05)
         if key == GLUT_KEY_RIGHT:
             glMatrixMode(GL_MODELVIEW)
-            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
+#            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
     
 
-        elif key == b'f' or key == b'F':
-            print (b"Speeding Up")
-            incr = incr + 1
-        elif key == b's' or key == b'S':
-            glMatrixMode(GL_MODELVIEW)
-            glScalef(2.0, 2.0, 2.0)
+
 
         elif key == b'q' or key == b'Q':
             print ("Bye")
@@ -249,7 +265,6 @@ class OpenGL_Stuff():
         vecV = cam.vecV
         vecN = cam.vecN
 
-        eyeOffset
         ## From code provided by instructor
         glEnable(GL_SCISSOR_TEST)
         glScissor(screenLeft, screenBottom, screenWidth, screenHeight)
@@ -263,7 +278,8 @@ class OpenGL_Stuff():
             glFrustum(cam.wu[0], cam.wu[1], cam.wv[0], cam.wv[1], cam.wn[0], cam.wn[1])
 #        gluLookAt(0,0,3,0,0,0,0,1,0)
         gluLookAt(\
-            cam.eye[0] + eyeOffset[0] , cam.eye[1] + eyeOffset[1], cam.eye[2] + eyeOffset[2],\
+#            cam.eye[0] + eyeOffset[0] , cam.eye[1] + eyeOffset[1], cam.eye[2] + eyeOffset[2],\
+            cam.eye[0], cam.eye[1], cam.eye[2],\
             cam.lookAt[0], cam.lookAt[1], cam.lookAt[2],\
             cam.up[0], cam.up[1], cam.up[2]\
         )
@@ -272,8 +288,8 @@ class OpenGL_Stuff():
 
         glCallList(self.glList) 
         glPushMatrix()
-#        glLoadIdentity()
-#        glCallList(2) 
+        glLoadIdentity()
+        glCallList(2) 
         glPopMatrix()
         return
 

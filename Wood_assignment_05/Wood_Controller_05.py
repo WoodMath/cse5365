@@ -30,6 +30,7 @@ class Controller:
         self.createWindow(400,300)
         self.addCallbacks()
         self.opengl.createObjects(self.renderer.scene.objects)
+        self.opengl.createAxes()
 #        self.opengl.drawCameras(self.renderer.cameras)
 
         self.mainLoop()
