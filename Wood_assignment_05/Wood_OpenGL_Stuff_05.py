@@ -4,7 +4,7 @@
 # Assignment_05
 
 #   From
-#       http:
+#       https://www.opengl.org/discussion_boards/showthread.php/136442-what-are-the-codes-for-arrow-keys-to-use-in-glut-keyboard-callback-function
 
 import numpy as np
 import copy
@@ -25,6 +25,7 @@ class OpenGL_Stuff():
         self.glList = 1
         self.width = None
         self.height = None
+        self.offsetFactorVector = [1,1,1]
         return
     def createObject(self,obj):
         # 3 for triangles
@@ -100,10 +101,14 @@ class OpenGL_Stuff():
         glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
         glEnable(GL_DEPTH_TEST)
         glDepthFunc(GL_LESS);
-        
+
+    def special(self, key, mouseX, mouseY):
+
+        print(" Special called ")
     def addCallbacks(self):
         glutDisplayFunc(self.display)
         glutKeyboardFunc(self.keyHandler)
+        glutSpecialFunc(self.keyHandler)
         glutTimerFunc(300,self.timer,0)
         glutReshapeFunc(self.reshape)
         
@@ -122,7 +127,7 @@ class OpenGL_Stuff():
     def keyHandler(self, key, mouseX, mouseY):
         global incr
 
-#        print(' key = ' + str(key))
+        print(' key = ' + str(key))
 #        print(' mouseX = ' + str(mouseX))
 #        print(' mouseY = ' + str(mouseY))
 
@@ -166,6 +171,30 @@ class OpenGL_Stuff():
         if key == b'S':
             glMatrixMode(GL_MODELVIEW)
             glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
+
+        ## Backward / Forward
+        if key == b'b':
+            glMatrixMode(GL_MODELVIEW)
+            glRotated(-5, 0, 0, 1)
+        if key == b'f':
+            self.vectorOffset = 
+
+        ## Up / Down
+        if key == GLUT_KEY_DOWN:
+            glMatrixMode(GL_MODELVIEW)
+            glScalef(1.05, 1.05, 1.05)
+        if key == GLUT_KEY_UP:
+            glMatrixMode(GL_MODELVIEW)
+            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
+
+        ## Left / Right
+        if key == GLUT_KEY_LEFT:
+            glMatrixMode(GL_MODELVIEW)
+            glScalef(1.05, 1.05, 1.05)
+        if key == GLUT_KEY_RIGHT:
+            glMatrixMode(GL_MODELVIEW)
+            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
+    
 
         elif key == b'f' or key == b'F':
             print (b"Speeding Up")
@@ -216,6 +245,11 @@ class OpenGL_Stuff():
 #        print(' screenLeft = ' + str(screenLeft) + ' ; type(screenLeft) = ' + str(type(screenLeft)))
 #        print(' screenBottom = ' + str(screenBottom) + ' ; type(screenBottom) = ' + str(type(screenBottom)))
 
+        vecU = cam.vecU
+        vecV = cam.vecV
+        vecN = cam.vecN
+
+        eyeOffset
         ## From code provided by instructor
         glEnable(GL_SCISSOR_TEST)
         glScissor(screenLeft, screenBottom, screenWidth, screenHeight)
@@ -229,7 +263,7 @@ class OpenGL_Stuff():
             glFrustum(cam.wu[0], cam.wu[1], cam.wv[0], cam.wv[1], cam.wn[0], cam.wn[1])
 #        gluLookAt(0,0,3,0,0,0,0,1,0)
         gluLookAt(\
-            cam.eye[0], cam.eye[1], cam.eye[2],\
+            cam.eye[0] + eyeOffset[0] , cam.eye[1] + eyeOffset[1], cam.eye[2] + eyeOffset[2],\
             cam.lookAt[0], cam.lookAt[1], cam.lookAt[2],\
             cam.up[0], cam.up[1], cam.up[2]\
         )

@@ -40,6 +40,12 @@ class Camera:
         self.vx = None
         self.vy = None
 
+        self.vecU = None
+        self.vecV = None
+        self.vecN = None
+
+        self.distance = None
+
         self.rectangle = None
         self.text = None
 
@@ -61,8 +67,27 @@ class Camera:
                 'wV':self.wv, \
                 'wN':self.wn, \
                 'vX':self.vx, \
-                'vY':self.vy}
+                'vY':self.vy, \
+                'vecU':self.vecU, \
+                'vecV':self.vecV, \
+                'vecN':self.vecN}
 
+
+    def addVectors(self):
+        vTempN = np.array(self.eye) - np.array(self.lookAt)
+        self.distance = LA.norm(vTempN)
+        vTempN = vTempN / LA.norm(vTempN)
+        self.vecN = vTempN.tolist()
+
+        vTempU = np.cross(np.array(self.up), vTempN)
+        vTempU = vTempU / LA.norm(vTempU)
+        self.vecU = vTempU.tolist()
+
+        vTempV = np.cross(vTempN, vTempU)
+        vTempV = vTempV / LA.norm(vTempV)
+        self.vecV = vTempV.tolist()
+
+        
         
     def addInfo(self, sInfo):                   # Lines beginning with 'i'
         self.info = sInfo[0]
@@ -83,8 +108,13 @@ class Camera:
         return
     def addEye(self,vEye):
         self.eye = vEye
+        if(self.lookAt != None and self.up != None):
+            self.addVectors()
     def addLookAt(self, vLookAt):                     # Lines beginning with 'r'
         self.lookAt = vLookAt
-        return
+        if(self.eye != None and self.up != None):
+            self.addVectors()
     def addUp(self, vUp):                     # Lines beginning with 'n'
         self.up = vUp
+        if(self.eye != None and self.lookAt != None):
+            self.addVectors()
