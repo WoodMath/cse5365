@@ -58,7 +58,6 @@ class Renderer():
     
         
     def addCamera(self, cam):
-        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
         if(self.scene):
             cam.scene = self.scene
         self.cameras.append(cam)
@@ -75,28 +74,29 @@ class Renderer():
             print(' *** Stop Cycling Cameras *** ')
         
     def clearScene(self):
-        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
+#        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
         self.scene = None
 
     def addObjectFile(self, sFileName):
-        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
+#        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
 
         ## Code below is to be used to allow only a single object in scene
         ## IE each 'addObjectFile' resets and loads   
         if(self.scene.objects):
             self.clearScene()
-        
-        
-        ## Resume normal logic
-        oObject = Object()
-        oObject.loadFile(sFileName)
+
+        ## Resume normal logic                
         self.scene = Scene()
         self.scene.renderer = self
         self.scene.controller = self.controller
+
+        oObject = Object()
+        oObject.loadFile(sFileName)
         self.scene.addObject(oObject)
-   
+
+
     def addCameraFile(self, sFileName):
-        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
+#        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
 
         self.cameraFileName = sFileName
         self.clearCameras()

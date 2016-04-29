@@ -21,6 +21,7 @@ from Wood_Object_05 import *
 class Scene():
     def __init__(self):
 
+        self.objects = []
         self.controller = None
         self.renderer = None
         self.clearScene()

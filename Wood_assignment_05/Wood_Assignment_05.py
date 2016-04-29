@@ -15,21 +15,16 @@ from OpenGL.GLUT import *
 
 from Wood_Controller_05 import *
 
-Angle = 0
-Incr = 1
 
-for k in sys.argv:
-    print(str(k))
 
 c = Controller()
-c.addCameraFile('cameras_05.txt')
-c.addObjectFile('cube_05.txt')
+
+
 c.addObjectFile('pyramid_05.txt')
-#c.addObjectFile('teapot_lid_05.txt')
+for i in range(1, len(sys.argv)):
+    arg = sys.argv[i]
+    print(' arg = ' + str(arg))
+    c.addObjectFile(arg)
+
 c.go()
 
-print('Exited')
-print('Exited')
-print('Exited')
-print('Exited')
-print('Exited')

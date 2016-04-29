@@ -54,7 +54,7 @@ class Object:
     def clear(self):
         self.objectFileName = None
         self.vertices = []
-        self.faces = []  
+        self.faces = []
         
         
         return
@@ -72,7 +72,7 @@ class Object:
         ## Lines should only have two indices
 
     def loadFile(self,sFileName):
-        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
+#        print(' ' + str(self.__class__.__name__) + '.' + str(sys._getframe().f_back.f_code.co_name) + '() called')
         
         self.objectFileName = sFileName
 

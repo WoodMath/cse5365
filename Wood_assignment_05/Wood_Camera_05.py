@@ -21,7 +21,6 @@ fDelay = 0.5
 
 class Camera:
     def __init__(self,renderer):
-        print(' ************************** ')
         self.scene = None
 
         ## tags from 'camera' file
@@ -72,6 +71,11 @@ class Camera:
                 'vecV':self.vecV, \
                 'vecN':self.vecN}
 
+    def toggleType(self):
+        if self.type == 'perspective':
+            self.type = 'parallel'
+        elif self.type == 'parallel':
+            self.type = 'perspective'
 
     def addVectors(self):
         vTempN = np.array(self.eye) - np.array(self.lookAt)

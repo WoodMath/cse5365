@@ -27,11 +27,14 @@ class Controller:
         self.opengl.mainLoop()
     
     def go(self):
+        self.addCameraFile('cameras_05.txt')
+
         self.createWindow(400,300)
         self.addCallbacks()
-        self.opengl.createObjects(self.renderer.scene.objects)
-        self.opengl.createAxes()
+#        self.opengl.createObjects(self.renderer.scene.objects)
+#        self.opengl.createAxes()
 #        self.opengl.drawCameras(self.renderer.cameras)
+        self.opengl.create()
 
         self.mainLoop()
         

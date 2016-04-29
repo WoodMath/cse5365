@@ -11,22 +11,28 @@ import copy
 from numpy.linalg import inv
 from numpy import linalg as LA
 
-import sys
-
 import OpenGL
 from OpenGL.GL import *     
 from OpenGL.GLU import *    
 from OpenGL.GLUT import *
 
+iDelay = 30
 
 class OpenGL_Stuff:
     def __init__(self, controller):
         self.controller = controller
         self.glList = 1
+        self.displayState = True
+        self.inputState = False
         self.width = None
         self.height = None
-        self.offsetVector = [0,0,0]
+        self.eyeOffsetVector = None
+        self.resetEyeOffset()
+        self.filename = ''
         return
+
+    def resetEyeOffset(self):
+        self.eyeOffsetVector = [0,0,0]
 
     def createAxes(self):
         glNewList(2,GL_COMPILE)
@@ -108,35 +114,15 @@ class OpenGL_Stuff:
         glMatrixMode(GL_MODELVIEW)
 
         glNewList(self.glList,GL_COMPILE)
-        for o in objs:
-            self.createObject(o)
+        if(self.displayState):
+            for o in objs:
+                self.createObject(o)
+
         glEndList()
-    def createWindow(self, width=800, height=600, left=100, top=100):
-        glutInit(sys.argv)
-        glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH)
-        glutInitWindowSize(800, 500)
-        glutInitWindowPosition(100, 100)
-        self.width = width
-        self.height = height
-        self.controller.window = glutCreateWindow(b"PyOpenGL Demo")
-        glClearColor(1,1,0,0)
-        glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
-        glEnable(GL_DEPTH_TEST)
-        glDepthFunc(GL_LESS);
-
-    def special(self, key, mouseX, mouseY):
-
-        print(" Special called ")
-    def addCallbacks(self):
-        glutDisplayFunc(self.display)
-        glutKeyboardFunc(self.keyHandler)
-        glutSpecialFunc(self.keyHandler)
-        glutTimerFunc(300,self.timer,0)
-        glutReshapeFunc(self.reshape)
-        
+                
         
     def display(self):
-        print(' Displaying stuff')
+#        print(' Displaying stuff')
         self.displayCameras(self.controller.renderer.cameras)
 
         glFlush()
@@ -145,22 +131,41 @@ class OpenGL_Stuff:
 #        print(' Finished Display')
         return
 
-
+    
     def keyHandler(self, key, mouseX, mouseY):
-        global incr
 
-        print(' key = ' + str(key))
 #        print(' mouseX = ' + str(mouseX))
 #        print(' mouseY = ' + str(mouseY))
 
+#        if(self.inputState):
+#            self.consoleInput(key)
+#            return
+
         ## Load file
         if key == b'n' or key == b'N':
+#            self.filename = input(' Input filname  : ')
+
+            self.inputState = True
+            self.displayState = False
+            self.create()
+
+#            print(' Input filname (Keep Focus on OpenGL window) : ', end='')
+
+            print(' *** Change focus to Python Console *** ')
             result = input(' Load a file : ')
-            print(' result = ' + str(result))
+            self.filename = result
+            print(' Loading \'' + str(result) + '\'')
+            self.controller.addObjectFile(result)
+            print(' *** Change focus back to OpenGL window *** ')
+            self.inputState = False
 
         if key == b'd' or key == b'D':
-            result = input(' Load a file : ')
-            print(' result = ' + str(result))
+            self.displayState = True
+            self.create()
+
+        if key == b'p' or key == b'P':
+            for c in self.controller.renderer.cameras:
+                c.toggleType()
 
         ## Rotate about x-Axis
         if key == b'x':
@@ -195,26 +200,10 @@ class OpenGL_Stuff:
             glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
 
         ## Backward / Forward
-        if key == b'b':
-            glMatrixMode(GL_MODELVIEW)
-        if key == b'f':
-            glMatrixMode(GL_MODELVIEW) 
-
-        ## Up / Down
-        if key == GLUT_KEY_DOWN:
-            glMatrixMode(GL_MODELVIEW)
-#            glScalef(1.05, 1.05, 1.05)
-        if key == GLUT_KEY_UP:
-            glMatrixMode(GL_MODELVIEW)
-#            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
-
-        ## Left / Right
-        if key == GLUT_KEY_LEFT:
-            glMatrixMode(GL_MODELVIEW)
-#            glScalef(1.05, 1.05, 1.05)
-        if key == GLUT_KEY_RIGHT:
-            glMatrixMode(GL_MODELVIEW)
-#            glScalef(1.00/1.05, 1.00/1.05, 1.00/1.05)
+        if key == b'b' or key == b'B':
+            self.eyeOffsetVector[2] = 0.05/1.05
+        if key == b'f' or key == b'F':
+            self.eyeOffsetVector[2] = -0.05
     
 
 
@@ -225,12 +214,24 @@ class OpenGL_Stuff:
         elif key == b'\x1b':
             print ("Bye")
             sys.exit()
-        else:
-            print ("Invalid Key ", key)
+
+    def specialHandler(self, key, mouseX, mouseY):
+        ## Left / Right
+        if key == GLUT_KEY_LEFT:
+            self.eyeOffsetVector[0] = 0.05
+        if key == GLUT_KEY_RIGHT:
+            self.eyeOffsetVector[0] = -0.05
+
+        ## Up / Down
+        if key == GLUT_KEY_DOWN:
+            self.eyeOffsetVector[1] = -0.05
+        if key == GLUT_KEY_UP:
+            self.eyeOffsetVector[1] = 0.05
+
     
     def timer(self, dummy):
         self.display()
-        glutTimerFunc(30, self.timer,0)
+        glutTimerFunc(iDelay, self.timer,0)
         
     def reshape(self, width, height):
         self.width = width
@@ -244,7 +245,11 @@ class OpenGL_Stuff:
         for c in cams:
             self.displayCamera(c)
 
+        ## Reset eyeOffsetVectorh
+        self.resetEyeOffset()
+
     def displayCamera(self, cam):
+
         viewportWidth = cam.vx[1] - cam.vx[0]
         viewportHeight = cam.vy[1] - cam.vy[0]
         viewportLeft = cam.vx[0]
@@ -261,9 +266,22 @@ class OpenGL_Stuff:
 #        print(' screenLeft = ' + str(screenLeft) + ' ; type(screenLeft) = ' + str(type(screenLeft)))
 #        print(' screenBottom = ' + str(screenBottom) + ' ; type(screenBottom) = ' + str(type(screenBottom)))
 
-        vecU = cam.vecU
-        vecV = cam.vecV
-        vecN = cam.vecN
+        vecU = np.array(cam.vecU)
+        vecV = np.array(cam.vecV)
+        vecN = np.array(cam.vecN)
+        dist = cam.distance
+        eye = np.array(cam.eye)
+        
+        fUoffset = dist * self.eyeOffsetVector[0]
+        fVoffset = dist * self.eyeOffsetVector[1]
+        fNoffset = dist * self.eyeOffsetVector[2]
+
+        vecU *= fUoffset
+        vecV *= fVoffset
+        vecN *= fNoffset      
+
+        eye += (vecU+vecV+vecN)
+        cam.addEye(eye)
 
         ## From code provided by instructor
         glEnable(GL_SCISSOR_TEST)
@@ -292,6 +310,43 @@ class OpenGL_Stuff:
         glCallList(2) 
         glPopMatrix()
         return
+
+    def create(self):
+        self.controller.addCameraFile('cameras_05.txt')
+#        print(' self.controller = ' + str(self.controller))
+#        print(' self.controller.renderer = ' + str(self.controller.renderer))
+#        print(' self.controller.renderer.scene = ' + str(self.controller.renderer.scene))
+#        print(' self.controller.renderer.scene.objects = ' + str(self.controller.renderer.scene.objects))
+        
+        if(self.controller.renderer.scene.objects):
+            self.createObjects(self.controller.renderer.scene.objects)
+        else:
+            print(' No object files have been sucessfully loaded !')
+        self.createAxes()
+
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+
+    def createWindow(self, width=800, height=600, left=100, top=100):
+        glutInit(sys.argv)
+        glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH)
+        glutInitWindowSize(800, 500)
+        glutInitWindowPosition(100, 100)
+        self.width = width
+        self.height = height
+        self.controller.window = glutCreateWindow(b'Wood Assignment 05')
+        glClearColor(1,1,0,0)
+        glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
+        glEnable(GL_DEPTH_TEST)
+        glDepthFunc(GL_LESS);
+        
+    def addCallbacks(self):
+        glutDisplayFunc(self.display)
+        glutKeyboardFunc(self.keyHandler)
+        glutSpecialFunc(self.specialHandler)
+        glutTimerFunc(300,self.timer,0)
+        glutReshapeFunc(self.reshape)
+
 
     def mainLoop(self):
         glutMainLoop()
