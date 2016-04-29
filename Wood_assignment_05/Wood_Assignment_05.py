@@ -15,6 +15,11 @@ from OpenGL.GLUT import *
 
 from Wood_Controller_05 import *
 
+'''
+    ***************************************************
+    **  See README.txt for instructions on running.  **
+    ***************************************************
+'''
 
 
 c = Controller()
